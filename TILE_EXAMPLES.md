@@ -7,7 +7,7 @@ Here are some real life examples of Tiles.<br>
 ```js
 {
  position: [0, 3],
- type: TYPES.ALARM,
+ type: 'alarm',
  title: 'Alarm',
  id: 'alarm_control_panel.home_alarm',
  icons: {
@@ -35,7 +35,7 @@ Manually trigger an automation
 ```js
 {
     position: [0,2],
-    type: TYPES.AUTOMATION,
+    type: 'automation',
     title: 'Sunrise Actions',
     subtitle: 'Trigger Automation',
     id: 'automation.sunrise_actions',
@@ -48,12 +48,12 @@ Manually trigger an automation
 {
    position: [0, 0],
    id: 'camera.front_gate',
-   type: TYPES.CAMERA_THUMBNAIL,
+   type: 'camera_thumbnail',
    bgSize: 'cover',
    width: 2,
    state: false,
    fullscreen: {
-      type: TYPES.CAMERA,
+      type: 'camera',
       refresh: 1500, // can be number in milliseconds
       bgSize: 'contain'
    },
@@ -71,12 +71,12 @@ Optionally, the fullscreen camera entity can be different from the thumbnail cam
 {
    position: [0, 0],
    id: 'camera.front_gate',
-   type: TYPES.CAMERA_THUMBNAIL,
+   type: 'camera_thumbnail',
    bgSize: 'cover',
    width: 2,
    state: false,
    fullscreen: {
-      type: TYPES.CAMERA_STREAM,
+      type: 'camera_stream',
       objFit: 'contain',
       id: 'camera.front_gate_highres',  // Optional: camera entity to use on fullscreen, defaults to the tile camera entity if omitted
       bufferLength: 5  // Optional: buffer length in seconds for the HLS buffer, default is 5 seconds
@@ -94,7 +94,7 @@ Optionally, the fullscreen camera entity can be different from the thumbnail cam
 {
    position: [0, 2],
    id: "climate.kitchen",
-   type: TYPES.CLIMATE,
+   type: 'climate',
    unit: 'C',
    state: function (item, entity) {
       return 'Current '
@@ -112,7 +112,7 @@ The custom tile type does not have handling for any specific entity types. It ca
 ```js
 {
    position: [0, 0],
-   type: TYPES.CUSTOM,
+   type: 'custom',
    title: 'Screen Off',
    id: { },
    icon: 'mdi-monitor',
@@ -132,7 +132,7 @@ The custom tile type does not have handling for any specific entity types. It ca
 ```js
 {
    position: [0, 0],
-   type: TYPES.DEVICE_TRACKER,
+   type: 'device_tracker',
    id: 'device_tracker.google_maps_9000',
    map: 'yandex',
    states: {
@@ -151,14 +151,14 @@ Essentially a door entry tile is a pop-up with a fullscreen camera and a set of 
 ```js
 {
     position: [0, 3],
-    type: TYPES.DOOR_ENTRY,
+    type: 'door_entry',
     id: {},
     icon: 'mdi-phone',
     title: 'Door entry',
     state: false,
     layout: {
         camera: {
-            type: TYPES.CAMERA,
+            type: 'camera',
             id: 'camera.front_gate',
             refresh: 1500,
             bgSize: 'cover'
@@ -167,7 +167,7 @@ Essentially a door entry tile is a pop-up with a fullscreen camera and a set of 
         tiles: [{
                 position: [0, 0],
                 theme: ITEM_TRANSPARENT,
-                type: TYPES.SWITCH,
+                type: 'switch',
                 id: 'switch.intercom',
                 icons: {
                     on: 'mdi-phone-in-talk',
@@ -181,7 +181,7 @@ Essentially a door entry tile is a pop-up with a fullscreen camera and a set of 
             {
                 position: [0, 1],
                 theme: ITEM_TRANSPARENT,
-                type: TYPES.SCRIPT,
+                type: 'script',
                 id: 'script.front_gate_open',
                 icons: {
                     on: "mdi-gate",
@@ -193,7 +193,7 @@ Essentially a door entry tile is a pop-up with a fullscreen camera and a set of 
                 position: [0, 2],
                 theme: ITEM_TRANSPARENT,
                 id: 'switch.outdoor_lights',
-                type: TYPES.SWITCH,
+                type: 'switch',
                 title: 'Lights',
                 states: {
                     on: "On",
@@ -216,7 +216,7 @@ Allows you to toggle a fan on and off, as well as set the speed.
 ```js
 {
    position: [0, 2],
-   type: TYPES.FAN,
+   type: 'fan',
    title: 'Ceiling fan',
    id: 'fan.living_room_fan',
 }
@@ -226,7 +226,7 @@ Allows you to toggle a fan on and off, as well as set the speed.
 ```js
 {
    position: [0, 3],
-   type: TYPES.IFRAME,
+   type: 'iframe',
    id: {},
    width: 3,
    height: 2,
@@ -242,7 +242,7 @@ Also alows showing custom HTML content in the tile.
 ```js
 {
    position: [0, 3],
-   type: TYPES.POPUP_IFRAME,
+   type: 'popup_iframe',
    id: {},
    width: 3,
    height: 2,
@@ -258,7 +258,7 @@ Also alows showing custom HTML content in the tile.
    width: 1,
    title: 'Radio',
    classes: [CLASS_BIG],
-   type: TYPES.INPUT_BOOLEAN,
+   type: 'input_boolean',
    id: 'input_boolean.play_radio',
    icons: {
       on: 'mdi-stop',
@@ -276,7 +276,7 @@ Also alows showing custom HTML content in the tile.
 ```js
 {
    position: [0, 1],
-   type: TYPES.INPUT_SELECT,
+   type: 'input_select',
    id: 'input_select.climate_mode',
    state: false
 }
@@ -286,7 +286,7 @@ Also alows showing custom HTML content in the tile.
 ```js
 {
    position: [0, 1],
-   type: TYPES.INPUT_SELECT,
+   type: 'input_select',
    id: 'input_select.house_mode',
    title: 'House Mode',
    icons: {
@@ -304,7 +304,7 @@ Also alows showing custom HTML content in the tile.
 ```js
 {
    position: [0, 3],
-   type: TYPES.INPUT_DATETIME,
+   type: 'input_datetime',
    state: false,
    id: "input_datetime.both_date_and_time",
 }
@@ -321,7 +321,7 @@ Light switch. You can optionally define sliders to control colour temperature or
    title: 'Floor lamp',
    subtitle: 'Lounge',
    id: 'light.lounge_floor_lamp',
-   type: TYPES.LIGHT,
+   type: 'light',
    states: {
       on: "On",
       off: "Off"
@@ -368,7 +368,7 @@ Locks and unlocks the lock on tap. Also shows icon depending on the state<br>
 ```js
 {
    position: [0, 1],
-   type: TYPES.LOCK,
+   type: 'lock',
    id: 'lock.front_door',
    title: 'Front door',
    states: {
@@ -388,7 +388,7 @@ Locks and unlocks the lock on tap. Also shows icon depending on the state<br>
 {
    position: [0, 3],
    id: 'media_player.volumio',
-   type: TYPES.MEDIA_PLAYER,
+   type: 'media_player',
    hideSource: false,
    hideMuteButton: false,
    state: false,
@@ -404,7 +404,7 @@ Works almost identical to the SCRIPT. Activates scene in a tap.
 {
    position: [1, 2],
    id: 'scene.movie_time',
-   type: TYPES.SCENE,
+   type: 'scene',
    state: false,
    icon: 'mdi-movie-roll',
 },
@@ -417,7 +417,7 @@ Call script on click/tap<br>
 ```js
 {
    position: [0, 0],
-   type: TYPES.SCRIPT,
+   type: 'script',
    id: 'script.front_gate_open',
    icons: {
       on: "mdi-gate",
@@ -432,7 +432,7 @@ Call script on click/tap<br>
 ```js
 {
    position: [0, 0],
-   type: TYPES.SENSOR,
+   type: 'sensor',
    title: 'Outdoor',
    id: 'sensor.outdoor_temperature',
    unit: 'C', // override default entity unit
@@ -450,7 +450,7 @@ Similar to sensor, but with an icon.<br>
 ```js
 {
    position: [1, 1],
-   type: TYPES.SENSOR_ICON,
+   type: 'sensor_icon',
    title: 'Hot water',
    id: 'sensor.hot_water',
    states: {
@@ -470,7 +470,7 @@ Similar to sensor, but with an icon.<br>
 {
    position: [6, 1],
    id: 'input_number.casatunes_volume_6',
-   type: TYPES.SLIDER,
+   type: 'slider',
    unit: '%',
    state: false,
    //bottom: true, // puts slider on bottom
@@ -494,7 +494,7 @@ Toggle switch on tap. Also shows icon depending on the state<br>
 ```js
 {
    position: [0, 1],
-   type: TYPES.SWITCH,
+   type: 'switch',
    id: 'switch.kitchen_spotlights',
    title: 'Spotlights',
    subtitle: 'Kitchen',
@@ -519,7 +519,7 @@ This is a custom tile which can be used for displaying values from different sen
    height: 1,
    title: 'Travel',
    id: {}, // since we are binding each list item to different sensor, so we simply use an empty object
-   type: TYPES.TEXT_LIST,
+   type: 'text_list',
    state: false,
    list: [
       {
@@ -549,7 +549,7 @@ This is a custom tile which can be used for displaying values from different sen
    position: [2, 1],
    height: 2,
    //classes: ['-compact'], // enable this if you want a little square tile (1x1)
-   type: TYPES.WEATHER,
+   type: 'weather',
    id: 'group.weather',
    state: '&sensor.dark_sky_summary.state', // label with weather summary (e.g. Sunny)
    icon: '&sensor.dark_sky_icon.state',
@@ -600,7 +600,7 @@ This is a custom tile which can be used for displaying values from different sen
 ```js
 {
    position: [0, 1],
-   type: TYPES.WEATHER_LIST,
+   type: 'weather_list',
    width: 2,
    height: 2,
    title: 'Forecast',
@@ -650,7 +650,7 @@ This is a custom tile which can be used for displaying values from different sen
    height: 1,
    title: 'Energy Production',
    subtitle: '',
-   type: TYPES.GAUGE,
+   type: 'gauge',
    id: 'sensor.my_enery_sensor', // Assign the sensor you want to display on the gauge
    value: function(item, entity){
       return entity.state;
@@ -681,7 +681,7 @@ This is a custom tile which can be used for displaying values from different sen
 ```js
 {
    position: [0, 1],
-   type: TYPES.IMAGE,
+   type: 'image',
    id: {},
    url: '../qrcode.png'
 }

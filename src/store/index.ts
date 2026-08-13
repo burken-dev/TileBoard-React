@@ -1,6 +1,12 @@
 import { create } from 'zustand';
 import type { StoreApi, UseBoundStore } from 'zustand';
-import type { EntityStates, HaEntity, TileBoardConfig, TileConfig } from '../config/types';
+import type {
+  EntityStates,
+  HaEntity,
+  NotificationData,
+  TileBoardConfig,
+  TileConfig,
+} from '../config/types';
 import { callService, getHistory } from '../ha/services';
 import {
   buildDatetimePayload,
@@ -105,18 +111,11 @@ interface HistorySlice {
   closeHistory(): void;
 }
 
-export interface NotificationData {
-  id?: string | number;
-  type?: 'info' | 'warning' | 'error' | 'success';
-  title?: string;
-  message?: string;
-  icon?: string;
-  lifetime?: number;
-}
-
 export interface NotificationModel extends NotificationData {
   showed: boolean;
 }
+
+export type { NotificationData };
 
 interface NotificationsSlice {
   notifications: NotificationModel[];

@@ -43,10 +43,11 @@ export function initConnection(): void {
         'tileboard',
       );
 
-      if (config.onReady) callFunction(config.onReady, []);
-
       connection.addEventListener('disconnected', () => setStatus('reconnecting'));
-      connection.addEventListener('ready', () => setStatus('ready'));
+      connection.addEventListener('ready', () => {
+        setStatus('ready');
+        if (config.onReady) callFunction(config.onReady, []);
+      });
       connection.addEventListener('reconnect-error', () => {
         const { config, addNotification } = getAppStore();
         if (!config.ignoreErrors) {

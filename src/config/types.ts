@@ -10,12 +10,22 @@ export interface HaEntity {
 
 export type EntityStates = Record<string, HaEntity>;
 
+export interface NotificationData {
+  id?: string | number;
+  type?: 'info' | 'warning' | 'error' | 'success';
+  title?: string;
+  message?: string;
+  icon?: string;
+  lifetime?: number;
+}
+
 export interface FunctionContext {
   states: EntityStates;
   parseFieldValue: (value: unknown, item?: TileConfig, entity?: HaEntity | null) => unknown;
   callService: (domain: string, service: string, serviceData?: Record<string, unknown>) => void;
   sendMessage: <T = unknown>(data: Record<string, unknown>) => Promise<T>;
   openPage: (pageIndex: number) => void;
+  addNotification: (data: NotificationData) => void;
 }
 
 export type ConfigFunction<T = unknown> = (

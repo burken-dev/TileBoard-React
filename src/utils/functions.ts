@@ -13,6 +13,7 @@ export function getContext(): FunctionContext {
     callService,
     sendMessage,
     openPage: (pageIndex) => getAppStore().openPage(pageIndex),
+    addNotification: (data) => getAppStore().addNotification(data),
   };
 }
 
