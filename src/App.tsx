@@ -8,6 +8,7 @@ import HistoryPopup from './components/popups/HistoryPopup';
 import IframePopup from './components/popups/IframePopup';
 import Notifications from './components/Notifications';
 import Pages from './components/Pages';
+import Screensaver from './components/Screensaver';
 import type { TileBoardConfig } from './config/types';
 import { initConnection } from './ha/connection';
 import { useAppStore } from './store';
@@ -39,6 +40,7 @@ export default function App({ config }: AppProps) {
       <IframePopup />
       <HistoryPopup />
       <Notifications />
+      <Screensaver />
     </div>
   );
 }
