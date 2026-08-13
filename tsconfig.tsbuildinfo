@@ -1,1 +1,1 @@
-{"root":["./src/App.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/test/setup.test.ts","./src/test/setup.ts","./vite.config.ts"],"version":"6.0.3"}
+{"root":["./src/App.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/components/ConfigError.tsx","./src/config/constants.ts","./src/config/defaults.test.ts","./src/config/defaults.ts","./src/config/load.ts","./src/config/schema.test.ts","./src/config/schema.ts","./src/config/types.ts","./src/test/setup.test.ts","./src/test/setup.ts","./vite.config.ts"],"version":"6.0.3"}
