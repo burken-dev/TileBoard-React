@@ -16,10 +16,14 @@ export function getContext(): FunctionContext {
     parseFieldValue: parseFieldValue as FunctionContext['parseFieldValue'],
     callService,
     sendMessage,
-    openPage: () => {
-      // wired in step 04
-    },
+    openPage: (pageIndex) => getAppStore().openPage(pageIndex),
   };
+}
+
+export function isHidden(obj: { hidden?: unknown }, entity: unknown = null): boolean {
+  if (!('hidden' in obj)) return false;
+  if (typeof obj.hidden === 'function') return Boolean(callFunction(obj.hidden, [obj, entity]));
+  return Boolean(obj.hidden);
 }
 
 export function callFunction<T>(funcOrValue: T | ConfigFunction<T>, args: unknown[]): unknown {
