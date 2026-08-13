@@ -3,8 +3,10 @@ import AlarmPopup from './components/popups/AlarmPopup';
 import CameraPopup from './components/popups/CameraPopup';
 import DatetimePopup from './components/popups/DatetimePopup';
 import DoorEntryPopup from './components/popups/DoorEntryPopup';
+import Header from './components/Header';
 import HistoryPopup from './components/popups/HistoryPopup';
 import IframePopup from './components/popups/IframePopup';
+import Notifications from './components/Notifications';
 import Pages from './components/Pages';
 import type { TileBoardConfig } from './config/types';
 import { initConnection } from './ha/connection';
@@ -28,6 +30,7 @@ export default function App({ config }: AppProps) {
 
   return (
     <div className="page-container">
+      <Header header={config.header} />
       <Pages />
       <DatetimePopup />
       <CameraPopup />
@@ -35,6 +38,7 @@ export default function App({ config }: AppProps) {
       <DoorEntryPopup />
       <IframePopup />
       <HistoryPopup />
+      <Notifications />
     </div>
   );
 }

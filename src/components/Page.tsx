@@ -3,6 +3,7 @@ import type { PageConfig } from '../config/types';
 import { getAppStore, useAppStore } from '../store';
 import { pageBackground } from '../utils/layout';
 import Group from './Group';
+import Header from './Header';
 
 interface PageProps {
   page: PageConfig;
@@ -46,6 +47,7 @@ export default function Page({ page, index }: PageProps) {
       onScroll={onScroll}
     >
       <div className="page-align" />
+      <Header header={page.header} />
       {page.groups.map((group, groupIndex) => (
         <Group key={groupIndex} group={group} page={page} />
       ))}

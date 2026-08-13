@@ -1,4 +1,5 @@
 import type { EntityStates, Field, HaEntity, TileConfig } from '../config/types';
+import { getAppStore } from '../store';
 import { callFunction } from './functions';
 import { getItemFieldValue, parseFieldValue, parseString } from './fields';
 import { escapeClass } from './misc';
@@ -11,6 +12,20 @@ export function getItemEntity(item: TileConfig, entities: EntityStates): HaEntit
   if (!entity && !warnedIds.has(item.id)) {
     warnedIds.add(item.id);
     console.warn(`Entity "${item.id}" not found`);
+    const { config, addNotification, notificationSeen } = getAppStore();
+    if (!config.ignoreErrors) {
+      const id = `${item.id}_not_found`;
+      if (!notificationSeen(id)) {
+        setTimeout(() => {
+          addNotification({
+            type: 'warning',
+            id,
+            title: 'Entity not found',
+            message: String(item.id),
+          });
+        }, 0);
+      }
+    }
   }
   return entity;
 }

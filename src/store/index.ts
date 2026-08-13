@@ -105,6 +105,27 @@ interface HistorySlice {
   closeHistory(): void;
 }
 
+export interface NotificationData {
+  id?: string | number;
+  type?: 'info' | 'warning' | 'error' | 'success';
+  title?: string;
+  message?: string;
+  icon?: string;
+  lifetime?: number;
+}
+
+export interface NotificationModel extends NotificationData {
+  showed: boolean;
+}
+
+interface NotificationsSlice {
+  notifications: NotificationModel[];
+  addNotification(data: NotificationData): void;
+  removeNotification(id: string | number): void;
+  clearNotifications(): void;
+  notificationSeen(id: string | number): boolean;
+}
+
 export type AppStore = AppData &
   AppDataActions &
   NavigationSlice &
@@ -116,13 +137,24 @@ export type AppStore = AppData &
   AlarmSlice &
   DoorEntrySlice &
   IframeSlice &
-  HistorySlice;
+  HistorySlice &
+  NotificationsSlice;
 
 type AppStoreApi = UseBoundStore<StoreApi<AppStore>>;
 
 let appStore: AppStoreApi | null = null;
 const latestAlarmActions = new Map<string, number>();
 let doorEntryTimeout: ReturnType<typeof setTimeout> | null = null;
+
+const notyTimers = new Map<string | number, Set<ReturnType<typeof setTimeout>>>();
+const notyHistory = new Set<string | number>();
+
+function clearNotyTimers(id: string | number): void {
+  const timers = notyTimers.get(id);
+  if (!timers) return;
+  timers.forEach((timer) => clearTimeout(timer));
+  notyTimers.delete(id);
+}
 
 function checkAlarmState(entityId: string): void {
   const ts = latestAlarmActions.get(entityId);
@@ -157,6 +189,7 @@ export function createAppStore(config: TileBoardConfig): void {
     lightControls: new Set(),
     activeCamera: null,
     screensaverShown: false,
+    notifications: [],
     activeAlarm: null,
     alarmCode: '',
     activeDoorEntry: null,
@@ -336,6 +369,52 @@ export function createAppStore(config: TileBoardConfig): void {
         });
     },
     closeHistory: () => set({ activeHistory: null }),
+    addNotification: (data) => {
+      const id = data.id ?? Math.random();
+      const existing = get().notifications.find((n) => n.id === id);
+      clearNotyTimers(id);
+      if (existing) {
+        set({
+          notifications: get().notifications.map((n) =>
+            n.id === id ? { ...n, ...data, id, showed: n.showed } : n,
+          ),
+        });
+      } else {
+        notyHistory.add(id);
+        set({
+          notifications: [...get().notifications, { ...data, id, showed: false }],
+        });
+      }
+      const timers = new Set<ReturnType<typeof setTimeout>>();
+      timers.add(
+        setTimeout(() => {
+          set({
+            notifications: get().notifications.map((n) =>
+              n.id === id ? { ...n, showed: true } : n,
+            ),
+          });
+        }, 100),
+      );
+      if (data.lifetime) {
+        timers.add(
+          setTimeout(() => {
+            set({ notifications: get().notifications.filter((n) => n.id !== id) });
+            clearNotyTimers(id);
+          }, data.lifetime * 1000),
+        );
+      }
+      notyTimers.set(id, timers);
+    },
+    removeNotification: (id) => {
+      clearNotyTimers(id);
+      set({ notifications: get().notifications.filter((n) => n.id !== id) });
+    },
+    clearNotifications: () => {
+      notyTimers.forEach((timers) => timers.forEach((timer) => clearTimeout(timer)));
+      notyTimers.clear();
+      set({ notifications: [] });
+    },
+    notificationSeen: (id) => notyHistory.has(id),
   }));
 
   window.openPage = (index: number) => getAppStore().openPage(index);

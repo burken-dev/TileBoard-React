@@ -1,63 +1,7 @@
-import type { EntityStates, HaEntity, TileConfig } from '../../config/types';
+import type { HaEntity, TileConfig } from '../../config/types';
 import { useAppStore } from '../../store';
-import { entityIcon } from '../../utils/entity';
 import { parseFieldValue } from '../../utils/fields';
-import { callFunction } from '../../utils/functions';
-
-function getWeatherField(
-  field: string,
-  item: TileConfig,
-  entity: HaEntity | null,
-  states: EntityStates,
-): unknown {
-  const fields = item.fields;
-  if (!fields || !fields[field]) return null;
-  return parseFieldValue(fields[field], states, item, entity);
-}
-
-function getWeatherIcon(item: TileConfig, entity: HaEntity | null, states: EntityStates): string | null {
-  let icon: string | null = null;
-  if (item.icon || item.icons) icon = entityIcon(item, entity, states);
-  if (!icon) {
-    icon = getWeatherField('icon', item, entity, states) as string | null;
-    if (icon) {
-      console.warn(
-        '`icon` field inside fields is deprecated for WEATHER tile, please move it to the tile object',
-      );
-    }
-  }
-  if (!icon) return null;
-
-  let map: unknown = item.icons;
-  if (!map && item.fields?.iconMap) {
-    map = item.fields.iconMap;
-    if (icon) {
-      console.warn(
-        '`iconMap` field inside fields is deprecated for WEATHER tile, please move it to the tile object as `icons`',
-      );
-    }
-  }
-  if (typeof map === 'function') return String(callFunction(map, [icon, item, entity]));
-  if (!map) return icon;
-  return (map as Record<string, string>)[icon] || icon;
-}
-
-function getWeatherImageStyles(
-  item: TileConfig,
-  entity: HaEntity | null,
-  states: EntityStates,
-): Record<string, string> | null {
-  if (!item.iconImage) return null;
-  let iconImage = parseFieldValue(item.iconImage, states, item, entity);
-  if (typeof item.icons === 'function') {
-    iconImage = callFunction(item.icons, [iconImage, item, entity]);
-  }
-  if (item.icons && typeof item.icons === 'object' && String(iconImage) in (item.icons as object)) {
-    iconImage = (item.icons as Record<string, unknown>)[iconImage as string];
-  }
-  if (!iconImage) return null;
-  return { backgroundImage: `url("${String(iconImage)}")` };
-}
+import { getWeatherField, getWeatherIcon, getWeatherImageStyles } from '../../utils/weather';
 
 export function WeatherTile({ item, entity }: { item: TileConfig; entity: HaEntity }) {
   const states = useAppStore((s) => s.entities);

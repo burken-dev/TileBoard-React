@@ -47,6 +47,17 @@ export function initConnection(): void {
 
       connection.addEventListener('disconnected', () => setStatus('reconnecting'));
       connection.addEventListener('ready', () => setStatus('ready'));
+      connection.addEventListener('reconnect-error', () => {
+        const { config, addNotification } = getAppStore();
+        if (!config.ignoreErrors) {
+          addNotification({
+            type: 'error',
+            title: 'Connection',
+            message: 'Connection error',
+            lifetime: 10,
+          });
+        }
+      });
 
       if (config.pingConnection !== false) {
         setInterval(() => pingConnection(connection), 5000);
@@ -87,7 +98,27 @@ function pingConnection(connection: Connection): void {
 
   setTimeout(() => {
     if (success) return;
+    const { addNotification } = getAppStore();
     getAppStore().setStatus('reconnecting');
+    addNotification({
+      type: 'warning',
+      title: 'Ping unsuccessful',
+      message: 'Trying to reconnect',
+      id: 'ping',
+    });
     connection.reconnect();
+
+    const onReady = () => {
+      connection.removeEventListener('ready', onReady);
+      getAppStore().removeNotification('ping');
+      addNotification({
+        type: 'success',
+        title: 'Reconnection',
+        message: 'Reconnection successful',
+        lifetime: 1,
+        id: 'ping-ok',
+      });
+    };
+    connection.addEventListener('ready', onReady);
   }, 3000);
 }
