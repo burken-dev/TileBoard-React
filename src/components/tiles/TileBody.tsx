@@ -1,15 +1,17 @@
 import type { ReactElement } from 'react';
-import type { HaEntity, TileConfig } from '../../config/types';
+import type { HaEntity, PageConfig, TileConfig } from '../../config/types';
 import { Camera } from '../cameras/Camera';
 import { CameraStream } from '../cameras/CameraStream';
 import { CameraThumbnail } from '../cameras/CameraThumbnail';
 import { ClimateTile } from './ClimateTile';
 import { CoverTile } from './CoverTile';
 import { CustomTile } from './CustomTile';
+import { DeviceTrackerTile } from './DeviceTrackerTile';
 import { DimmerTile } from './DimmerTile';
 import { FanTile } from './FanTile';
 import { GaugeTile } from './GaugeTile';
 import { IconTile } from './IconTile';
+import { IframeTile } from './IframeTile';
 import { ImageTile } from './ImageTile';
 import { InputDatetimeTile } from './InputDatetimeTile';
 import { InputNumberTile } from './InputNumberTile';
@@ -19,15 +21,19 @@ import { MediaPlayerTile } from './MediaPlayerTile';
 import { SensorTile } from './SensorTile';
 import { SliderTile } from './SliderTile';
 import { TextListTile } from './TextListTile';
+import { WeatherListTile } from './WeatherListTile';
+import { WeatherTile } from './WeatherTile';
 
 export function TileBody({
   item,
   entity,
   freezed,
+  page,
 }: {
   item: TileConfig;
   entity: HaEntity;
   freezed: boolean;
+  page: PageConfig;
 }): ReactElement | null {
   switch (item.type) {
     case 'sensor':
@@ -94,6 +100,19 @@ export function TileBody({
       );
     case 'media_player':
       return <MediaPlayerTile item={item} entity={entity} />;
+    case 'weather':
+      return <WeatherTile item={item} entity={entity} />;
+    case 'weather_list':
+      return <WeatherListTile item={item} entity={entity} />;
+    case 'device_tracker':
+      return <DeviceTrackerTile item={item} entity={entity} page={page} />;
+    case 'iframe':
+      return <IframeTile item={item} entity={entity} />;
+    case 'popup_iframe':
+      return <CustomTile item={item} entity={entity} />;
+    case 'alarm':
+    case 'door_entry':
+      return <IconTile item={item} entity={entity} />;
     default:
       return null;
   }

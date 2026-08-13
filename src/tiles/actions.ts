@@ -45,6 +45,15 @@ export function entityClick(item: TileConfig, entity: HaEntity | null): void {
     case 'camera_stream':
       getAppStore().openCamera(item);
       return;
+    case 'alarm':
+      getAppStore().openAlarm(item);
+      return;
+    case 'door_entry':
+      getAppStore().openDoorEntry(item);
+      return;
+    case 'popup_iframe':
+      getAppStore().openIframe(item);
+      return;
     case 'dimmer_switch': {
       if (typeof item.action === 'function') {
         callFunction(item.action, [item, entity, () => {}]);
@@ -61,6 +70,10 @@ export function entityLongPress(item: TileConfig, entity: HaEntity | null): void
     callFunction(item.secondaryAction, [item, entity]);
     return;
   }
+  if (item.history) {
+    getAppStore().openHistory(item, entity);
+    return;
+  }
   switch (item.type) {
     case 'light': {
       const store = getAppStore();
@@ -71,6 +84,8 @@ export function entityLongPress(item: TileConfig, entity: HaEntity | null): void
       store.openLightControls(item);
       return;
     }
+    default:
+      if (entity && entity.entity_id) getAppStore().openHistory(item, entity);
   }
 }
 

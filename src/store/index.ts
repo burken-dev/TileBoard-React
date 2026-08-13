@@ -1,13 +1,16 @@
 import { create } from 'zustand';
 import type { StoreApi, UseBoundStore } from 'zustand';
 import type { EntityStates, HaEntity, TileBoardConfig, TileConfig } from '../config/types';
-import { callService } from '../ha/services';
+import { callService, getHistory } from '../ha/services';
 import {
   buildDatetimePayload,
   datetimePlaceholder,
   datetimeValid,
   interleaveDigits,
 } from '../utils/datetime';
+import { getItemFieldValue } from '../utils/fields';
+import { buildHistoryDatasets } from '../utils/history';
+import type { HistoryChartModel } from '../utils/history';
 import { leadZero } from '../utils/misc';
 
 export type ConnectionStatus = 'loading' | 'ready' | 'reconnecting' | 'error';
@@ -68,6 +71,40 @@ interface CameraSlice {
   setScreensaverShown(shown: boolean): void;
 }
 
+interface AlarmSlice {
+  activeAlarm: TileConfig | null;
+  alarmCode: string;
+  openAlarm(item: TileConfig): void;
+  closeAlarm(): void;
+  inputAlarmDigit(d: number): void;
+  clearAlarmCode(): void;
+  actionAlarm(action: string): void;
+}
+
+interface DoorEntrySlice {
+  activeDoorEntry: TileConfig | null;
+  openDoorEntry(item: TileConfig): void;
+  closeDoorEntry(): void;
+}
+
+interface IframeSlice {
+  activeIframe: TileConfig | null;
+  openIframe(item: TileConfig): void;
+  closeIframe(): void;
+}
+
+interface HistorySlice {
+  activeHistory: {
+    item: TileConfig;
+    isLoading: boolean;
+    errorText: string | null;
+    model?: HistoryChartModel;
+    options?: Record<string, unknown>;
+  } | null;
+  openHistory(item: TileConfig, entity: HaEntity | null): void;
+  closeHistory(): void;
+}
+
 export type AppStore = AppData &
   AppDataActions &
   NavigationSlice &
@@ -75,11 +112,23 @@ export type AppStore = AppData &
   SelectSlice &
   DatetimeSlice &
   LightControlsSlice &
-  CameraSlice;
+  CameraSlice &
+  AlarmSlice &
+  DoorEntrySlice &
+  IframeSlice &
+  HistorySlice;
 
 type AppStoreApi = UseBoundStore<StoreApi<AppStore>>;
 
 let appStore: AppStoreApi | null = null;
+const latestAlarmActions = new Map<string, number>();
+let doorEntryTimeout: ReturnType<typeof setTimeout> | null = null;
+
+function checkAlarmState(entityId: string): void {
+  const ts = latestAlarmActions.get(entityId);
+  if (typeof ts === 'undefined') return;
+  if (Date.now() - ts < 3000) getAppStore().closeAlarm();
+}
 
 function initialPage(config: TileBoardConfig): number {
   if (config.rememberLastPage && location.hash) {
@@ -108,10 +157,21 @@ export function createAppStore(config: TileBoardConfig): void {
     lightControls: new Set(),
     activeCamera: null,
     screensaverShown: false,
-    setEntities: (states) =>
+    activeAlarm: null,
+    alarmCode: '',
+    activeDoorEntry: null,
+    activeIframe: null,
+    activeHistory: null,
+    setEntities: (states) => {
       set({
         entities: Object.fromEntries(states.map((state) => [state.entity_id, state])),
-      }),
+      });
+      if (latestAlarmActions.size > 0) {
+        states.forEach((state) => {
+          if (latestAlarmActions.has(state.entity_id)) checkAlarmState(state.entity_id);
+        });
+      }
+    },
     updateEntity: (state) =>
       set((prev) => ({
         entities: {
@@ -188,6 +248,94 @@ export function createAppStore(config: TileBoardConfig): void {
     openCamera: (item) => set({ activeCamera: item }),
     closeCamera: () => set({ activeCamera: null }),
     setScreensaverShown: (shown) => set({ screensaverShown: shown }),
+    openAlarm: (item) => set({ activeAlarm: item, alarmCode: '' }),
+    closeAlarm: () => set({ activeAlarm: null, alarmCode: '' }),
+    inputAlarmDigit: (num) =>
+      set((prev) => ({ alarmCode: prev.alarmCode + num })),
+    clearAlarmCode: () => set({ alarmCode: '' }),
+    actionAlarm: (action) => {
+      const { activeAlarm, entities, alarmCode } = get();
+      if (!activeAlarm) return;
+      const entity = entityFor(activeAlarm, entities);
+      const data: Record<string, unknown> = { entity_id: activeAlarm.id };
+      if (entity?.attributes?.code_format && alarmCode) data.code = alarmCode;
+      latestAlarmActions.set(String(activeAlarm.id), Date.now());
+      callService('alarm_control_panel', action, data);
+      set({ alarmCode: '' });
+    },
+    openDoorEntry: (item) => {
+      set({ activeDoorEntry: item });
+      if (doorEntryTimeout) clearTimeout(doorEntryTimeout);
+      doorEntryTimeout = null;
+      const timeout = get().config.doorEntryTimeout;
+      if (timeout) {
+        doorEntryTimeout = setTimeout(() => {
+          if (get().activeDoorEntry === item) set({ activeDoorEntry: null });
+        }, timeout * 1000);
+      }
+    },
+    closeDoorEntry: () => {
+      if (doorEntryTimeout) {
+        clearTimeout(doorEntryTimeout);
+        doorEntryTimeout = null;
+      }
+      set({ activeDoorEntry: null });
+    },
+    openIframe: (item) => set({ activeIframe: item }),
+    closeIframe: () => set({ activeIframe: null }),
+    openHistory: (item, entity) => {
+      const states = get().entities;
+      const entityId =
+        (getItemFieldValue('history.entity', states, item, entity) as string) ||
+        entity?.entity_id;
+      if (!entityId) {
+        set({
+          activeHistory: { item, isLoading: false, errorText: 'No entity was specified' },
+        });
+        return;
+      }
+      const day = 24 * 60 * 60 * 1000;
+      const offset = Number(getItemFieldValue('history.offset', states, item, entity)) || day;
+      const startDate = new Date(Date.now() - offset).toISOString();
+      set({ activeHistory: { item, isLoading: true, errorText: null } });
+      getHistory(startDate, entityId)
+        .then((data) => {
+          const current = get().activeHistory;
+          if (!current || current.item !== item) return;
+          if (!data || data.length === 0) {
+            set({ activeHistory: { item, isLoading: false, errorText: 'No history data found' } });
+            return;
+          }
+          const series = data as unknown as Array<
+            Array<Record<string, unknown>>
+          >;
+          const seriesMeta = series.map((points) => {
+            const first = points[0] ?? {};
+            const attrs = (first.attributes ?? {}) as Record<string, unknown>;
+            const id = String(first.entity_id ?? entityId);
+            return {
+              name: String(attrs.friendly_name ?? id),
+              unit:
+                attrs.unit_of_measurement != null
+                  ? String(attrs.unit_of_measurement)
+                  : undefined,
+              currentState: states[id]?.state,
+            };
+          });
+          const model = buildHistoryDatasets(series as never, seriesMeta, Date.now());
+          const options = getItemFieldValue(
+            'history.options',
+            states,
+            item,
+            entity,
+          ) as Record<string, unknown> | undefined;
+          set({ activeHistory: { item, isLoading: false, errorText: null, model, options } });
+        })
+        .catch(() => {
+          set({ activeHistory: { item, isLoading: false, errorText: 'No history data found' } });
+        });
+    },
+    closeHistory: () => set({ activeHistory: null }),
   }));
 
   window.openPage = (index: number) => getAppStore().openPage(index);

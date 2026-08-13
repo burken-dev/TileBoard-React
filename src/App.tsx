@@ -1,6 +1,10 @@
 import { useEffect } from 'react';
+import AlarmPopup from './components/popups/AlarmPopup';
 import CameraPopup from './components/popups/CameraPopup';
 import DatetimePopup from './components/popups/DatetimePopup';
+import DoorEntryPopup from './components/popups/DoorEntryPopup';
+import HistoryPopup from './components/popups/HistoryPopup';
+import IframePopup from './components/popups/IframePopup';
 import Pages from './components/Pages';
 import type { TileBoardConfig } from './config/types';
 import { initConnection } from './ha/connection';
@@ -27,6 +31,10 @@ export default function App({ config }: AppProps) {
       <Pages />
       <DatetimePopup />
       <CameraPopup />
+      <AlarmPopup />
+      <DoorEntryPopup />
+      <IframePopup />
+      <HistoryPopup />
     </div>
   );
 }

@@ -121,7 +121,7 @@ export default function Tile({ item, page }: TileProps) {
           </div>
         </div>
       )}
-      <TileBody item={item} entity={entity} freezed={freezed} />
+      <TileBody item={item} entity={entity} freezed={freezed} page={page} />
     </div>
   );
 }
