@@ -1,3 +1,6 @@
+import { useEffect } from 'react';
+import { initConnection } from './ha/connection';
+import { createAppStore } from './store';
 import type { TileBoardConfig } from './config/types';
 
 interface AppProps {
@@ -5,6 +8,10 @@ interface AppProps {
 }
 
 export default function App({ config }: AppProps) {
-  void config;
+  useEffect(() => {
+    createAppStore(config);
+    initConnection();
+  }, [config]);
+
   return <div className="page-container">TileBoard</div>;
 }

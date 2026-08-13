@@ -1,0 +1,93 @@
+import {
+  createConnection,
+  createLongLivedTokenAuth,
+  getAuth,
+  subscribeEntities,
+} from 'home-assistant-js-websocket';
+import type { Connection } from 'home-assistant-js-websocket';
+import type { ConfigFunction, EventConfig } from '../config/types';
+import { getAppStore } from '../store';
+import { setConnection, sendMessage } from './services';
+import { callFunction } from '../utils/functions';
+
+let initStarted = false;
+
+export function initConnection(): void {
+  if (initStarted) return;
+  initStarted = true;
+
+  const { config } = getAppStore();
+  const setStatus = getAppStore().setStatus;
+
+  setStatus('loading');
+
+  const authPromise = config.authToken
+    ? Promise.resolve(createLongLivedTokenAuth(config.serverUrl, config.authToken))
+    : getAuth({ hassUrl: config.serverUrl });
+
+  authPromise
+    .then((auth) => createConnection({ auth }))
+    .then((connection) => {
+      setConnection(connection);
+      setStatus('ready');
+
+      subscribeEntities(connection, (states) => {
+        getAppStore().setEntities(Object.values(states));
+        if (config.debug) console.log('entities updated', states);
+      });
+
+      connection.subscribeEvents(
+        (ev: { event?: { data?: Record<string, unknown> } }) => {
+          handleTileboardEvent(ev?.event?.data);
+        },
+        'tileboard',
+      );
+
+      if (config.onReady) callFunction(config.onReady, []);
+
+      connection.addEventListener('disconnected', () => setStatus('reconnecting'));
+      connection.addEventListener('ready', () => setStatus('ready'));
+
+      if (config.pingConnection !== false) {
+        setInterval(() => pingConnection(connection), 5000);
+        window.addEventListener('focus', () => pingConnection(connection));
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      setStatus('error');
+    });
+}
+
+export function matchEvent(
+  events: EventConfig[] | undefined,
+  eventData: Record<string, unknown>,
+): EventConfig | undefined {
+  if (!events) return undefined;
+  return events.find((event) => event.command === eventData.command);
+}
+
+function handleTileboardEvent(data: Record<string, unknown> | undefined): void {
+  if (!data) return;
+  const { config } = getAppStore();
+  if (config.debug) console.log('tileboard event', data);
+  const event = matchEvent(config.events, data);
+  if (event && typeof event.action === 'function') {
+    callFunction(event.action as unknown as ConfigFunction, [data]);
+  }
+}
+
+function pingConnection(connection: Connection): void {
+  if (getAppStore().status !== 'ready') return;
+
+  let success = false;
+  sendMessage({ type: 'ping' }).then(() => {
+    success = true;
+  });
+
+  setTimeout(() => {
+    if (success) return;
+    getAppStore().setStatus('reconnecting');
+    connection.reconnect();
+  }, 3000);
+}
