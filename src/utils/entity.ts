@@ -110,6 +110,12 @@ export function listField(
   return value;
 }
 
+export function supportsFeature(feature: number, entity: HaEntity | null): boolean {
+  if (!entity || !('supported_features' in entity.attributes)) return false;
+  const features = Number(entity.attributes.supported_features);
+  return (features & feature) === feature;
+}
+
 export function itemClasses(
   item: TileConfig,
   entity: HaEntity | null,

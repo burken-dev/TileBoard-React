@@ -19,6 +19,8 @@ export default function Pages() {
   const activePage = useAppStore((s) => s.activePage);
   const openPage = useAppStore((s) => s.openPage);
   const entities = useAppStore((s) => s.entities);
+  const activeSelect = useAppStore((s) => s.activeSelect);
+  const closeSelect = useAppStore((s) => s.closeSelect);
 
   const transition = config.transition ?? 'animated';
   const menuOnLeft = (config.menuPosition ?? 'left') === 'left';
@@ -72,6 +74,7 @@ export default function Pages() {
   return (
     <>
       <div id="pages" className="pages" style={containerStyle} {...pointerHandlers}>
+        {activeSelect ? <div className="page-overlay" onClick={() => closeSelect()} /> : null}
         {visible.map(({ page, index }) =>
           shouldDrawPage(index, activePage, transition) ? (
             <Page key={index} page={page} index={index} />

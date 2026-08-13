@@ -45,6 +45,7 @@ export default function Tile({ item, page }: TileProps) {
   const config = useAppStore((s) => s.config);
   const entities = useAppStore((s) => s.entities);
   const isLoading = useAppStore((s) => s.isLoading);
+  const selectOpened = useAppStore((s) => s.selectOpened);
 
   const entity = getItemEntity(item, entities);
 
@@ -77,7 +78,7 @@ export default function Tile({ item, page }: TileProps) {
 
   return (
     <div
-      className={'item ' + itemClasses(item, entity, loading).join(' ')}
+      className={'item ' + itemClasses(item, entity, loading, selectOpened(item)).join(' ')}
       style={styles}
       onPointerDown={long.onPointerDown}
       onPointerUp={long.onPointerUp}

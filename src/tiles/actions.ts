@@ -1,4 +1,4 @@
-import type { HaEntity, TileConfig } from '../config/types';
+import type { ConfigFunction, HaEntity, TileConfig } from '../config/types';
 import { callService } from '../ha/services';
 import { getAppStore } from '../store';
 import { callFunction } from '../utils/functions';
@@ -34,6 +34,20 @@ export function entityClick(item: TileConfig, entity: HaEntity | null): void {
     case 'scene':
       callScene(item, entity);
       return;
+    case 'input_select':
+      toggleSelect(item);
+      return;
+    case 'input_datetime':
+      getAppStore().openDatetime(item);
+      return;
+    case 'dimmer_switch': {
+      if (typeof item.action === 'function') {
+        callFunction(item.action, [item, entity, () => {}]);
+      } else if (typeof item.id === 'string' && entity) {
+        toggleSwitch(item, entity);
+      }
+      return;
+    }
   }
 }
 
@@ -41,6 +55,17 @@ export function entityLongPress(item: TileConfig, entity: HaEntity | null): void
   if (typeof item.secondaryAction === 'function') {
     callFunction(item.secondaryAction, [item, entity]);
     return;
+  }
+  switch (item.type) {
+    case 'light': {
+      const store = getAppStore();
+      if ((!item.sliders || !item.sliders.length) && !item.colorpicker) return;
+      const stateEntity =
+        typeof item.id === 'string' ? store.entities[item.id] ?? null : null;
+      if (stateEntity && stateEntity.state !== 'on') toggleSwitch(item, stateEntity);
+      store.openLightControls(item);
+      return;
+    }
   }
 }
 
@@ -53,8 +78,8 @@ export function withLoading(item: TileConfig, fn: () => Promise<unknown>): void 
   });
 }
 
-function sendItemData(item: TileConfig, domain: string, service: string): void {
-  withLoading(item, () => callService(domain, service, { entity_id: item.id }));
+function sendItemData(item: TileConfig, domain: string, service: string, data?: Record<string, unknown>): void {
+  withLoading(item, () => callService(domain, service, { entity_id: item.id, ...data }));
 }
 
 export function toggleSwitch(item: TileConfig, entity: HaEntity | null): void {
@@ -103,4 +128,94 @@ export function callScript(item: TileConfig, _entity: HaEntity | null): void {
 
 export function callScene(item: TileConfig, _entity: HaEntity | null): void {
   sendItemData(item, 'scene', 'turn_on');
+}
+
+export function toggleSelect(item: TileConfig): void {
+  const store = getAppStore();
+  if (store.selectOpened(item)) store.closeSelect();
+  else store.openSelect(item);
+}
+
+export function setSelectOption(item: TileConfig, _entity: HaEntity | null, option: string): void {
+  sendItemData(item, 'input_select', 'select_option', { option });
+}
+
+export function setFanSpeed(item: TileConfig, _entity: HaEntity | null, speed: string): void {
+  sendItemData(item, 'fan', 'set_speed', { speed });
+}
+
+export function setClimateOption(item: TileConfig, _entity: HaEntity | null, preset: string): void {
+  sendItemData(item, 'climate', 'set_preset_mode', { preset_mode: preset });
+}
+
+export function setClimateTemp(item: TileConfig, value: number): void {
+  sendItemData(item, 'climate', 'set_temperature', { temperature: value });
+}
+
+export function increaseClimateTemp(item: TileConfig, entity: HaEntity | null): void {
+  if (!entity) return;
+  let value = parseFloat(String(entity.attributes.temperature));
+  value += Number(entity.attributes.target_temp_step) || 1;
+  if (entity.attributes.max_temp) value = Math.min(value, Number(entity.attributes.max_temp));
+  setClimateTemp(item, value);
+}
+
+export function decreaseClimateTemp(item: TileConfig, entity: HaEntity | null): void {
+  if (!entity) return;
+  let value = parseFloat(String(entity.attributes.temperature));
+  value -= Number(entity.attributes.target_temp_step) || 1;
+  if (entity.attributes.min_temp) value = Math.max(value, Number(entity.attributes.min_temp));
+  setClimateTemp(item, value);
+}
+
+export function sendCover(service: string, item: TileConfig, _entity: HaEntity | null): void {
+  sendItemData(item, 'cover', service);
+}
+
+export function setInputNumber(item: TileConfig, value: number): void {
+  sendItemData(item, 'input_number', 'set_value', { value });
+}
+
+export function increaseNumber(item: TileConfig, entity: HaEntity | null): void {
+  if (!entity) return;
+  let value = parseFloat(entity.state);
+  value += Number(entity.attributes.step) || 1;
+  if (entity.attributes.max) value = Math.min(value, Number(entity.attributes.max));
+  setInputNumber(item, value);
+}
+
+export function decreaseNumber(item: TileConfig, entity: HaEntity | null): void {
+  if (!entity) return;
+  let value = parseFloat(entity.state);
+  value -= Number(entity.attributes.step) || 1;
+  if (entity.attributes.min) value = Math.max(value, Number(entity.attributes.min));
+  setInputNumber(item, value);
+}
+
+export function dimmerAction(action: 'plus' | 'minus', item: TileConfig, entity: HaEntity | null): void {
+  const func = 'action' + (action === 'plus' ? 'Plus' : 'Minus');
+  const f = (item as unknown as Record<string, unknown>)[func];
+  if (typeof f === 'function') callFunction(f as ConfigFunction, [item, entity]);
+}
+
+export function setLightBrightness(item: TileConfig, brightness: number): void {
+  sendItemData(item, 'light', 'turn_on', {
+    brightness_pct: Math.round((brightness / 255) * 100 / 10) * 10,
+  });
+}
+
+export function increaseBrightness(item: TileConfig, entity: HaEntity | null): void {
+  if (!entity || entity.state === 'off' || !('brightness' in entity.attributes)) return;
+  const brightness = Math.min(Number(entity.attributes.brightness) + 25.5, 255);
+  setLightBrightness(item, brightness);
+}
+
+export function decreaseBrightness(item: TileConfig, entity: HaEntity | null): void {
+  if (!entity || entity.state === 'off' || !('brightness' in entity.attributes)) return;
+  const brightness = Math.max(Number(entity.attributes.brightness) - 25.5, 1);
+  setLightBrightness(item, brightness);
+}
+
+export function setLightColor(item: TileConfig, rgb: [number, number, number]): void {
+  sendItemData(item, 'light', 'turn_on', { rgb_color: rgb });
 }
