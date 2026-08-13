@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type React from 'react';
 import { usePanGesture } from '../hooks/usePanGesture';
 import { useAppStore } from '../store';
-import { isHidden } from '../utils/functions';
+import { isHidden } from '../utils/fields';
 import { pageTransform, shouldDrawPage } from '../utils/layout';
 import Page from './Page';
 import PagesMenu from './PagesMenu';
@@ -18,13 +18,14 @@ export default function Pages() {
   const config = useAppStore((s) => s.config);
   const activePage = useAppStore((s) => s.activePage);
   const openPage = useAppStore((s) => s.openPage);
+  const entities = useAppStore((s) => s.entities);
 
   const transition = config.transition ?? 'animated';
   const menuOnLeft = (config.menuPosition ?? 'left') === 'left';
 
   const visible = config.pages
     .map((page, index) => ({ page, index }))
-    .filter(({ page }) => !isHidden(page));
+    .filter(({ page }) => !isHidden(page, entities));
 
   const count = visible.length;
   const activePos = Math.max(

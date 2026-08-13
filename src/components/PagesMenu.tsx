@@ -1,13 +1,14 @@
 import { useAppStore } from '../store';
-import { isHidden } from '../utils/functions';
+import { isHidden } from '../utils/fields';
 
 export default function PagesMenu() {
   const config = useAppStore((s) => s.config);
   const activePage = useAppStore((s) => s.activePage);
   const openPage = useAppStore((s) => s.openPage);
+  const entities = useAppStore((s) => s.entities);
 
   const menuPosition = config.menuPosition ?? 'left';
-  const visibleCount = config.pages.filter((page) => !isHidden(page)).length;
+  const visibleCount = config.pages.filter((page) => !isHidden(page, entities)).length;
   if (visibleCount <= 1) return null;
 
   return (
@@ -16,7 +17,7 @@ export default function PagesMenu() {
       <div className="pages-menu--aligner" />
       <div className="pages-menu--items">
         {config.pages.map((page, index) =>
-          isHidden(page) ? null : (
+          isHidden(page, entities) ? null : (
             <div
               key={index}
               className={

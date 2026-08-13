@@ -1,29 +1,19 @@
 import type { ConfigFunction, FunctionContext } from '../config/types';
-import { getAppStore } from '../store';
 import { callService, sendMessage } from '../ha/services';
+import { getAppStore } from '../store';
+import { parseFieldValue } from './fields';
 
 export type { FunctionContext };
-
-function parseFieldValue(value: unknown, item?: unknown, entity?: unknown): unknown {
-  if (typeof value === 'function') return callFunction(value as ConfigFunction, [item, entity]);
-  if (typeof value === 'string') return value;
-  return value;
-}
 
 export function getContext(): FunctionContext {
   return {
     states: getAppStore().entities,
-    parseFieldValue: parseFieldValue as FunctionContext['parseFieldValue'],
+    parseFieldValue: (value, item, entity) =>
+      parseFieldValue(value, getAppStore().entities, item, entity),
     callService,
     sendMessage,
     openPage: (pageIndex) => getAppStore().openPage(pageIndex),
   };
-}
-
-export function isHidden(obj: { hidden?: unknown }, entity: unknown = null): boolean {
-  if (!('hidden' in obj)) return false;
-  if (typeof obj.hidden === 'function') return Boolean(callFunction(obj.hidden, [obj, entity]));
-  return Boolean(obj.hidden);
 }
 
 export function callFunction<T>(funcOrValue: T | ConfigFunction<T>, args: unknown[]): unknown {

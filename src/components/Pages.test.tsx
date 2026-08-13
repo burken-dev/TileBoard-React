@@ -1,7 +1,7 @@
 import { fireEvent, render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import Pages from './Pages';
-import { createAppStore } from '../store';
+import { createAppStore, getAppStore } from '../store';
 import type { TileBoardConfig } from '../config/types';
 
 const fixture: TileBoardConfig = {
@@ -30,9 +30,18 @@ const fixture: TileBoardConfig = {
   ],
 };
 
+function setup() {
+  createAppStore(fixture);
+  getAppStore().setEntities([
+    { entity_id: 'a', state: 'off', attributes: {} },
+    { entity_id: 'b', state: 'off', attributes: {} },
+    { entity_id: 'c', state: 'off', attributes: {} },
+  ]);
+}
+
 describe('Pages', () => {
   it('renders groups, items and group titles', () => {
-    createAppStore(fixture);
+    setup();
     const { container } = render(<Pages />);
     expect(container.querySelectorAll('.group')).toHaveLength(2);
     expect(container.querySelectorAll('.item')).toHaveLength(3);
@@ -40,7 +49,7 @@ describe('Pages', () => {
   });
 
   it('menu switches active page', () => {
-    createAppStore(fixture);
+    setup();
     const { container } = render(<Pages />);
     const items = container.querySelectorAll('.pages-menu--item');
     expect(items).toHaveLength(2);

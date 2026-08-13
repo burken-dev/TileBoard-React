@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import type { StoreApi, UseBoundStore } from 'zustand';
-import type { EntityStates, HaEntity, TileBoardConfig } from '../config/types';
+import type { EntityStates, HaEntity, TileBoardConfig, TileConfig } from '../config/types';
 
 export type ConnectionStatus = 'loading' | 'ready' | 'reconnecting' | 'error';
 
@@ -23,7 +23,13 @@ interface NavigationSlice {
   setScrolled(scroll: { horizontal: boolean; vertical: boolean }): void;
 }
 
-export type AppStore = AppData & AppDataActions & NavigationSlice;
+interface LoadingSlice {
+  loadingItems: Set<TileConfig>;
+  isLoading(item: TileConfig): boolean;
+  setLoading(item: TileConfig, loading: boolean): void;
+}
+
+export type AppStore = AppData & AppDataActions & NavigationSlice & LoadingSlice;
 
 type AppStoreApi = UseBoundStore<StoreApi<AppStore>>;
 
@@ -39,12 +45,13 @@ function initialPage(config: TileBoardConfig): number {
 
 export function createAppStore(config: TileBoardConfig): void {
   if (appStore) return;
-  appStore = create<AppStore>()((set) => ({
+  appStore = create<AppStore>()((set, get) => ({
     config,
     entities: {},
     status: 'loading',
     activePage: initialPage(config),
     scrolled: { horizontal: false, vertical: false },
+    loadingItems: new Set(),
     setEntities: (states) =>
       set({
         entities: Object.fromEntries(states.map((state) => [state.entity_id, state])),
@@ -64,6 +71,14 @@ export function createAppStore(config: TileBoardConfig): void {
         return { activePage: clamped, scrolled: { horizontal: false, vertical: false } };
       }),
     setScrolled: (scroll) => set({ scrolled: scroll }),
+    isLoading: (item) => get().loadingItems.has(item),
+    setLoading: (item, loading) =>
+      set((prev) => {
+        const next = new Set(prev.loadingItems);
+        if (loading) next.add(item);
+        else next.delete(item);
+        return { loadingItems: next };
+      }),
   }));
 
   window.openPage = (index: number) => getAppStore().openPage(index);
