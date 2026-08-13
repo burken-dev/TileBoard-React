@@ -47,6 +47,16 @@ export default function Tile({ item, page }: TileProps) {
   const isLoading = useAppStore((s) => s.isLoading);
 
   const entity = getItemEntity(item, entities);
+
+  const long = useLongPress(
+    () => {
+      if (entity) entityLongPress(item, entity);
+    },
+    () => {
+      if (entity) entityClick(item, entity);
+    },
+  );
+
   if (!entity || isHidden(item, entities)) return null;
 
   const title = entityTitle(item, entity, entities);
@@ -62,11 +72,6 @@ export default function Tile({ item, page }: TileProps) {
     custom = item.customStyles;
   }
   const styles = { ...base, ...custom };
-
-  const long = useLongPress(
-    () => entityLongPress(item, entity),
-    () => entityClick(item, entity),
-  );
 
   const slides = item.slides ?? [];
 
