@@ -46,6 +46,9 @@ export default function Tile({ item, page }: TileProps) {
   const entities = useAppStore((s) => s.entities);
   const isLoading = useAppStore((s) => s.isLoading);
   const selectOpened = useAppStore((s) => s.selectOpened);
+  const activePage = useAppStore((s) => s.activePage);
+  const activeCamera = useAppStore((s) => s.activeCamera);
+  const screensaverShown = useAppStore((s) => s.screensaverShown);
 
   const entity = getItemEntity(item, entities);
 
@@ -75,6 +78,8 @@ export default function Tile({ item, page }: TileProps) {
   const styles = { ...base, ...custom };
 
   const slides = item.slides ?? [];
+  const freezed =
+    activePage !== config.pages.indexOf(page) || activeCamera !== null || screensaverShown;
 
   return (
     <div
@@ -116,7 +121,7 @@ export default function Tile({ item, page }: TileProps) {
           </div>
         </div>
       )}
-      <TileBody item={item} entity={entity} />
+      <TileBody item={item} entity={entity} freezed={freezed} />
     </div>
   );
 }

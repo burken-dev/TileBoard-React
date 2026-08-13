@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import CameraPopup from './components/popups/CameraPopup';
 import DatetimePopup from './components/popups/DatetimePopup';
 import Pages from './components/Pages';
 import type { TileBoardConfig } from './config/types';
@@ -25,6 +26,7 @@ export default function App({ config }: AppProps) {
     <div className="page-container">
       <Pages />
       <DatetimePopup />
+      <CameraPopup />
     </div>
   );
 }

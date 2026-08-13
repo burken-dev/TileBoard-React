@@ -1,5 +1,8 @@
 import type { ReactElement } from 'react';
 import type { HaEntity, TileConfig } from '../../config/types';
+import { Camera } from '../cameras/Camera';
+import { CameraStream } from '../cameras/CameraStream';
+import { CameraThumbnail } from '../cameras/CameraThumbnail';
 import { ClimateTile } from './ClimateTile';
 import { CoverTile } from './CoverTile';
 import { CustomTile } from './CustomTile';
@@ -12,11 +15,20 @@ import { InputDatetimeTile } from './InputDatetimeTile';
 import { InputNumberTile } from './InputNumberTile';
 import { InputSelectTile } from './InputSelectTile';
 import { LightTile } from './LightTile';
+import { MediaPlayerTile } from './MediaPlayerTile';
 import { SensorTile } from './SensorTile';
 import { SliderTile } from './SliderTile';
 import { TextListTile } from './TextListTile';
 
-export function TileBody({ item, entity }: { item: TileConfig; entity: HaEntity }): ReactElement | null {
+export function TileBody({
+  item,
+  entity,
+  freezed,
+}: {
+  item: TileConfig;
+  entity: HaEntity;
+  freezed: boolean;
+}): ReactElement | null {
   switch (item.type) {
     case 'sensor':
       return <SensorTile item={item} entity={entity} />;
@@ -56,6 +68,32 @@ export function TileBody({ item, entity }: { item: TileConfig; entity: HaEntity 
       return <LightTile item={item} entity={entity} />;
     case 'input_datetime':
       return <InputDatetimeTile item={item} entity={entity} />;
+    case 'camera':
+      return (
+        <div className="item-entity-container -below">
+          <div className="item-camera">
+            <Camera item={item} entity={entity} freezed={freezed} />
+          </div>
+        </div>
+      );
+    case 'camera_thumbnail':
+      return (
+        <div className="item-entity-container -below">
+          <div className="item-camera">
+            <CameraThumbnail item={item} entity={entity} freezed={freezed} />
+          </div>
+        </div>
+      );
+    case 'camera_stream':
+      return (
+        <div className="item-entity-container -below">
+          <div className="item-camera">
+            <CameraStream item={item} entity={entity} freezed={freezed} />
+          </div>
+        </div>
+      );
+    case 'media_player':
+      return <MediaPlayerTile item={item} entity={entity} />;
     default:
       return null;
   }

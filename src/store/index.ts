@@ -60,13 +60,22 @@ interface LightControlsSlice {
   closeLightControls(item: TileConfig): void;
 }
 
+interface CameraSlice {
+  activeCamera: TileConfig | null;
+  openCamera(item: TileConfig): void;
+  closeCamera(): void;
+  screensaverShown: boolean;
+  setScreensaverShown(shown: boolean): void;
+}
+
 export type AppStore = AppData &
   AppDataActions &
   NavigationSlice &
   LoadingSlice &
   SelectSlice &
   DatetimeSlice &
-  LightControlsSlice;
+  LightControlsSlice &
+  CameraSlice;
 
 type AppStoreApi = UseBoundStore<StoreApi<AppStore>>;
 
@@ -97,6 +106,8 @@ export function createAppStore(config: TileBoardConfig): void {
     activeDatetime: null,
     datetimeInput: '',
     lightControls: new Set(),
+    activeCamera: null,
+    screensaverShown: false,
     setEntities: (states) =>
       set({
         entities: Object.fromEntries(states.map((state) => [state.entity_id, state])),
@@ -174,6 +185,9 @@ export function createAppStore(config: TileBoardConfig): void {
         next.delete(item);
         return { lightControls: next };
       }),
+    openCamera: (item) => set({ activeCamera: item }),
+    closeCamera: () => set({ activeCamera: null }),
+    setScreensaverShown: (shown) => set({ screensaverShown: shown }),
   }));
 
   window.openPage = (index: number) => getAppStore().openPage(index);

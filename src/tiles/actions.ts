@@ -40,6 +40,11 @@ export function entityClick(item: TileConfig, entity: HaEntity | null): void {
     case 'input_datetime':
       getAppStore().openDatetime(item);
       return;
+    case 'camera':
+    case 'camera_thumbnail':
+    case 'camera_stream':
+      getAppStore().openCamera(item);
+      return;
     case 'dimmer_switch': {
       if (typeof item.action === 'function') {
         callFunction(item.action, [item, entity, () => {}]);
@@ -218,4 +223,16 @@ export function decreaseBrightness(item: TileConfig, entity: HaEntity | null): v
 
 export function setLightColor(item: TileConfig, rgb: [number, number, number]): void {
   sendItemData(item, 'light', 'turn_on', { rgb_color: rgb });
+}
+
+export function sendPlayer(service: string, item: TileConfig, _entity: HaEntity | null): void {
+  sendItemData(item, 'media_player', service);
+}
+
+export function mutePlayer(muteState: boolean, item: TileConfig, _entity: HaEntity | null): void {
+  sendItemData(item, 'media_player', 'volume_mute', { is_volume_muted: muteState });
+}
+
+export function setSourcePlayer(item: TileConfig, _entity: HaEntity | null, option: string): void {
+  sendItemData(item, 'media_player', 'select_source', { source: option });
 }
