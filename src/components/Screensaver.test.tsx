@@ -10,6 +10,7 @@ const config: TileBoardConfig = {
   screensaver: {
     timeout: 5,
     slidesTimeout: 1,
+    slideCacheBust: 60,
     slides: [{ bg: 'a.jpg' }, { bg: 'b.jpg' }],
     rightTop: [{ type: 'datetime' }],
   },
@@ -72,5 +73,14 @@ describe('Screensaver', () => {
       vi.advanceTimersByTime(6000);
     });
     expect(container.querySelector('.screensaver-content--right-top .clock--h')).toBeTruthy();
+  });
+
+  it('appends a rolling cache-bust query to slide backgrounds', () => {
+    const { container } = render(<Screensaver />);
+    act(() => {
+      vi.advanceTimersByTime(6000);
+    });
+    const slide = container.querySelector('.screensaver-slide') as HTMLElement;
+    expect(slide.style.backgroundImage).toContain('a.jpg?t=0');
   });
 });
