@@ -8,7 +8,7 @@ export function loadConfig(): ConfigResult {
     return {
       ok: false,
       errors: [
-        'config.js is missing or did not set window.CONFIG. Copy public/config.example.js to config.js.',
+        'config/config.js is missing or did not set window.CONFIG. Copy public/config/config.example.js to config.js.',
       ],
     };
   }
