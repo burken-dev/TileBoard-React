@@ -1,4 +1,4 @@
-import type { HaEntity } from '../config/types';
+import type { HaEntity, MockConfig } from '../config/types';
 import { getAppStore } from '../store';
 
 export function stepMockEntities(entities: HaEntity[]): HaEntity[] {
@@ -47,7 +47,7 @@ export function mockCallService(
     if (service === 'toggle') state = state === 'on' ? 'off' : 'on';
     else if (service === 'turn_on') state = 'on';
     else if (service === 'turn_off') state = 'off';
-    else if (service === 'start' || service === 'turn_on') state = 'cleaning';
+    else if (service === 'start') state = 'cleaning';
     else if (service === 'return_to_base') state = 'docked';
     else if (service === 'pause') state = 'paused';
     if (domain === 'fan' && service === 'set_speed') write('speed');
@@ -80,7 +80,7 @@ export function mockCallService(
     else if (service === 'volume_up') attributes.volume_level = Math.min(1, (Number(attributes.volume_level) || 0) + 0.05);
     else if (service === 'volume_down') attributes.volume_level = Math.max(0, (Number(attributes.volume_level) || 0) - 0.05);
     else if (service === 'select_source') write('source');
-    else if (service === 'volume_mute') attributes.is_volume_muted = true;
+    else if (service === 'volume_mute') write('is_volume_muted');
     else if (service === 'volume_unmute') attributes.is_volume_muted = false;
   } else if (domain === 'input_number') {
     if (service === 'set_value') state = String(serviceData?.value ?? state);
@@ -125,8 +125,7 @@ export function mockGetHistory(entityId: string | string[], startDate: string): 
   return Promise.resolve(series);
 }
 
-// ponytail: inline structural type, replace with MockConfig when src/config/types.ts gains it
-export function startMockSimulator(mock: { entities: HaEntity[]; interval?: number }): () => void {
+export function startMockSimulator(mock: MockConfig): () => void {
   const store = getAppStore();
   store.setEntities(mock.entities);
   const interval = mock.interval ?? 2000;
