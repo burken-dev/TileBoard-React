@@ -69,9 +69,7 @@ export default function Screensaver() {
   const slides = conf.slides ?? [];
   const cacheBust = conf?.slideCacheBust;
   const slideBgUrl = (bg: string) => slideBg(bg, cacheBust);
-  const activeBg = conf?.slideCacheBust && slides.length
-    ? slideBgUrl(slides[activeSlide]?.bg ?? '')
-    : undefined;
+  const activeBg = slides.length ? slideBgUrl(slides[activeSlide]?.bg ?? '') : undefined;
 
   return (
     <div className="screensaver" style={conf.styles} onClick={() => setScreensaverShown(false)}>
