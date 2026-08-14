@@ -2,7 +2,8 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import ConfigError from './components/ConfigError';
-import { loadConfig } from './config/load';
+import ConfigNotFound from './components/ConfigNotFound';
+import { configName, loadConfig, loadConfigScript } from './config/load';
 import { createAppStore, getAppStore } from './store';
 import '@mdi/font/css/materialdesignicons.css';
 import '../styles/main.less';
@@ -23,11 +24,27 @@ window.onerror = (error, file, line, col) => {
   }
 };
 
-const result = loadConfig();
-if (result.ok) createAppStore(result.config);
+async function start() {
+  const name = configName();
+  try {
+    await loadConfigScript(name);
+  } catch {
+    createRoot(document.getElementById('root')!).render(
+      <StrictMode>
+        <ConfigNotFound name={name} />
+      </StrictMode>,
+    );
+    return;
+  }
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    {result.ok ? <App config={result.config} /> : <ConfigError errors={result.errors} />}
-  </StrictMode>,
-);
+  const result = loadConfig();
+  if (result.ok) createAppStore(result.config);
+
+  createRoot(document.getElementById('root')!).render(
+    <StrictMode>
+      {result.ok ? <App config={result.config} /> : <ConfigError errors={result.errors} />}
+    </StrictMode>,
+  );
+}
+
+start();

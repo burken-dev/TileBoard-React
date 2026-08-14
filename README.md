@@ -65,6 +65,11 @@ TileBoard is configured with a `config.js` file that sets the global `window.CON
 * **Deployed build:** copy `dist/config/config.example.js` to `dist/config/config.js` (before or after `npm run build`)
 * **Docker:** mount your own `config/` folder at `/usr/share/nginx/html/config` (see the Docker section)
 
+To run multiple dashboards, add a `?config=<name>` query parameter to the URL and it loads
+`/config/<name>.js` instead of the default `config.js`. For example, `/?config=garage`
+loads `config/garage.js` (it must set `window.CONFIG` like the example file). A missing
+file shows a "config not found" error with a reload button.
+
 Every field is optional unless noted. The full config object:
 
 ```js
