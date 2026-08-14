@@ -7,6 +7,8 @@ import { useAppStore } from '../../store';
 import { entityTitle, getItemEntity } from '../../utils/entity';
 import { getItemFieldValue } from '../../utils/fields';
 
+const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+
 function deepMerge<T>(base: T, extra: unknown): T {
   if (extra === null || typeof extra !== 'object' || Array.isArray(extra)) {
     return extra as T;
@@ -43,6 +45,8 @@ export default function HistoryPopup() {
     };
 
     const baseOptions: Record<string, unknown> = {
+      animation: false,
+      devicePixelRatio: dpr,
       maintainAspectRatio: false,
       responsive: true,
       interaction: {

@@ -1,7 +1,8 @@
+import { memo } from 'react';
 import type React from 'react';
 import type { HaEntity, PageConfig, TileConfig } from '../config/types';
 import { useLongPress } from '../hooks/useLongPress';
-import { useAppStore } from '../store';
+import { useAppStore, useEntities } from '../store';
 import { entityClick, entityLongPress } from '../tiles/actions';
 import {
   entityState,
@@ -41,9 +42,9 @@ function itemBackgroundStyles(
   return styles;
 }
 
-export default function Tile({ item, page }: TileProps) {
+function Tile({ item, page }: TileProps) {
   const config = useAppStore((s) => s.config);
-  const entities = useAppStore((s) => s.entities);
+  const entities = useEntities([String(item.id)]);
   const isLoading = useAppStore((s) => s.isLoading);
   const selectOpened = useAppStore((s) => s.selectOpened);
   const activePage = useAppStore((s) => s.activePage);
@@ -125,3 +126,5 @@ export default function Tile({ item, page }: TileProps) {
     </div>
   );
 }
+
+export default memo(Tile);

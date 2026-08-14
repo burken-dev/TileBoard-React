@@ -1,7 +1,8 @@
+import { memo } from 'react';
 import type { HaEntity, TileConfig } from '../../config/types';
 import { sendCover } from '../../tiles/actions';
 
-export function CoverTile({ item, entity }: { item: TileConfig; entity: HaEntity }) {
+export const CoverTile = memo(function CoverTile({ item, entity }: { item: TileConfig; entity: HaEntity }) {
   const attrs = entity.attributes;
   const openDisabled = entity.state === 'open' && (!attrs.current_position || attrs.current_position === 100);
   const closeDisabled = entity.state === 'closed';
@@ -42,4 +43,4 @@ export function CoverTile({ item, entity }: { item: TileConfig; entity: HaEntity
       </div>
     </div>
   );
-}
+});

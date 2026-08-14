@@ -1,8 +1,8 @@
-import { useEffect, useRef } from 'react';
+import { memo, useEffect, useRef } from 'react';
 import type { HaEntity, TileConfig } from '../../config/types';
 import { callFunction } from '../../utils/functions';
 
-export function IframeTile({ item, entity }: { item: TileConfig; entity: HaEntity }) {
+export const IframeTile = memo(function IframeTile({ item, entity }: { item: TileConfig; entity: HaEntity }) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const src =
     typeof item.url === 'function' ? String(callFunction(item.url, [item, entity])) : item.url;
@@ -25,4 +25,4 @@ export function IframeTile({ item, entity }: { item: TileConfig; entity: HaEntit
       </div>
     </div>
   );
-}
+});

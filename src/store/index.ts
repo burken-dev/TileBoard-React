@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import type { StoreApi, UseBoundStore } from 'zustand';
+import { useCallback, useRef, useSyncExternalStore } from 'react';
 import type {
   EntityStates,
   HaEntity,
@@ -429,4 +430,41 @@ export function useAppStore<U>(selector?: (state: AppStore) => U): AppStore | U 
 export function getAppStore(): AppStore {
   if (!appStore) throw new Error('createAppStore() must be called before getAppStore()');
   return appStore.getState();
+}
+
+export function useEntity(item: TileConfig): HaEntity | null {
+  return useAppStore((s) => {
+    if (typeof item.id === 'object') return item.id as HaEntity;
+    return s.entities[item.id] ?? null;
+  });
+}
+
+export function useEntities(ids: string[]): EntityStates {
+  const idsRef = useRef(ids);
+  idsRef.current = ids;
+  const lastRef = useRef<EntityStates | null>(null);
+
+  const subscribe = useCallback((onStoreChange: () => void): (() => void) => {
+    if (!appStore) throw new Error('createAppStore() must be called before useAppStore()');
+    return appStore.subscribe((state, prev) => {
+      for (const id of idsRef.current) {
+        if (prev.entities[id] !== state.entities[id]) {
+          onStoreChange();
+          return;
+        }
+      }
+    });
+  }, []);
+
+  const getSnapshot = useCallback((): EntityStates => {
+    if (!appStore) throw new Error('createAppStore() must be called before useAppStore()');
+    const current = appStore.getState().entities;
+    if (lastRef.current && idsRef.current.every((id) => lastRef.current![id] === current[id])) {
+      return lastRef.current;
+    }
+    lastRef.current = current;
+    return current;
+  }, []);
+
+  return useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 }

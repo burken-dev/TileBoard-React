@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import type { HaEntity, PageConfig, TileConfig } from '../../config/types';
 import { useAppStore } from '../../store';
 import { staticMapUrl } from '../../utils/maps';
@@ -9,7 +10,7 @@ interface DeviceTrackerTileProps {
   page: PageConfig;
 }
 
-export function DeviceTrackerTile({ item, entity, page }: DeviceTrackerTileProps) {
+export const DeviceTrackerTile = memo(function DeviceTrackerTile({ item, entity, page }: DeviceTrackerTileProps) {
   const config = useAppStore((s) => s.config);
   const attrs = entity.attributes;
   const hasCoords = !!attrs.longitude || !!attrs.latitude;
@@ -81,4 +82,4 @@ export function DeviceTrackerTile({ item, entity, page }: DeviceTrackerTileProps
   }
 
   return null;
-}
+});

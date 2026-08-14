@@ -1,9 +1,10 @@
+import { memo } from 'react';
 import type { HaEntity, TileConfig } from '../../config/types';
-import { useAppStore } from '../../store';
+import { useEntities } from '../../store';
 import { parseFieldValue } from '../../utils/fields';
 
-export function ImageTile({ item, entity }: { item: TileConfig; entity: HaEntity }) {
-  const states = useAppStore((s) => s.entities);
+export const ImageTile = memo(function ImageTile({ item, entity }: { item: TileConfig; entity: HaEntity }) {
+  const states = useEntities([String(item.id)]);
   const url = parseFieldValue(item.url, states, item, entity);
   if (!url) return null;
   return (
@@ -11,4 +12,4 @@ export function ImageTile({ item, entity }: { item: TileConfig; entity: HaEntity
       <div className="item-image" style={{ backgroundImage: `url(${url})` }} />
     </div>
   );
-}
+});

@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import type { HeaderItemConfig } from '../config/types';
 import { useAppStore } from '../store';
 import { isHidden } from '../utils/fields';
@@ -5,10 +6,8 @@ import { getWeatherField, getWeatherIcon, getWeatherImageStyles } from '../utils
 import Clock from './Clock';
 import DateDisplay from './DateDisplay';
 
-export default function HeaderItem({ item }: { item: HeaderItemConfig }) {
-  const states = useAppStore((s) => s.entities);
-
-  if (isHidden(item, states)) return null;
+function HeaderItem({ item }: { item: HeaderItemConfig }) {
+  if (isHidden(item, {} as never)) return null;
 
   return (
     <div className={'header-item -' + item.type} style={item.styles}>
@@ -27,6 +26,8 @@ export default function HeaderItem({ item }: { item: HeaderItemConfig }) {
     </div>
   );
 }
+
+export default memo(HeaderItem);
 
 function HeaderWeather({ item }: { item: HeaderItemConfig }) {
   const states = useAppStore((s) => s.entities);

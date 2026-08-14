@@ -1,7 +1,8 @@
+import { memo } from 'react';
 import type { HeaderConfig } from '../config/types';
 import HeaderItem from './HeaderItem';
 
-export default function Header({ header }: { header?: HeaderConfig }) {
+function Header({ header }: { header?: HeaderConfig }) {
   if (!header) return null;
   return (
     <div className="header">
@@ -20,3 +21,5 @@ export default function Header({ header }: { header?: HeaderConfig }) {
     </div>
   );
 }
+
+export default memo(Header);

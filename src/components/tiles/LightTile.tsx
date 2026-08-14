@@ -1,6 +1,7 @@
+import { memo, useRef } from 'react';
 import type { HaEntity, TileConfig } from '../../config/types';
 import { FEATURES } from '../../config/constants';
-import { useAppStore } from '../../store';
+import { useAppStore, useEntities } from '../../store';
 import {
   decreaseBrightness,
   increaseBrightness,
@@ -10,12 +11,11 @@ import { entityIcon } from '../../utils/entity';
 import { debounce } from '../../utils/misc';
 import { getLightSliderConf, sendSliderValue } from '../../utils/sliders';
 import { SliderInput } from './SliderInput';
-import { useRef } from 'react';
 import { RgbColorPicker } from 'react-colorful';
 import { supportsFeature } from '../../utils/entity';
 
-export function LightTile({ item, entity }: { item: TileConfig; entity: HaEntity }) {
-  const states = useAppStore((s) => s.entities);
+export const LightTile = memo(function LightTile({ item, entity }: { item: TileConfig; entity: HaEntity }) {
+  const states = useEntities([String(item.id)]);
   const lightControls = useAppStore((s) => s.lightControls);
   const closeLightControls = useAppStore((s) => s.closeLightControls);
   const controlsEnabled = lightControls.has(item);
@@ -101,4 +101,4 @@ export function LightTile({ item, entity }: { item: TileConfig; entity: HaEntity
       </div>
     </div>
   );
-}
+});
