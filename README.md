@@ -43,13 +43,15 @@ docker run -d \
 
 Then open `http://localhost:8080`.
 
+If you previously mounted single files (at `/usr/share/nginx/html/config.js` and `/usr/share/nginx/html/styles/custom.css`), put those files into a mounted `config/` folder instead.
+
 The image ships defaults inside `config/`: `config.js` (a copy of the example),
-an empty `styles/custom.css`, the `manifest.webmanifest`, and example
-backgrounds in `images/`. Mount your own `config/` folder to override any of
-them at once:
+an empty `config/styles/custom.css`, the `config/manifest.webmanifest`, and
+example backgrounds in `config/images/`. Mount your own `config/` folder to
+override any of them at once:
 
 * `config/config.js` — your dashboard configuration. Start from the shipped example (`/usr/share/nginx/html/config/config.example.js`) if you want a reference.
-* `config/styles/custom.css` — your custom CSS, loaded at runtime (see *Custom CSS Styles* below). The image ships an empty placeholder so a whole-folder mount is enough.
+* `config/styles/custom.css` — your custom CSS, loaded at runtime (see *Custom CSS Styles* below). The image ships an empty placeholder so the no-mount default is clean; include `styles/custom.css` (even empty) in your mounted folder to avoid a 404.
 * `config/images/` — any additional images your config references (reference them as `config/images/...`).
 * `config/manifest.webmanifest` — the PWA manifest.
 
