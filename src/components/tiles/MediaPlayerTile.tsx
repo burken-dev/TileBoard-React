@@ -1,7 +1,8 @@
+import { memo } from 'react';
 import type { HaEntity, TileConfig } from '../../config/types';
 import { FEATURES } from '../../config/constants';
 import { callService } from '../../ha/services';
-import { useAppStore } from '../../store';
+import { useAppStore, useEntities } from '../../store';
 import { mutePlayer, sendPlayer, setSourcePlayer, withLoading } from '../../tiles/actions';
 import { entityState, entitySubtitle } from '../../utils/entity';
 import { debounce } from '../../utils/misc';
@@ -17,8 +18,8 @@ const sendVolume = debounce((item: TileConfig, value: number) => {
   );
 }, 250);
 
-export function MediaPlayerTile({ item, entity }: { item: TileConfig; entity: HaEntity }) {
-  const entities = useAppStore((s) => s.entities);
+export const MediaPlayerTile = memo(function MediaPlayerTile({ item, entity }: { item: TileConfig; entity: HaEntity }) {
+  const entities = useEntities([String(item.id)]);
   const openSelect = useAppStore((s) => s.openSelect);
   const closeSelect = useAppStore((s) => s.closeSelect);
   const selectOpened = useAppStore((s) => s.selectOpened);
@@ -234,4 +235,4 @@ export function MediaPlayerTile({ item, entity }: { item: TileConfig; entity: Ha
       )}
     </div>
   );
-}
+});

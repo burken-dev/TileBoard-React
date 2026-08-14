@@ -64,7 +64,7 @@ export function Camera({ item, entity, freezed }: CameraProps) {
     let photoUrl: string | null = null;
 
     const reload = (): void => {
-      if (!photoUrl || (i > 1 && freezedRef.current)) return;
+      if (!photoUrl || freezedRef.current) return;
       show(photoUrl + (photoUrl.includes('?') ? '&' : '?') + '_i=' + i++);
     };
 

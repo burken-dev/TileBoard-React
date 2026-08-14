@@ -1,9 +1,10 @@
+import { memo } from 'react';
 import type { HaEntity, TileConfig } from '../../config/types';
-import { useAppStore } from '../../store';
+import { useEntities } from '../../store';
 import { entityValue } from '../../utils/entity';
 
-export function InputDatetimeTile({ item, entity }: { item: TileConfig; entity: HaEntity }) {
-  const states = useAppStore((s) => s.entities);
+export const InputDatetimeTile = memo(function InputDatetimeTile({ item, entity }: { item: TileConfig; entity: HaEntity }) {
+  const states = useEntities([String(item.id)]);
   return (
     <div className="item-entity-container">
       <div className="item-entity">
@@ -13,4 +14,4 @@ export function InputDatetimeTile({ item, entity }: { item: TileConfig; entity: 
       </div>
     </div>
   );
-}
+});

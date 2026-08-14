@@ -1,5 +1,6 @@
+import { memo } from 'react';
 import type { EntityStates, HaEntity, TileConfig } from '../../config/types';
-import { useAppStore } from '../../store';
+import { useEntities } from '../../store';
 import { parseFieldValue } from '../../utils/fields';
 import { callFunction } from '../../utils/functions';
 
@@ -45,8 +46,8 @@ function weatherListImageStyles(
   return { backgroundImage: `url("${String(iconImage)}")` };
 }
 
-export function WeatherListTile({ item, entity }: { item: TileConfig; entity: HaEntity }) {
-  const states = useAppStore((s) => s.entities);
+export const WeatherListTile = memo(function WeatherListTile({ item, entity }: { item: TileConfig; entity: HaEntity }) {
+  const states = useEntities([String(item.id)]);
   const list = (item.list ?? []) as Array<Record<string, unknown>>;
 
   return (
@@ -102,7 +103,7 @@ export function WeatherListTile({ item, entity }: { item: TileConfig; entity: Ha
       </div>
     </div>
   );
-}
+});
 
 function itemField(field: string, item: TileConfig, entity: HaEntity, states: EntityStates): unknown {
   const value = (item as unknown as Record<string, unknown>)[field];

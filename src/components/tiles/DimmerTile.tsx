@@ -1,10 +1,11 @@
+import { memo } from 'react';
 import type { HaEntity, TileConfig } from '../../config/types';
-import { useAppStore } from '../../store';
+import { useEntities } from '../../store';
 import { dimmerAction } from '../../tiles/actions';
 import { entityIcon, entityState } from '../../utils/entity';
 
-export function DimmerTile({ item, entity }: { item: TileConfig; entity: HaEntity }) {
-  const states = useAppStore((s) => s.entities);
+export const DimmerTile = memo(function DimmerTile({ item, entity }: { item: TileConfig; entity: HaEntity }) {
+  const states = useEntities([String(item.id)]);
   const icon = entityIcon(item, entity, states);
   const showButtons = Boolean(entityState(item, entity, states)) && entity.state !== 'off';
 
@@ -39,4 +40,4 @@ export function DimmerTile({ item, entity }: { item: TileConfig; entity: HaEntit
       </div>
     </div>
   );
-}
+});

@@ -1,11 +1,12 @@
+import { memo } from 'react';
 import type { HaEntity, TileConfig } from '../../config/types';
 import { SelectOverlay, selectStyles } from '../SelectOverlay';
-import { useAppStore } from '../../store';
+import { useAppStore, useEntities } from '../../store';
 import { setSelectOption } from '../../tiles/actions';
 import { entityIcon, entityUnit, entityValue } from '../../utils/entity';
 
-export function InputSelectTile({ item, entity }: { item: TileConfig; entity: HaEntity }) {
-  const states = useAppStore((s) => s.entities);
+export const InputSelectTile = memo(function InputSelectTile({ item, entity }: { item: TileConfig; entity: HaEntity }) {
+  const states = useEntities([String(item.id)]);
   const activeSelect = useAppStore((s) => s.activeSelect);
   const closeSelect = useAppStore((s) => s.closeSelect);
   const opened = activeSelect === item;
@@ -41,4 +42,4 @@ export function InputSelectTile({ item, entity }: { item: TileConfig; entity: Ha
       )}
     </div>
   );
-}
+});

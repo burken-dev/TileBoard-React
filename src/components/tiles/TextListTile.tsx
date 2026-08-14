@@ -1,9 +1,10 @@
+import { memo } from 'react';
 import type { HaEntity, TileConfig } from '../../config/types';
-import { useAppStore } from '../../store';
+import { useEntities } from '../../store';
 import { listField } from '../../utils/entity';
 
-export function TextListTile({ item, entity: _entity }: { item: TileConfig; entity: HaEntity }) {
-  const states = useAppStore((s) => s.entities);
+export const TextListTile = memo(function TextListTile({ item, entity: _entity }: { item: TileConfig; entity: HaEntity }) {
+  const states = useEntities([String(item.id)]);
   return (
     <div className="item-entity-container">
       <div className="item-list">
@@ -24,4 +25,4 @@ export function TextListTile({ item, entity: _entity }: { item: TileConfig; enti
       </div>
     </div>
   );
-}
+});

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef } from 'react';
 import type React from 'react';
 import { usePanGesture } from '../hooks/usePanGesture';
 import { useAppStore } from '../store';
@@ -18,7 +18,6 @@ export default function Pages() {
   const config = useAppStore((s) => s.config);
   const activePage = useAppStore((s) => s.activePage);
   const openPage = useAppStore((s) => s.openPage);
-  const entities = useAppStore((s) => s.entities);
   const activeSelect = useAppStore((s) => s.activeSelect);
   const closeSelect = useAppStore((s) => s.closeSelect);
 
@@ -27,7 +26,7 @@ export default function Pages() {
 
   const visible = config.pages
     .map((page, index) => ({ page, index }))
-    .filter(({ page }) => !isHidden(page, entities));
+    .filter(({ page }) => !isHidden(page, {}));
 
   const count = visible.length;
   const activePos = Math.max(
@@ -35,8 +34,7 @@ export default function Pages() {
     visible.findIndex((entry) => entry.index === activePage),
   );
 
-  const [dragOffset, setDragOffset] = useState<number | null>(null);
-  const [dragging, setDragging] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const pan = usePanGesture({
     axis: menuOnLeft ? 'y' : 'x',
@@ -44,28 +42,29 @@ export default function Pages() {
     active: activePos,
     disabled: false,
     onDrag: (offset) => {
-      setDragging(true);
-      setDragOffset(offset);
+      const el = containerRef.current;
+      if (el) el.style.transform = dragTransform(offset, transition, menuOnLeft);
     },
     onSettle: (targetPos) => {
-      setDragging(false);
-      setDragOffset(null);
+      const el = containerRef.current;
+      if (el) {
+        el.style.transition = '';
+        el.style.transform = pageTransform(targetPos, transition, menuOnLeft) ?? '';
+      }
       if (visible[targetPos]) openPage(visible[targetPos].index);
     },
   });
 
-  const transform =
-    dragging && dragOffset !== null
-      ? dragTransform(dragOffset, transition, menuOnLeft)
-      : pageTransform(activePage, transition, menuOnLeft);
-
   const containerStyle: React.CSSProperties = {
-    transform,
-    transition: dragging ? 'none' : undefined,
+    transform: pageTransform(activePage, transition, menuOnLeft),
   };
 
   const pointerHandlers = {
-    onPointerDown: pan.onPointerDown,
+    onPointerDown: (e: React.PointerEvent) => {
+      const el = containerRef.current;
+      if (el) el.style.transition = 'none';
+      pan.onPointerDown(e);
+    },
     onPointerMove: pan.onPointerMove,
     onPointerUp: pan.onPointerUp,
     onPointerCancel: pan.onPointerCancel,
@@ -73,7 +72,13 @@ export default function Pages() {
 
   return (
     <>
-      <div id="pages" className="pages" style={containerStyle} {...pointerHandlers}>
+      <div
+        ref={containerRef}
+        id="pages"
+        className="pages"
+        style={containerStyle}
+        {...pointerHandlers}
+      >
         {activeSelect ? <div className="page-overlay" onClick={() => closeSelect()} /> : null}
         {visible.map(({ page, index }) =>
           shouldDrawPage(index, activePage, transition) ? (

@@ -1,11 +1,12 @@
+import { memo } from 'react';
 import type { HaEntity, TileConfig } from '../../config/types';
-import { useAppStore } from '../../store';
+import { useEntities } from '../../store';
 import { getSliderConf, sendSliderValue } from '../../utils/sliders';
 import { entityUnit, entityValue } from '../../utils/entity';
 import { SliderInput } from './SliderInput';
 
-export function SliderTile({ item, entity }: { item: TileConfig; entity: HaEntity }) {
-  const states = useAppStore((s) => s.entities);
+export const SliderTile = memo(function SliderTile({ item, entity }: { item: TileConfig; entity: HaEntity }) {
+  const states = useEntities([String(item.id)]);
   const conf = getSliderConf(item, entity);
   const unit = entityUnit(item, entity, states);
 
@@ -18,4 +19,4 @@ export function SliderTile({ item, entity }: { item: TileConfig; entity: HaEntit
       <SliderInput conf={conf} onChange={(value) => sendSliderValue(item, { ...conf, value })} />
     </div>
   );
-}
+});

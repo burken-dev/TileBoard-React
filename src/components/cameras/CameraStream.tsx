@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import type React from 'react';
-import Hls from 'hls.js';
 import type { HaEntity, TileConfig } from '../../config/types';
 import { sendMessage } from '../../ha/services';
 import { useAppStore } from '../../store';
@@ -12,13 +11,13 @@ interface CameraStreamProps {
   freezed: boolean;
 }
 
-export function CameraStream({ item, entity }: CameraStreamProps) {
+export function CameraStream({ item, entity, freezed }: CameraStreamProps) {
   const serverUrl = useAppStore((s) => s.config.serverUrl);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [url, setUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    if (entity?.state === 'off') return;
+    if (freezed || entity?.state === 'off') return;
     let cancelled = false;
     sendMessage<{ result?: { url?: string } }>({
       type: 'camera/stream',
@@ -31,23 +30,31 @@ export function CameraStream({ item, entity }: CameraStreamProps) {
     return () => {
       cancelled = true;
     };
-  }, [entity, serverUrl, item.id]);
+  }, [entity, serverUrl, item.id, freezed]);
 
   useEffect(() => {
-    if (!url) return;
+    if (freezed || !url) return;
     const el = videoRef.current;
     if (!el) return;
     const len = typeof item.bufferLength !== 'undefined' ? item.bufferLength : 5;
-    const hls = new Hls({ maxBufferLength: len, maxMaxBufferLength: len });
-    hls.loadSource(url);
-    hls.attachMedia(el);
-    hls.on(Hls.Events.MANIFEST_PARSED, () => {
-      el.play().catch(() => {});
-    });
+    let hls: import('hls.js').default | null = null;
+    let cancelled = false;
+    (async () => {
+      const { default: Hls } = await import('hls.js');
+      if (cancelled || freezed) return;
+      hls = new Hls({ maxBufferLength: len, maxMaxBufferLength: len });
+      hls.loadSource(url);
+      hls.attachMedia(el);
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        el.play().catch(() => {});
+      });
+    })();
     return () => {
-      hls.destroy();
+      cancelled = true;
+      el.pause();
+      hls?.destroy();
     };
-  }, [url, item.bufferLength]);
+  }, [url, item.bufferLength, freezed]);
 
   return (
     <div className="item-camera" style={{ position: 'relative', overflow: 'hidden' }}>

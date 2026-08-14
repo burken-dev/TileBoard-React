@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import type { GroupConfig, PageConfig } from '../config/types';
 import { useAppStore } from '../store';
 import { isHidden } from '../utils/fields';
@@ -9,9 +10,8 @@ interface GroupProps {
   page: PageConfig;
 }
 
-export default function Group({ group, page }: GroupProps) {
+function Group({ group, page }: GroupProps) {
   const config = useAppStore((s) => s.config);
-  const entities = useAppStore((s) => s.entities);
   const opts = pageOpts(page, config);
 
   const styles = {
@@ -23,10 +23,12 @@ export default function Group({ group, page }: GroupProps) {
     <div className="group" style={styles}>
       {group.title ? <div className="group-title">{group.title}</div> : null}
       {group.items
-        .filter((item) => !isHidden(item, entities))
+        .filter((item) => !isHidden(item, {} as never))
         .map((item, index) => (
           <Tile key={index} item={item} page={page} />
         ))}
     </div>
   );
 }
+
+export default memo(Group);

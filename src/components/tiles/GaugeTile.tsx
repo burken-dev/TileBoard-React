@@ -1,7 +1,8 @@
+import { memo } from 'react';
 import type { CSSProperties } from 'react';
 import type { HaEntity, TileConfig } from '../../config/types';
 import { GAUGE_DEFAULTS } from '../../config/constants';
-import { useAppStore } from '../../store';
+import { useAppStore, useEntities } from '../../store';
 import { entityValue } from '../../utils/entity';
 import { parseFieldValue } from '../../utils/fields';
 import { callFunction } from '../../utils/functions';
@@ -61,8 +62,8 @@ function thresholdColor(
   return color;
 }
 
-export function GaugeTile({ item, entity }: { item: TileConfig; entity: HaEntity }) {
-  const states = useAppStore((s) => s.entities);
+export const GaugeTile = memo(function GaugeTile({ item, entity }: { item: TileConfig; entity: HaEntity }) {
+  const states = useEntities([String(item.id)]);
   const config = useAppStore((s) => s.config);
 
   const type = String(getGaugeField('type', item, entity, states) ?? 'full');
@@ -147,4 +148,4 @@ export function GaugeTile({ item, entity }: { item: TileConfig; entity: HaEntity
       </div>
     </div>
   );
-}
+});

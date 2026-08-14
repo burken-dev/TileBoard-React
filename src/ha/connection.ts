@@ -5,12 +5,34 @@ import {
   subscribeEntities,
 } from 'home-assistant-js-websocket';
 import type { Connection } from 'home-assistant-js-websocket';
-import type { ConfigFunction, EventConfig } from '../config/types';
+import type { ConfigFunction, EntityStates, EventConfig } from '../config/types';
 import { getAppStore } from '../store';
 import { setConnection, sendMessage } from './services';
 import { callFunction } from '../utils/functions';
 
 let initStarted = false;
+
+let pendingStates: EntityStates | null = null;
+let flushScheduled = false;
+
+function flushEntities(): void {
+  flushScheduled = false;
+  if (!pendingStates) return;
+  const states = pendingStates;
+  pendingStates = null;
+  getAppStore().setEntities(Object.values(states));
+}
+
+function scheduleFlush(): void {
+  if (flushScheduled || !pendingStates) return;
+  flushScheduled = true;
+  if (typeof requestAnimationFrame === 'function') {
+    requestAnimationFrame(flushEntities);
+  } else {
+    // jsdom / tests
+    setTimeout(flushEntities, 0);
+  }
+}
 
 export function initConnection(): void {
   if (initStarted) return;
@@ -32,7 +54,8 @@ export function initConnection(): void {
       setStatus('ready');
 
       subscribeEntities(connection, (states) => {
-        getAppStore().setEntities(Object.values(states));
+        pendingStates = states;
+        scheduleFlush();
         if (config.debug) console.log('entities updated', states);
       });
 

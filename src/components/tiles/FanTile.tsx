@@ -1,11 +1,12 @@
+import { memo } from 'react';
 import type { HaEntity, TileConfig } from '../../config/types';
 import { SelectOverlay } from '../SelectOverlay';
-import { useAppStore } from '../../store';
+import { useAppStore, useEntities } from '../../store';
 import { setFanSpeed } from '../../tiles/actions';
 import { entityIcon } from '../../utils/entity';
 
-export function FanTile({ item, entity }: { item: TileConfig; entity: HaEntity }) {
-  const states = useAppStore((s) => s.entities);
+export const FanTile = memo(function FanTile({ item, entity }: { item: TileConfig; entity: HaEntity }) {
+  const states = useEntities([String(item.id)]);
   const activeSelect = useAppStore((s) => s.activeSelect);
   const openSelect = useAppStore((s) => s.openSelect);
   const closeSelect = useAppStore((s) => s.closeSelect);
@@ -47,4 +48,4 @@ export function FanTile({ item, entity }: { item: TileConfig; entity: HaEntity }
       ) : null}
     </div>
   );
-}
+});
