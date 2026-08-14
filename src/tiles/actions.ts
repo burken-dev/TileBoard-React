@@ -157,7 +157,8 @@ export function toggleSelect(item: TileConfig): void {
 }
 
 export function setSelectOption(item: TileConfig, _entity: HaEntity | null, option: string): void {
-  sendItemData(item, 'input_select', 'select_option', { option });
+  const domain = typeof item.id === 'string' ? item.id.split('.')[0] : 'input_select';
+  sendItemData(item, domain, 'select_option', { option });
 }
 
 export function setFanSpeed(item: TileConfig, _entity: HaEntity | null, speed: string): void {
