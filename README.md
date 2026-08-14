@@ -107,6 +107,12 @@ var CONFIG = {
    debug: false,
    /* timeFormat: 12 for AM/PM marker, 24 for 24 hour time (default) */
    timeFormat: 24,
+   /* autoReloadInterval: seconds between full page reloads (0/absent = never) */
+   autoReloadInterval: 3600,
+   /* scripts: extra scripts to load after the config, before the app renders */
+   scripts: ['https://cdn.jsdelivr.net/npm/...'],
+   /* locale: date-fns locale name, e.g. 'sv-se'. Defaults to English. */
+   locale: 'sv-se',
 
    /* googleApiKey: Required if you use device tracker tiles with Google Maps.
     * https://developers.google.com/maps/documentation/maps-static/usage-and-billing
@@ -144,6 +150,9 @@ var CONFIG = {
      timeout: 300,
      /* slidesTimeout: Amount of time (in seconds) to show each slide */
      slidesTimeout: 10,
+     /* slideCacheBust: seconds. Append a rolling cache-bust query to slide bg urls
+      * so same-name image files are re-fetched. (optional) */
+     slideCacheBust: 300,
      styles: { fontSize: '40px' },
      /* corner items for the static screensaver content */
      leftBottom: [{ type: 'datetime' }],
@@ -169,6 +178,11 @@ var CONFIG = {
    doorEntryTimeout: 60,
 }
 ```
+
+Screensaver corner items accept `{ type: 'photo_date' }` to show the EXIF capture date
+(`DateTimeOriginal`) of the current slide. It lazy-loads `exifreader`, so it only ships
+when used. Format via `format` (date-fns tokens, default `dd MMMM yyyy`); the configured
+`locale` is applied.
 
 ### Pages
 
@@ -359,6 +373,9 @@ Every anonymous function in a tile/config is called with a context (`this`) that
    callService: Function, // (domain, service, data) -> Promise; call a HA service
    sendMessage: Function, // (data) -> Promise; send a raw websocket message
    openPage: Function, // (index) -> void; switch to a page
+   memo: Function, // (key, ttlSeconds, fn) -> value; memoizes fn() for ttlSeconds
+   uiState: Function, // (key) -> value; read a page-level UI state value
+   setUiState: Function, // (key, value) -> void; set a value and re-render affected tiles
 }
 ```
 

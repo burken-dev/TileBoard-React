@@ -24,6 +24,12 @@ var CONFIG = {
    // next fields are optional
    events: [],
    timeFormat: 24,
+   /* autoReloadInterval: seconds between full page reloads (optional) */
+   //autoReloadInterval: 3600,
+   /* scripts: extra scripts to load before the app renders (optional) */
+   //scripts: ['https://cdn.jsdelivr.net/npm/exif-js'],
+   /* locale: date-fns locale name, e.g. 'sv-se' (optional) */
+   //locale: 'sv-se',
    menuPosition: 'left', // or 'bottom'
    hideScrollbar: false, // horizontal scrollbar
    groupsAlign: 'horizontally', // or 'vertically'
@@ -46,8 +52,10 @@ var CONFIG = {
    /*screensaver: {// optional
       timeout: 300, // after 5 mins of inactive
       slidesTimeout: 10, // 10s for one slide
+      slideCacheBust: 300, // append a rolling cache-bust query to slide bgs (optional)
       styles: { fontSize: '40px' },
       leftBottom: [{ type: 'datetime' }], // put datetime to the left-bottom of screensaver
+      rightBottom: [{ type: 'photo_date' }], // show the EXIF date of the current slide
       slides: [
          { bg: 'config/images/bg1.jpeg' },
          {
