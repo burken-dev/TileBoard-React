@@ -124,6 +124,25 @@ describe('interactive tiles', () => {
     });
   });
 
+  it('select_option uses the domain from the entity id', () => {
+    setup([
+      { entity_id: 'select.laddbox', state: 'A', attributes: { options: ['A', 'B'] } },
+    ]);
+    const { container } = renderTile({
+      type: 'input_select',
+      id: 'select.laddbox',
+      position: [0, 0],
+    });
+    tap(container);
+    const overlay = container.querySelector('.item-select');
+    expect(overlay).not.toBeNull();
+    fireEvent.click(overlay!.querySelectorAll('.item-select--option')[1]!);
+    expect(callServiceMock).toHaveBeenCalledWith('select', 'select_option', {
+      entity_id: 'select.laddbox',
+      option: 'B',
+    });
+  });
+
   it('light brightness + computes brightness_pct', () => {
     setup([
       {
