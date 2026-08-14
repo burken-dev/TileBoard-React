@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import App from './App';
 import ConfigError from './components/ConfigError';
 import ConfigNotFound from './components/ConfigNotFound';
-import { configName, loadConfig, loadConfigScript } from './config/load';
+import { configName, loadConfig, loadConfigScript, loadScript } from './config/load';
 import { createAppStore, getAppStore } from './store';
 import '@mdi/font/css/materialdesignicons.css';
 import '../styles/main.less';
@@ -38,7 +38,21 @@ async function start() {
   }
 
   const result = loadConfig();
-  if (result.ok) createAppStore(result.config);
+  if (result.ok) {
+    createAppStore(result.config);
+    for (const url of result.config.scripts ?? []) {
+      try {
+        await loadScript(url);
+      } catch {
+        getAppStore().addNotification({
+          type: 'error',
+          title: 'Failed to load script',
+          message: url,
+          lifetime: 12,
+        });
+      }
+    }
+  }
 
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
