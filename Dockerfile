@@ -6,8 +6,8 @@ COPY package*.json ./
 RUN npm ci
 COPY . .
 RUN npm run build \
-    && cp dist/config.example.js dist/config.js \
-    && mkdir -p dist/styles && touch dist/styles/custom.css
+    && cp dist/config/config.example.js dist/config/config.js \
+    && mkdir -p dist/config/styles && touch dist/config/styles/custom.css
 
 FROM nginx:alpine
 COPY nginx.conf /etc/nginx/conf.d/default.conf
