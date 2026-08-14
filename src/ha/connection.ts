@@ -7,8 +7,9 @@ import {
 import type { Connection } from 'home-assistant-js-websocket';
 import type { ConfigFunction, EntityStates, EventConfig } from '../config/types';
 import { getAppStore } from '../store';
-import { setConnection, sendMessage } from './services';
+import { setConnection, sendMessage, setMockMode } from './services';
 import { callFunction } from '../utils/functions';
+import { startMockSimulator } from './mock';
 
 let initStarted = false;
 
@@ -42,6 +43,14 @@ export function initConnection(): void {
   const setStatus = getAppStore().setStatus;
 
   setStatus('loading');
+
+  if (config.mock) {
+    setMockMode(true);
+    startMockSimulator(config.mock);
+    setStatus('ready');
+    if (config.onReady) callFunction(config.onReady, []);
+    return;
+  }
 
   const authPromise = config.authToken
     ? Promise.resolve(createLongLivedTokenAuth(config.serverUrl, config.authToken))
