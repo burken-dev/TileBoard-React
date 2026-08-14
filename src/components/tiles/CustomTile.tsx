@@ -1,10 +1,11 @@
+import { memo } from 'react';
 import type { HaEntity, TileConfig } from '../../config/types';
-import { useAppStore } from '../../store';
+import { useEntities } from '../../store';
 import { parseFieldValue } from '../../utils/fields';
 import { IconTile } from './IconTile';
 
-export function CustomTile({ item, entity }: { item: TileConfig; entity: HaEntity }) {
-  const states = useAppStore((s) => s.entities);
+export const CustomTile = memo(function CustomTile({ item, entity }: { item: TileConfig; entity: HaEntity }) {
+  const states = useEntities([String(item.id)]);
   if (item.customHtml) {
     const html = parseFieldValue(item.customHtml, states, item, entity);
     return (
@@ -14,4 +15,4 @@ export function CustomTile({ item, entity }: { item: TileConfig; entity: HaEntit
     );
   }
   return <IconTile item={item} entity={entity} />;
-}
+});

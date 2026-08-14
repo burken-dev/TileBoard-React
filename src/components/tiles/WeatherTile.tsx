@@ -1,10 +1,11 @@
+import { memo } from 'react';
 import type { HaEntity, TileConfig } from '../../config/types';
-import { useAppStore } from '../../store';
+import { useEntities } from '../../store';
 import { parseFieldValue } from '../../utils/fields';
 import { getWeatherField, getWeatherIcon, getWeatherImageStyles } from '../../utils/weather';
 
-export function WeatherTile({ item, entity }: { item: TileConfig; entity: HaEntity }) {
-  const states = useAppStore((s) => s.entities);
+export const WeatherTile = memo(function WeatherTile({ item, entity }: { item: TileConfig; entity: HaEntity }) {
+  const states = useEntities([String(item.id)]);
   const icon = getWeatherIcon(item, entity, states);
   const imgStyles = getWeatherImageStyles(item, entity, states);
   const f = item.fields;
@@ -110,4 +111,4 @@ export function WeatherTile({ item, entity }: { item: TileConfig; entity: HaEnti
       </div>
     </div>
   );
-}
+});

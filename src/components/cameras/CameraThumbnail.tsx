@@ -20,7 +20,7 @@ export function CameraThumbnail({ item, entity, freezed }: CameraThumbnailProps)
     if (typeof item.refresh === 'function') {
       return Number(callFunction(item.refresh, [item, entity]));
     }
-    return item.refresh ?? 2000;
+    return item.refresh ?? 5000;
   }, [item, entity]);
 
   useEffect(() => {
@@ -34,8 +34,8 @@ export function CameraThumbnail({ item, entity, freezed }: CameraThumbnailProps)
     };
 
     const reload = (): void => {
+      if (freezedRef.current) return;
       if (Date.now() - lastUpdate < (refresh ? refresh * 0.9 : 100)) return;
-      if (lastUpdate && freezedRef.current) return;
       lastUpdate = Date.now();
       if (entity?.state === 'off') return;
       sendMessage<{ result?: { content_type?: string; content?: string } }>({

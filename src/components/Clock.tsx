@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { getAppStore } from '../store';
 import { leadZero } from '../utils/misc';
 
@@ -15,7 +15,7 @@ function currentTime(): { h: string; postfix: string; m: string } {
   return { h: String(h), postfix, m: String(leadZero(d.getMinutes())) };
 }
 
-export default function Clock() {
+function Clock() {
   const [time, setTime] = useState(currentTime);
 
   useEffect(() => {
@@ -32,3 +32,5 @@ export default function Clock() {
     </>
   );
 }
+
+export default memo(Clock);

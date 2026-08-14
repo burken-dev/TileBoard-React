@@ -40,21 +40,22 @@ export default function Screensaver() {
   useEffect(() => {
     if (!conf?.timeout) return;
     const id = window.setInterval(() => {
+      if (shown) return;
       const inactivity = Date.now() - lastActivity;
       setScreensaverShown(conf.timeout < inactivity / 1000);
     }, 1000);
     return () => window.clearInterval(id);
-  }, [conf, setScreensaverShown]);
+  }, [conf, setScreensaverShown, shown]);
 
   useEffect(() => {
-    if (!conf?.timeout) return;
+    if (!conf?.timeout || !shown) return;
     const slides = conf.slides ?? [];
     if (!slides.length) return;
     const id = window.setInterval(() => {
       setActiveSlide((prev) => (prev + 1) % slides.length);
     }, (conf.slidesTimeout ?? 1) * 1000);
     return () => window.clearInterval(id);
-  }, [conf]);
+  }, [conf, shown]);
 
   if (!conf?.timeout || !shown) return null;
 

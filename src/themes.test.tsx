@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { act, render } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import App from './App';
 import { createAppStore } from './store';
@@ -24,7 +24,7 @@ const themes = [
 ];
 
 describe('themes', () => {
-  it('applies every legacy theme class to the body', () => {
+  it('applies every legacy theme class to the body', async () => {
     const config: TileBoardConfig = {
       serverUrl: 'http://h',
       pages: [{ groups: [] }],
@@ -32,12 +32,13 @@ describe('themes', () => {
     };
     createAppStore(config);
     const { container } = render(<App config={config} />);
+    await act(async () => {});
     const cls = document.body.className;
     themes.forEach((theme) => expect(cls).toContain('-theme-' + theme));
     expect(container.querySelector('.page-container')).toBeTruthy();
   });
 
-  it('applies a single customTheme string', () => {
+  it('applies a single customTheme string', async () => {
     const config: TileBoardConfig = {
       serverUrl: 'http://h',
       pages: [{ groups: [] }],
@@ -45,6 +46,7 @@ describe('themes', () => {
     };
     createAppStore(config);
     render(<App config={config} />);
+    await act(async () => {});
     expect(document.body.classList.contains('-theme-homekit')).toBe(true);
   });
 });
