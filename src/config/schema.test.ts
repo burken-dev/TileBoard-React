@@ -174,6 +174,27 @@ describe('validateConfig', () => {
     expect(result.ok).toBe(false);
   });
 
+  it('accepts the new optional config keys', () => {
+    const config = {
+      ...minimalValidConfig,
+      autoReloadInterval: 3600,
+      scripts: ['https://cdn.example.com/lib.js'],
+      locale: 'sv-se',
+      screensaver: {
+        timeout: 180,
+        slideCacheBust: 300,
+        slides: [{ bg: 'a.jpg' }],
+      },
+    };
+    const result = validateConfig(config);
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.config.autoReloadInterval).toBe(3600);
+      expect(result.config.scripts).toEqual(['https://cdn.example.com/lib.js']);
+      expect(result.config.locale).toBe('sv-se');
+    }
+  });
+
   it('accepts empty object id', () => {
     const config = {
       ...minimalValidConfig,

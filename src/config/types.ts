@@ -31,6 +31,9 @@ export interface FunctionContext {
   sendMessage: <T = unknown>(data: Record<string, unknown>) => Promise<T>;
   openPage: (pageIndex: number) => void;
   addNotification: (data: NotificationData) => void;
+  memo: <T>(key: string, ttlSeconds: number, fn: () => T) => T;
+  uiState: (key: string) => unknown;
+  setUiState: (key: string, value: unknown) => void;
 }
 
 export type ConfigFunction<T = unknown> = (
@@ -146,7 +149,7 @@ export interface PageConfig {
   groups: GroupConfig[];
 }
 
-export type HeaderItemType = 'time' | 'date' | 'datetime' | 'weather' | 'custom_html';
+export type HeaderItemType = 'time' | 'date' | 'datetime' | 'weather' | 'custom_html' | 'photo_date';
 
 export interface HeaderItemConfig {
   type: HeaderItemType;
@@ -179,6 +182,7 @@ export interface SlideConfig {
 export interface ScreensaverConfig {
   timeout: number;
   slidesTimeout?: number;
+  slideCacheBust?: number; // seconds; append a rolling cache-bust query to slide bg urls
   styles?: CSSProperties;
   leftTop?: HeaderItemConfig[];
   leftBottom?: HeaderItemConfig[];
@@ -215,6 +219,9 @@ export interface TileBoardConfig {
   notiesPosition?: 'left' | 'right';
   ignoreErrors?: boolean;
   rememberLastPage?: boolean;
+  autoReloadInterval?: number; // seconds between full page reloads
+  scripts?: string[];          // extra scripts to load after config, before app render
+  locale?: string;             // date-fns locale name, e.g. 'sv-se'
   doorEntryTimeout?: number;
   clockStyles?: CSSProperties;
   onReady?: (this: FunctionContext) => void;
