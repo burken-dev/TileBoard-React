@@ -49,9 +49,9 @@ var CONFIG = {
       styles: { fontSize: '40px' },
       leftBottom: [{ type: 'datetime' }], // put datetime to the left-bottom of screensaver
       slides: [
-         { bg: 'images/bg1.jpeg' },
+         { bg: 'config/images/bg1.jpeg' },
          {
-            bg: 'images/bg2.png',
+            bg: 'config/images/bg2.png',
             rightTop: [ // put text to the 2nd slide
                {
                   type: 'custom_html',
@@ -60,14 +60,14 @@ var CONFIG = {
                }
             ]
          },
-         { bg: 'images/bg3.jpg' }
+         { bg: 'config/images/bg3.jpg' }
       ]
    },*/
 
    pages: [
       {
          title: 'Main page',
-         bg: 'images/bg1.jpeg',
+         bg: 'config/images/bg1.jpeg',
          icon: 'mdi-home-outline', // home icon
          groups: [
             {
@@ -214,7 +214,7 @@ var CONFIG = {
       },
       {
          title: 'Second page',
-         bg: 'images/bg2.png',
+         bg: 'config/images/bg2.png',
          icon: 'mdi-numeric-2-box-outline',
          groups: [
             {
