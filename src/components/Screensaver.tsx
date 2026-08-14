@@ -69,6 +69,9 @@ export default function Screensaver() {
   const slides = conf.slides ?? [];
   const cacheBust = conf?.slideCacheBust;
   const slideBgUrl = (bg: string) => slideBg(bg, cacheBust);
+  const activeBg = conf?.slideCacheBust && slides.length
+    ? slideBgUrl(slides[activeSlide]?.bg ?? '')
+    : undefined;
 
   return (
     <div className="screensaver" style={conf.styles} onClick={() => setScreensaverShown(false)}>
@@ -92,28 +95,28 @@ export default function Screensaver() {
               {slide.rightBottom ? (
                 <div className="screensaver-content--right-bottom">
                   {slide.rightBottom.map((item, i) => (
-                    <HeaderItem key={i} item={item} />
+                    <HeaderItem key={i} item={item} slideBg={slideBgUrl(slide.bg)} />
                   ))}
                 </div>
               ) : null}
               {slide.rightTop ? (
                 <div className="screensaver-content--right-top">
                   {slide.rightTop.map((item, i) => (
-                    <HeaderItem key={i} item={item} />
+                    <HeaderItem key={i} item={item} slideBg={slideBgUrl(slide.bg)} />
                   ))}
                 </div>
               ) : null}
               {slide.leftBottom ? (
                 <div className="screensaver-content--left-bottom">
                   {slide.leftBottom.map((item, i) => (
-                    <HeaderItem key={i} item={item} />
+                    <HeaderItem key={i} item={item} slideBg={slideBgUrl(slide.bg)} />
                   ))}
                 </div>
               ) : null}
               {slide.leftTop ? (
                 <div className="screensaver-content--left-top">
                   {slide.leftTop.map((item, i) => (
-                    <HeaderItem key={i} item={item} />
+                    <HeaderItem key={i} item={item} slideBg={slideBgUrl(slide.bg)} />
                   ))}
                 </div>
               ) : null}
@@ -126,28 +129,28 @@ export default function Screensaver() {
         {conf.rightBottom ? (
           <div className="screensaver-content--right-bottom">
             {conf.rightBottom.map((item, i) => (
-              <HeaderItem key={i} item={item} />
+              <HeaderItem key={i} item={item} slideBg={activeBg} />
             ))}
           </div>
         ) : null}
         {conf.rightTop ? (
           <div className="screensaver-content--right-top">
             {conf.rightTop.map((item, i) => (
-              <HeaderItem key={i} item={item} />
+              <HeaderItem key={i} item={item} slideBg={activeBg} />
             ))}
           </div>
         ) : null}
         {conf.leftBottom ? (
           <div className="screensaver-content--left-bottom">
             {conf.leftBottom.map((item, i) => (
-              <HeaderItem key={i} item={item} />
+              <HeaderItem key={i} item={item} slideBg={activeBg} />
             ))}
           </div>
         ) : null}
         {conf.leftTop ? (
           <div className="screensaver-content--left-top">
             {conf.leftTop.map((item, i) => (
-              <HeaderItem key={i} item={item} />
+              <HeaderItem key={i} item={item} slideBg={activeBg} />
             ))}
           </div>
         ) : null}
