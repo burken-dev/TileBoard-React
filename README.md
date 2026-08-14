@@ -543,6 +543,36 @@ For tablet configuration use the `'compact'` theme and reduce padding. For mobil
 
 Please feel free to post an issue or pull request and we will sort it out.
 
+## Test config
+
+For developing tile types and layouts, a test configuration ships at
+`public/config/test.js` covering every tile type across four pages with varied
+group sizes, alignment, and tile sizes. It runs in **mock mode**: instead of
+connecting to Home Assistant, `?config=test` seeds the app with synthetic
+entities matching the HA websocket shape and simulates live updates
+(`mock.interval` ms between ticks). Tapping tiles mutates the mock state locally
+(switches toggle, lights dim, media players play/pause), so behavior can be
+tested without a server.
+
+Run it with:
+
+```bash
+npm run dev
+# open http://localhost:5173/?config=test
+```
+
+Pages:
+
+- **Core tiles** — switches, lights, climate, covers, fans, sensors, inputs, alarm, gauge, custom.
+- **Media & lists** — media_player, text_list, weather, weather_list, image.
+- **Network & cameras** — camera, camera_thumbnail, camera_stream, device_tracker, iframe, popup_iframe, door_entry.
+- **Layout torture** — varied tile sizes, a compact weather tile, narrow and sparse groups for overflow/scrollbar testing.
+
+Adding a tile type: add the tile to `test.js` and any new entity to
+`mock.entities`. `npm run test` fails if a tile type in `src/config/schema.ts`
+is not present in the test config, or if a config tile references an entity id
+that is not in the mock data.
+
 ## License
 
 MIT License
