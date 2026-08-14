@@ -96,7 +96,8 @@ Loaded via `?config=test`. Structure:
   `dimmer_switch`, `image`.
 - **Page 3 "Network & cameras"** — `camera`, `camera_thumbnail`, `camera_stream`,
   `iframe`, `popup_iframe`, `door_entry` (with internal `layout.tiles`), `device_tracker`
-  (coords set; static map tiles via a keyless style).
+  (coords set; `map: 'yandex'` — the only keyless static-map provider in
+  `utils/maps.ts`).
 - **Page 4 "Layout torture"** — varied tile widths/heights, groups with different
   `width`/`height`, a compact 1×1 weather, a near-full page and a sparse group to test
   overflow/scrollbars.
