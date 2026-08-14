@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { createAppStore, getAppStore } from '../store';
 import { mockCallService, stepMockEntities } from './mock';
 
@@ -11,6 +11,7 @@ const lamp = {
 
 describe('stepMockEntities', () => {
   it('jitters numeric sensors and leaves other entities untouched', () => {
+    vi.spyOn(Math, 'random').mockReturnValue(0.1);
     const sensor = {
       entity_id: 'sensor.outdoor_temperature',
       state: '18.5',
@@ -22,6 +23,7 @@ describe('stepMockEntities', () => {
     expect(Math.abs(Number(sensorNext.state) - 18.5)).toBeLessThan(2);
     expect(lampNext.state).toBe(lamp.state);
     expect(lampNext.attributes).toEqual(lamp.attributes);
+    vi.restoreAllMocks();
   });
 
   it('bumps last_updated on every entity', () => {
