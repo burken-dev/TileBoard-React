@@ -5,8 +5,9 @@ import { isHidden } from '../utils/fields';
 import { getWeatherField, getWeatherIcon, getWeatherImageStyles } from '../utils/weather';
 import Clock from './Clock';
 import DateDisplay from './DateDisplay';
+import PhotoDate from './PhotoDate';
 
-function HeaderItem({ item }: { item: HeaderItemConfig }) {
+function HeaderItem({ item, slideBg }: { item: HeaderItemConfig; slideBg?: string }) {
   if (isHidden(item, {} as never)) return null;
 
   return (
@@ -23,6 +24,7 @@ function HeaderItem({ item }: { item: HeaderItemConfig }) {
         <div dangerouslySetInnerHTML={{ __html: item.html ?? '' }} />
       )}
       {item.type === 'weather' && <HeaderWeather item={item} />}
+      {item.type === 'photo_date' && <PhotoDate bg={slideBg} format={item.format} />}
     </div>
   );
 }
