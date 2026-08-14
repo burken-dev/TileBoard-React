@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { configName, loadConfigScript } from './load';
+import { configName, loadConfigScript, loadScript } from './load';
 
 describe('configName', () => {
   it('defaults to config', () => {
@@ -36,6 +36,33 @@ describe('loadConfigScript', () => {
     const spy = vi.spyOn(document.head, 'appendChild').mockImplementation(rejectHandler);
 
     await expect(loadConfigScript('missing')).rejects.toThrow('missing.js not found');
+    spy.mockRestore();
+  });
+});
+
+describe('loadScript', () => {
+  it('injects a script tag with the given src and resolves on load', async () => {
+    const loadHandler: typeof document.head.appendChild = (node) => {
+      node.dispatchEvent(new Event('load'));
+      return node;
+    };
+    const appendChild = vi.fn(loadHandler);
+    const spy = vi.spyOn(document.head, 'appendChild').mockImplementation(appendChild);
+
+    await expect(loadScript('https://cdn.example.com/lib.js')).resolves.toBeUndefined();
+    expect(appendChild).toHaveBeenCalledOnce();
+    expect(appendChild.mock.calls[0][0]).toHaveProperty('src', 'https://cdn.example.com/lib.js');
+    spy.mockRestore();
+  });
+
+  it('rejects when the script fails to load', async () => {
+    const rejectHandler: typeof document.head.appendChild = (node) => {
+      node.dispatchEvent(new Event('error'));
+      return node;
+    };
+    const spy = vi.spyOn(document.head, 'appendChild').mockImplementation(rejectHandler);
+
+    await expect(loadScript('https://cdn.example.com/missing.js')).rejects.toThrow();
     spy.mockRestore();
   });
 });

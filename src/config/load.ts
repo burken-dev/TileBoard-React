@@ -16,6 +16,16 @@ export function loadConfigScript(name: string): Promise<void> {
   });
 }
 
+export function loadScript(url: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = url;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error(`${url} failed to load`));
+    document.head.appendChild(script);
+  });
+}
+
 export function loadConfig(): ConfigResult {
   const raw = window.CONFIG;
   if (raw === undefined || raw === null) {
