@@ -10,6 +10,11 @@ export interface HaEntity {
 
 export type EntityStates = Record<string, HaEntity>;
 
+export interface MockConfig {
+  entities: HaEntity[];
+  interval?: number;
+}
+
 export interface NotificationData {
   id?: string | number;
   type?: 'info' | 'warning' | 'error' | 'success';
@@ -203,6 +208,7 @@ export interface TileBoardConfig {
   googleApiKey?: string | null;
   mapboxToken?: string | null;
   mapboxStyle?: string | null;
+  mock?: MockConfig;
   menuPosition?: 'left' | 'bottom';
   hideScrollbar?: boolean;
   groupsAlign?: 'horizontally' | 'vertically';

@@ -2,11 +2,17 @@ import { callService as haCallService } from 'home-assistant-js-websocket';
 import type { Connection, MessageBase } from 'home-assistant-js-websocket';
 import { getAppStore } from '../store';
 import { toAbsoluteServerURL } from '../utils/misc';
+import { mockCallService, mockGetHistory } from './mock';
 
 let conn: Connection | null = null;
+let mockMode = false;
 
 export function setConnection(connection: Connection): void {
   conn = connection;
+}
+
+export function setMockMode(enabled: boolean): void {
+  mockMode = enabled;
 }
 
 export function callService(
@@ -14,7 +20,11 @@ export function callService(
   service: string,
   serviceData?: Record<string, unknown>,
 ): Promise<void> {
-  if (!conn) return Promise.reject(new Error('not connected'));
+  if (!conn) {
+    return mockMode
+      ? mockCallService(domain, service, serviceData)
+      : Promise.reject(new Error('not connected'));
+  }
   return haCallService(conn, domain, service, serviceData) as Promise<void>;
 }
 
@@ -28,7 +38,11 @@ export function getHistory(
   entityIds: string | string[],
   endDate?: string,
 ): Promise<unknown[][]> {
-  if (!conn) return Promise.reject(new Error('not connected'));
+  if (!conn) {
+    return mockMode
+      ? mockGetHistory(entityIds, startDate)
+      : Promise.reject(new Error('not connected'));
+  }
   const { config } = getAppStore();
   const ids = Array.isArray(entityIds) ? entityIds.join(',') : entityIds;
   let url = `/api/history/period/${startDate}?end_time=${endDate ?? new Date(Date.now()).toISOString()}`;

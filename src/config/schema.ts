@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import type { TileBoardConfig } from './types';
 
-const TILE_TYPES = [
+export const TILE_TYPES = [
   'device_tracker',
   'script',
   'automation',
