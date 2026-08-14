@@ -30,6 +30,15 @@ export default function App({ config }: AppProps) {
     document.body.className = bodyClasses(config, scrolled).join(' ');
   }, [config, scrolled]);
 
+  useEffect(() => {
+    if (!config.autoReloadInterval || config.autoReloadInterval <= 0) return;
+    const id = window.setInterval(
+      () => window.location.reload(),
+      config.autoReloadInterval * 1000,
+    );
+    return () => window.clearInterval(id);
+  }, [config.autoReloadInterval]);
+
   return (
     <div className="page-container">
       <Header header={config.header} />
