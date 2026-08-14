@@ -4,6 +4,13 @@ import HeaderItem from './HeaderItem';
 
 let lastActivity = Date.now();
 
+function slideBg(bg: string, cacheBust?: number): string {
+  if (!cacheBust) return bg;
+  const base = bg.replace(/\?.*$/, '');
+  const bucket = Math.floor(Date.now() / 1000 / cacheBust);
+  return `${base}?t=${bucket}`;
+}
+
 export default function Screensaver() {
   const conf = useAppStore((s) => s.config.screensaver);
   const shown = useAppStore((s) => s.screensaverShown);
@@ -60,6 +67,8 @@ export default function Screensaver() {
   if (!conf?.timeout || !shown) return null;
 
   const slides = conf.slides ?? [];
+  const cacheBust = conf?.slideCacheBust;
+  const slideBgUrl = (bg: string) => slideBg(bg, cacheBust);
 
   return (
     <div className="screensaver" style={conf.styles} onClick={() => setScreensaverShown(false)}>
@@ -76,7 +85,7 @@ export default function Screensaver() {
                 (wasActive ? ' -prev' : '')
               }
               style={{
-                backgroundImage: `url(${slide.bg})`,
+                backgroundImage: `url(${slideBgUrl(slide.bg)})`,
                 ...(slide.styles ?? {}),
               }}
             >
