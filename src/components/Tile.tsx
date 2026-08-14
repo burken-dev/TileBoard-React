@@ -50,6 +50,7 @@ function Tile({ item, page }: TileProps) {
   const activePage = useAppStore((s) => s.activePage);
   const activeCamera = useAppStore((s) => s.activeCamera);
   const screensaverShown = useAppStore((s) => s.screensaverShown);
+  useAppStore((s) => s.uiState);
 
   const entity = getItemEntity(item, entities);
 
