@@ -28,12 +28,48 @@ Should you have any ideas or questions please post them on the home-assistant fo
 
 For development against a local Home Assistant instance run `npm run dev` and open the printed URL.
 
+## Docker
+
+A Docker image is provided. It builds the app and serves the static files with nginx on port `80`.
+
+```sh
+docker build -t tileboard .
+docker run -d \
+  -p 8080:80 \
+  -v /path/to/config.js:/usr/share/nginx/html/config.js:ro \
+  -v /path/to/custom.css:/usr/share/nginx/html/styles/custom.css:ro \
+  --name tileboard \
+  tileboard
+```
+
+Then open `http://localhost:8080`.
+
+The image ships a default `config.js` (a copy of the example) and an empty `styles/custom.css`, so mounting your own files over those paths just works.
+
+Anything else under the served root can be overridden the same way — e.g. mount your own `images/` or `manifest.webmanifest`:
+
+```sh
+docker run -d \
+  -p 8080:80 \
+  -v /path/to/config.js:/usr/share/nginx/html/config.js:ro \
+  -v /path/to/my-images:/usr/share/nginx/html/images:ro \
+  tileboard
+```
+
+* `config.js` — your dashboard configuration. Start from the shipped example (`/usr/share/nginx/html/config.example.js`) if you want a reference.
+* `styles/custom.css` — your custom CSS, loaded at runtime (see *Custom CSS Styles* below). Note the file must exist in the container for a single-file mount; the image ships an empty placeholder so it does.
+* `images/` — any additional images your config references.
+* `manifest.webmanifest` — the PWA manifest.
+
+Prefer whole-directory mounts over single-file mounts when you have several files, and note that the nginx config always redirects unknown paths to `index.html` so the SPA works.
+
 ## Configuration
 
 TileBoard is configured with a `config.js` file that sets the global `window.CONFIG`. It is loaded at runtime, so editing it does not require a rebuild.
 
 * **Development:** copy `public/config.example.js` to `public/config.js`
 * **Deployed build:** copy `public/config.example.js` to `dist/config.js` (before or after `npm run build`)
+* **Docker:** mount your own `config.js` at `/usr/share/nginx/html/config.js` (see the Docker section)
 
 Every field is optional unless noted. The full config object:
 
@@ -483,7 +519,13 @@ Example to fire a notification in a Home Assistant automation. This example fire
 
 ## Custom CSS Styles
 
-Several classes are added to each tile depending on the type of tile and state. Custom CSS styles can be applied by creating a `custom.css` file in the `styles` directory (or in `public/styles` for the React build; the file is imported by the app). The body also carries `-theme-{name}` classes and layout classes (`-menu-left`, `-groups-align-horizontally`, ...) for styling.
+Several classes are added to each tile depending on the type of tile and state. Custom CSS styles can be applied by creating a `custom.css` file. It is loaded at runtime from `/styles/custom.css`, so no rebuild is needed:
+
+* **Development:** place it at `public/styles/custom.css`
+* **Deployed build:** place it at `dist/styles/custom.css`
+* **Docker:** mount it at `/usr/share/nginx/html/styles/custom.css`
+
+The body also carries `-theme-{name}` classes and layout classes (`-menu-left`, `-groups-align-horizontally`, ...) for styling.
 
 ## Themes
 

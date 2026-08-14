@@ -8,7 +8,6 @@ import '@mdi/font/css/materialdesignicons.css';
 import '../styles/main.less';
 import '../styles/themes.less';
 import '../styles/weather-icons.css';
-import '../styles/custom.css';
 
 window.onerror = (error, file, line, col) => {
   try {
