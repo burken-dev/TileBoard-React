@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@testing-library/react';
+import { act, fireEvent, render } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import Tile from './Tile';
 import { createAppStore, getAppStore } from '../store';
@@ -79,5 +79,29 @@ describe('Tile', () => {
     };
     const { container } = render(<Tile item={item} page={{ groups: [] }} />);
     expect(container.querySelector('.item')).toBeNull();
+  });
+
+  it('re-evaluates hidden functions when uiState changes', () => {
+    setup();
+    const item: TileConfig = {
+      type: 'switch',
+      id: 'switch.test',
+      position: [0, 0],
+      hidden: function () {
+        return this.uiState('panel') === 'detail';
+      },
+    };
+    const { container } = render(<Tile item={item} page={{ groups: [] }} />);
+    expect(container.querySelector('.item')).not.toBeNull();
+
+    act(() => {
+      getAppStore().setUiState('panel', 'detail');
+    });
+    expect(container.querySelector('.item')).toBeNull();
+
+    act(() => {
+      getAppStore().setUiState('panel', 'overview');
+    });
+    expect(container.querySelector('.item')).not.toBeNull();
   });
 });

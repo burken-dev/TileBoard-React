@@ -126,6 +126,11 @@ interface NotificationsSlice {
   notificationSeen(id: string | number): boolean;
 }
 
+interface UiStateSlice {
+  uiState: Record<string, unknown>;
+  setUiState(key: string, value: unknown): void;
+}
+
 export type AppStore = AppData &
   AppDataActions &
   NavigationSlice &
@@ -138,7 +143,8 @@ export type AppStore = AppData &
   DoorEntrySlice &
   IframeSlice &
   HistorySlice &
-  NotificationsSlice;
+  NotificationsSlice &
+  UiStateSlice;
 
 type AppStoreApi = UseBoundStore<StoreApi<AppStore>>;
 
@@ -195,6 +201,9 @@ export function createAppStore(config: TileBoardConfig): void {
     activeDoorEntry: null,
     activeIframe: null,
     activeHistory: null,
+    uiState: {},
+    setUiState: (key, value) =>
+      set((prev) => ({ uiState: { ...prev.uiState, [key]: value } })),
     setEntities: (states) => {
       set({
         entities: Object.fromEntries(states.map((state) => [state.entity_id, state])),

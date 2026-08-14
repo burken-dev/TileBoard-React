@@ -6,8 +6,6 @@ import { memo } from './memo';
 
 export type { FunctionContext };
 
-const uiStateCache = new Map<string, unknown>();
-
 export function getContext(): FunctionContext {
   return {
     states: getAppStore().entities,
@@ -18,10 +16,8 @@ export function getContext(): FunctionContext {
     openPage: (pageIndex) => getAppStore().openPage(pageIndex),
     addNotification: (data) => getAppStore().addNotification(data),
     memo,
-    uiState: (key: string): unknown => uiStateCache.get(key),
-    setUiState: (key: string, value: unknown): void => {
-      uiStateCache.set(key, value);
-    },
+    uiState: (key) => getAppStore().uiState[key],
+    setUiState: (key, value) => getAppStore().setUiState(key, value),
   };
 }
 
