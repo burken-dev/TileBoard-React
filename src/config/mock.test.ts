@@ -17,6 +17,7 @@ function collectTiles(config: TileBoardConfig): TileConfig[] {
     for (const item of items) {
       out.push(item);
       if (item.layout?.tiles) walk(item.layout.tiles);
+      if (item.layout?.camera) walk([item.layout.camera]);
       if (item.fullscreen) walk([item.fullscreen]);
     }
   };
