@@ -153,10 +153,10 @@ export type HeaderItemType = 'time' | 'date' | 'datetime' | 'weather' | 'custom_
 
 export interface HeaderItemConfig {
   type: HeaderItemType;
-  format?: string;
-  dateFormat?: string;
-  styles?: CSSProperties;
-  html?: string;
+  format?: Field<string>;
+  dateFormat?: Field<string>;
+  styles?: Field<CSSProperties>;
+  html?: Field<string>;
   icon?: Field<string>;
   icons?: Record<string, string> | ((icon: string, item: unknown, entity: unknown) => string);
   iconImage?: Field<string>;
@@ -165,7 +165,7 @@ export interface HeaderItemConfig {
 }
 
 export interface HeaderConfig {
-  styles?: CSSProperties;
+  styles?: Field<CSSProperties>;
   left?: HeaderItemConfig[];
   right?: HeaderItemConfig[];
 }
