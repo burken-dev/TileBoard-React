@@ -35,6 +35,9 @@ export interface FunctionContext {
   memo: <T>(key: string, ttlSeconds: number, fn: () => T) => T;
   uiState: (key: string) => unknown;
   setUiState: (key: string, value: unknown) => void;
+  slide: string | null;       // current screensaver slide bg URL, null when not shown
+  slideIndex: number | null;  // 0-based index of the active slide, null when not shown
+  slideCount: number | null;  // number of screensaver slides, null when not shown
 }
 
 export type ConfigFunction<T = unknown> = (

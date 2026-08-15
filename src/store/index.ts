@@ -122,6 +122,15 @@ interface UiStateSlice {
   setUiState(key: string, value: unknown): void;
 }
 
+interface ScreensaverSlice {
+  screensaverSlide: number;   // 0-based active slide index
+  screensaverPaused: boolean; // paused = no auto-advance
+  screensaverBg: string | null; // resolved cache-busted bg URL of the active slide
+  setScreensaverSlide(index: number): void;
+  setScreensaverPaused(paused: boolean): void;
+  setScreensaverBg(bg: string | null): void;
+}
+
 export type AppStore = AppData &
   AppDataActions &
   NavigationSlice &
@@ -135,7 +144,8 @@ export type AppStore = AppData &
   IframeSlice &
   GraphSlice &
   NotificationsSlice &
-  UiStateSlice;
+  UiStateSlice &
+  ScreensaverSlice;
 
 type AppStoreApi = UseBoundStore<StoreApi<AppStore>>;
 
@@ -195,6 +205,12 @@ export function createAppStore(config: TileBoardConfig): void {
     uiState: {},
     setUiState: (key, value) =>
       set((prev) => ({ uiState: { ...prev.uiState, [key]: value } })),
+    screensaverSlide: 0,
+    screensaverPaused: false,
+    screensaverBg: null,
+    setScreensaverSlide: (index) => set({ screensaverSlide: index }),
+    setScreensaverPaused: (paused) => set({ screensaverPaused: paused }),
+    setScreensaverBg: (bg) => set({ screensaverBg: bg }),
     setEntities: (states) => {
       set({
         entities: Object.fromEntries(states.map((state) => [state.entity_id, state])),
