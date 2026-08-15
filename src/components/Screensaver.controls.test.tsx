@@ -1,6 +1,7 @@
 import { act, cleanup, fireEvent, render } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import Screensaver from './Screensaver';
+import ScreensaverControls from './ScreensaverControls';
 import { createAppStore, getAppStore } from '../store';
 import type { FunctionContext, ScreensaverButtonContext, TileBoardConfig } from '../config/types';
 
@@ -53,6 +54,8 @@ describe('Screensaver controls', () => {
     expect(buttons).toHaveLength(4);
     expect(buttons[0].querySelector('.mdi')!.className).toContain('mdi-arrow-left');
     expect(buttons[1].querySelector('.mdi')!.className).toContain('mdi-pause');
+    expect(buttons[0].getAttribute('aria-label')).toBe('Previous slide');
+    expect(buttons[1].getAttribute('aria-label')).toBe('Pause slideshow');
   });
 
   it('next button advances the active slide', () => {
@@ -115,5 +118,53 @@ describe('Screensaver controls', () => {
     expect(seen).toEqual([
       { ctx: { bg: 'a.jpg?t=0', index: 0, total: 2 }, slide: 'a.jpg?t=0' },
     ]);
+  });
+
+  it('navigating while paused does not unpause', () => {
+    const { container } = render(<Screensaver />);
+    act(() => {
+      vi.advanceTimersByTime(6000);
+    });
+    fireEvent.click(container.querySelectorAll('.screensaver-button')[1]);
+    expect(container.querySelectorAll('.screensaver-button')[1].querySelector('.mdi')!.className).toContain('mdi-play');
+    fireEvent.click(container.querySelectorAll('.screensaver-button')[2]);
+    expect(container.querySelectorAll('.screensaver-button')[1].querySelector('.mdi')!.className).toContain('mdi-play');
+    let slides = container.querySelectorAll('.screensaver-slide');
+    expect(slides[1].classList.contains('-active')).toBe(true);
+    act(() => {
+      vi.advanceTimersByTime(5000);
+    });
+    slides = container.querySelectorAll('.screensaver-slide');
+    expect(slides[1].classList.contains('-active')).toBe(true);
+  });
+
+  it('navigating resets the auto-advance timer', () => {
+    const { container } = render(<Screensaver />);
+    act(() => {
+      vi.advanceTimersByTime(6000);
+    });
+    act(() => {
+      vi.advanceTimersByTime(500);
+    });
+    const next = container.querySelectorAll('.screensaver-button')[2];
+    fireEvent.click(next);
+    fireEvent.click(next);
+    act(() => {
+      vi.advanceTimersByTime(501);
+    });
+    const slides = container.querySelectorAll('.screensaver-slide');
+    expect(slides[0].classList.contains('-active')).toBe(true);
+  });
+
+  it('renders no control bar when buttons is an empty list', () => {
+    const { container } = render(
+      <ScreensaverControls
+        buttons={[]}
+        position="bottom-center"
+        paused={false}
+        onAction={() => {}}
+      />,
+    );
+    expect(container.querySelector('.screensaver-controls')).toBeNull();
   });
 });
