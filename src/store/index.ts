@@ -8,16 +8,13 @@ import type {
   TileBoardConfig,
   TileConfig,
 } from '../config/types';
-import { callService, getHistory } from '../ha/services';
+import { callService } from '../ha/services';
 import {
   buildDatetimePayload,
   datetimePlaceholder,
   datetimeValid,
   interleaveDigits,
 } from '../utils/datetime';
-import { getItemFieldValue } from '../utils/fields';
-import { buildHistoryModel } from '../utils/graph';
-import type { ChartModel } from '../utils/graph';
 import { leadZero } from '../utils/misc';
 
 export type ConnectionStatus = 'loading' | 'ready' | 'reconnecting' | 'error';
@@ -100,16 +97,10 @@ interface IframeSlice {
   closeIframe(): void;
 }
 
-interface HistorySlice {
-  activeHistory: {
-    item: TileConfig;
-    isLoading: boolean;
-    errorText: string | null;
-    model?: ChartModel;
-    options?: Record<string, unknown>;
-  } | null;
-  openHistory(item: TileConfig, entity: HaEntity | null): void;
-  closeHistory(): void;
+interface GraphSlice {
+  activeGraph: { item: TileConfig } | null;
+  openGraph(item: TileConfig, entity: HaEntity | null): void;
+  closeGraph(): void;
 }
 
 export interface NotificationModel extends NotificationData {
@@ -142,7 +133,7 @@ export type AppStore = AppData &
   AlarmSlice &
   DoorEntrySlice &
   IframeSlice &
-  HistorySlice &
+  GraphSlice &
   NotificationsSlice &
   UiStateSlice;
 
@@ -200,7 +191,7 @@ export function createAppStore(config: TileBoardConfig): void {
     alarmCode: '',
     activeDoorEntry: null,
     activeIframe: null,
-    activeHistory: null,
+    activeGraph: null,
     uiState: {},
     setUiState: (key, value) =>
       set((prev) => ({ uiState: { ...prev.uiState, [key]: value } })),
@@ -323,59 +314,8 @@ export function createAppStore(config: TileBoardConfig): void {
     },
     openIframe: (item) => set({ activeIframe: item }),
     closeIframe: () => set({ activeIframe: null }),
-    openHistory: (item, entity) => {
-      const states = get().entities;
-      const entityId =
-        (getItemFieldValue('history.entity', states, item, entity) as string) ||
-        entity?.entity_id;
-      if (!entityId) {
-        set({
-          activeHistory: { item, isLoading: false, errorText: 'No entity was specified' },
-        });
-        return;
-      }
-      const day = 24 * 60 * 60 * 1000;
-      const offset = Number(getItemFieldValue('history.offset', states, item, entity)) || day;
-      const startDate = new Date(Date.now() - offset).toISOString();
-      set({ activeHistory: { item, isLoading: true, errorText: null } });
-      getHistory(startDate, entityId)
-        .then((data) => {
-          const current = get().activeHistory;
-          if (!current || current.item !== item) return;
-          if (!data || data.length === 0) {
-            set({ activeHistory: { item, isLoading: false, errorText: 'No history data found' } });
-            return;
-          }
-          const series = data as unknown as Array<
-            Array<Record<string, unknown>>
-          >;
-          const seriesMeta = series.map((points) => {
-            const first = points[0] ?? {};
-            const attrs = (first.attributes ?? {}) as Record<string, unknown>;
-            const id = String(first.entity_id ?? entityId);
-            return {
-              name: String(attrs.friendly_name ?? id),
-              unit:
-                attrs.unit_of_measurement != null
-                  ? String(attrs.unit_of_measurement)
-                  : undefined,
-              currentState: states[id]?.state,
-            };
-          });
-          const model = buildHistoryModel(series as never, seriesMeta, Date.now());
-          const options = getItemFieldValue(
-            'history.options',
-            states,
-            item,
-            entity,
-          ) as Record<string, unknown> | undefined;
-          set({ activeHistory: { item, isLoading: false, errorText: null, model, options } });
-        })
-        .catch(() => {
-          set({ activeHistory: { item, isLoading: false, errorText: 'No history data found' } });
-        });
-    },
-    closeHistory: () => set({ activeHistory: null }),
+    openGraph: (item, _entity) => set({ activeGraph: { item } }),
+    closeGraph: () => set({ activeGraph: null }),
     addNotification: (data) => {
       const id = data.id ?? Math.random();
       const existing = get().notifications.find((n) => n.id === id);

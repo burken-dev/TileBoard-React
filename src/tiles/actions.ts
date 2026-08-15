@@ -71,7 +71,7 @@ export function entityLongPress(item: TileConfig, entity: HaEntity | null): void
     return;
   }
   if (item.history) {
-    getAppStore().openHistory(item, entity);
+    getAppStore().openGraph(item, entity);
     return;
   }
   switch (item.type) {
@@ -85,7 +85,7 @@ export function entityLongPress(item: TileConfig, entity: HaEntity | null): void
       return;
     }
     default:
-      if (entity && entity.entity_id) getAppStore().openHistory(item, entity);
+      if (entity && entity.entity_id) getAppStore().openGraph(item, entity);
   }
 }
 
