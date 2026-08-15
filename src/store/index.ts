@@ -16,8 +16,8 @@ import {
   interleaveDigits,
 } from '../utils/datetime';
 import { getItemFieldValue } from '../utils/fields';
-import { buildHistoryDatasets } from '../utils/history';
-import type { HistoryChartModel } from '../utils/history';
+import { buildHistoryModel } from '../utils/graph';
+import type { ChartModel } from '../utils/graph';
 import { leadZero } from '../utils/misc';
 
 export type ConnectionStatus = 'loading' | 'ready' | 'reconnecting' | 'error';
@@ -105,7 +105,7 @@ interface HistorySlice {
     item: TileConfig;
     isLoading: boolean;
     errorText: string | null;
-    model?: HistoryChartModel;
+    model?: ChartModel;
     options?: Record<string, unknown>;
   } | null;
   openHistory(item: TileConfig, entity: HaEntity | null): void;
@@ -362,7 +362,7 @@ export function createAppStore(config: TileBoardConfig): void {
               currentState: states[id]?.state,
             };
           });
-          const model = buildHistoryDatasets(series as never, seriesMeta, Date.now());
+          const model = buildHistoryModel(series as never, seriesMeta, Date.now());
           const options = getItemFieldValue(
             'history.options',
             states,
