@@ -1,9 +1,12 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import type { CSSProperties } from 'react';
 import { useAppStore } from '../store';
 import { resolveFieldValue, resolveFields } from '../utils/fields';
 import { SCREENSAVER_FIELDS } from '../utils/fields';
+import { callFunction } from '../utils/functions';
+import type { ScreensaverButtonConfig } from '../config/types';
 import HeaderItem from './HeaderItem';
+import ScreensaverControls from './ScreensaverControls';
 
 let lastActivity = Date.now();
 
@@ -19,7 +22,11 @@ export default function Screensaver() {
   const states = useAppStore((s) => s.entities);
   const shown = useAppStore((s) => s.screensaverShown);
   const setScreensaverShown = useAppStore((s) => s.setScreensaverShown);
-  const [activeSlide, setActiveSlide] = useState(0);
+  const activeSlide = useAppStore((s) => s.screensaverSlide);
+  const paused = useAppStore((s) => s.screensaverPaused);
+  const setScreensaverSlide = useAppStore((s) => s.setScreensaverSlide);
+  const setScreensaverPaused = useAppStore((s) => s.setScreensaverPaused);
+  const setScreensaverBg = useAppStore((s) => s.setScreensaverBg);
 
   const conf = useMemo(
     () => (rawConf ? resolveFields(rawConf, SCREENSAVER_FIELDS, states, null) : rawConf),
@@ -73,20 +80,47 @@ export default function Screensaver() {
   }, [conf?.timeout, setScreensaverShown, shown]);
 
   useEffect(() => {
-    if (!conf?.timeout || !shown) return;
+    if (!conf?.timeout || !shown || paused) return;
     const slides = conf.slides ?? [];
     if (!slides.length) return;
     const id = window.setInterval(() => {
-      setActiveSlide((prev) => (prev + 1) % slides.length);
+      setScreensaverSlide((activeSlide + 1) % slides.length);
     }, ((conf.slidesTimeout as number | undefined) ?? 1) * 1000);
     return () => window.clearInterval(id);
-  }, [conf?.timeout, conf?.slidesTimeout, shown]);
+  }, [conf?.timeout, conf?.slidesTimeout, shown, paused, activeSlide, setScreensaverSlide]);
+
+  const cacheBust = conf?.slideCacheBust as number | undefined;
+  const activeBg = slides.length ? slideBg(slides[activeSlide]?.bg ?? '', cacheBust) : undefined;
+
+  useEffect(() => {
+    setScreensaverBg(activeBg ?? null);
+  }, [activeBg, setScreensaverBg]);
+
+  const handleControl = (button: ScreensaverButtonConfig): void => {
+    const len = slides.length;
+    if (!len) return;
+    switch (button.type) {
+      case 'previous':
+        setScreensaverSlide((activeSlide - 1 + len) % len);
+        return;
+      case 'next':
+        setScreensaverSlide((activeSlide + 1) % len);
+        return;
+      case 'play_pause':
+        setScreensaverPaused(!paused);
+        return;
+      default:
+        if (button.action) {
+          callFunction(button.action, [
+            { bg: activeBg ?? '', index: activeSlide, total: len },
+          ]);
+        }
+    }
+  };
 
   if (!conf?.timeout || !shown) return null;
 
-  const cacheBust = conf?.slideCacheBust as number | undefined;
   const slideBgUrl = (bg: string) => slideBg(bg, cacheBust);
-  const activeBg = slides.length ? slideBgUrl(slides[activeSlide]?.bg ?? '') : undefined;
 
   return (
     <div className="screensaver" style={conf.styles as CSSProperties | undefined} onClick={() => setScreensaverShown(false)}>
@@ -170,6 +204,17 @@ export default function Screensaver() {
           </div>
         ) : null}
       </div>
+
+      {slides.length ? (
+        <ScreensaverControls
+          buttons={
+            conf.buttons ?? [{ type: 'previous' }, { type: 'play_pause' }, { type: 'next' }]
+          }
+          position={conf.buttonsPosition ?? 'bottom-center'}
+          paused={paused}
+          onAction={handleControl}
+        />
+      ) : null}
     </div>
   );
 }

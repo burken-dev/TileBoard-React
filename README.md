@@ -161,7 +161,25 @@ var CONFIG = {
        { bg: 'images/bg1.jpeg' },
        { bg: 'images/bg2.png' },
        { bg: 'images/bg3.jpg' }
-     ]
+     ],
+     /* buttons: control-bar buttons. Omit to show Previous/Play-Pause/Next.
+      * Custom buttons need `icon` (an mdi class) and `action`; the action's
+      * `this` is the config FunctionContext and it receives one argument
+      * `{ bg, index, total }` (current slide URL, 0-based index, slide count). */
+     buttons: [
+       { type: 'previous' },
+       { type: 'play_pause' },
+       { type: 'next' },
+       {
+         icon: 'mdi-lightbulb-off-outline',
+         action: function (ctx) {
+           this.callService('light', 'turn_off', { entity_id: 'light.kitchen' });
+           fetch('/api/whatever?image=' + encodeURIComponent(ctx.bg));
+         },
+       },
+     ],
+     /* buttonsPosition: where the bar sits: 'bottom-center' (default), 'bottom-left', 'bottom-right' */
+     buttonsPosition: 'bottom-center',
    },
 
    /* header: object of header. Will be applied globally. (optional) */
@@ -183,6 +201,16 @@ Screensaver corner items accept `{ type: 'photo_date' }` to show the EXIF captur
 (`DateTimeOriginal`) of the current slide. It lazy-loads `exifreader`, so it only ships
 when used. Format via `format` (date-fns tokens, default `dd MMMM yyyy`); the configured
 `locale` is applied.
+
+Screensaver controls: `buttons` configures the control bar (Previous / Play-Pause /
+Next plus custom buttons with an mdi `icon` and an `action`). Built-in `previous` /
+`play_pause` / `next` buttons get fixed behavior and default icons; set `enabled: false`
+to hide one. Custom buttons run with the config `FunctionContext` as `this` and receive
+`{ bg, index, total }` — the current slide's cache-busted URL, its 0-based index, and
+the slide count. While the screensaver is active, any config function can also read
+`this.slide`, `this.slideIndex`, and `this.slideCount`. `buttonsPosition` moves the bar
+(`bottom-center` default, `bottom-left`, `bottom-right`). Setting `buttons: []` hides the
+control bar entirely.
 
 ### Pages
 

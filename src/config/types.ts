@@ -35,6 +35,9 @@ export interface FunctionContext {
   memo: <T>(key: string, ttlSeconds: number, fn: () => T) => T;
   uiState: (key: string) => unknown;
   setUiState: (key: string, value: unknown) => void;
+  slide: string | null;       // current screensaver slide bg URL, null when not shown
+  slideIndex: number | null;  // 0-based index of the active slide, null when not shown
+  slideCount: number | null;  // number of screensaver slides, null when not shown
 }
 
 export type ConfigFunction<T = unknown> = (
@@ -193,6 +196,26 @@ export interface SlideConfig {
   rightBottom?: HeaderItemConfig[];
 }
 
+export type ScreensaverButtonType = 'previous' | 'play_pause' | 'next';
+
+export interface ScreensaverButtonContext {
+  bg: string;     // current slide bg URL (resolved, incl. cache-bust)
+  index: number;  // 0-based index of the active slide
+  total: number;  // slide count
+}
+
+export type ScreensaverButtonAction = (
+  this: FunctionContext,
+  ctx: ScreensaverButtonContext,
+) => void;
+
+export interface ScreensaverButtonConfig {
+  type?: ScreensaverButtonType;     // absent -> custom button
+  icon?: string;                    // mdi class; defaults for built-ins, required for custom
+  action?: ScreensaverButtonAction; // required for custom buttons
+  enabled?: boolean;                // default true; false hides the button
+}
+
 export interface ScreensaverConfig {
   timeout: Field<number>;
   slidesTimeout?: Field<number>;
@@ -203,6 +226,8 @@ export interface ScreensaverConfig {
   rightTop?: HeaderItemConfig[];
   rightBottom?: HeaderItemConfig[];
   slides: SlideConfig[];
+  buttons?: ScreensaverButtonConfig[];                                   // default: [prev, play_pause, next]
+  buttonsPosition?: 'bottom-center' | 'bottom-left' | 'bottom-right';    // default 'bottom-center'
 }
 
 export interface EventConfig {

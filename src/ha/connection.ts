@@ -5,7 +5,7 @@ import {
   subscribeEntities,
 } from 'home-assistant-js-websocket';
 import type { Connection } from 'home-assistant-js-websocket';
-import type { ConfigFunction, EntityStates, EventConfig } from '../config/types';
+import type { EntityStates, EventConfig } from '../config/types';
 import { getAppStore } from '../store';
 import { setConnection, sendMessage, setMockMode } from './services';
 import { callFunction } from '../utils/functions';
@@ -117,7 +117,7 @@ function handleTileboardEvent(data: Record<string, unknown> | undefined): void {
   if (config.debug) console.log('tileboard event', data);
   const event = matchEvent(config.events, data);
   if (event && typeof event.action === 'function') {
-    callFunction(event.action as unknown as ConfigFunction, [data]);
+    callFunction(event.action, [data]);
   }
 }
 
