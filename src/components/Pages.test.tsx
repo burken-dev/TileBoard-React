@@ -1,8 +1,16 @@
 import { fireEvent, render } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
-import Pages from './Pages';
-import { createAppStore, getAppStore } from '../store';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { TileBoardConfig } from '../config/types';
+
+let createAppStore: typeof import('../store').createAppStore;
+let getAppStore: typeof import('../store').getAppStore;
+let Pages: typeof import('./Pages').default;
+
+beforeEach(async () => {
+  vi.resetModules();
+  ({ createAppStore, getAppStore } = await import('../store'));
+  ({ default: Pages } = await import('./Pages'));
+});
 
 const fixture: TileBoardConfig = {
   serverUrl: 'http://h',
@@ -56,5 +64,40 @@ describe('Pages', () => {
     fireEvent.click(items[1]);
     expect(items[1].className).toContain('-active');
     expect(items[0].className).not.toContain('-active');
+  });
+
+  it('resolves a function page background', () => {
+    createAppStore({
+      ...fixture,
+      pages: [{ ...fixture.pages[0], bg: () => 'http://h/bg.jpg' }],
+    });
+    getAppStore().setEntities([
+      { entity_id: 'a', state: 'off', attributes: {} },
+      { entity_id: 'b', state: 'off', attributes: {} },
+      { entity_id: 'c', state: 'off', attributes: {} },
+    ]);
+    const { container } = render(<Pages />);
+    const page = container.querySelector('.page') as HTMLElement;
+    expect(page.style.backgroundImage).toContain('http://h/bg.jpg');
+  });
+
+  it('resolves a function group title', () => {
+    createAppStore({
+      ...fixture,
+      pages: [
+        {
+          ...fixture.pages[0],
+          groups: [{ ...fixture.pages[0].groups[0], title: () => 'Fn' }],
+        },
+        fixture.pages[1],
+      ],
+    });
+    getAppStore().setEntities([
+      { entity_id: 'a', state: 'off', attributes: {} },
+      { entity_id: 'b', state: 'off', attributes: {} },
+      { entity_id: 'c', state: 'off', attributes: {} },
+    ]);
+    const { container } = render(<Pages />);
+    expect(container.textContent).toContain('Fn');
   });
 });

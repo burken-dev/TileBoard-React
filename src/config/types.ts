@@ -127,10 +127,10 @@ export interface SliderConfig {
 }
 
 export interface GroupConfig {
-  title?: string;
-  width?: number;
-  height?: number;
-  groupMarginCss?: string;
+  title?: Field<string>;
+  width?: Field<number>;
+  height?: Field<number>;
+  groupMarginCss?: Field<string>;
   hidden?: Field<boolean>;
   items: TileConfig[];
 }
@@ -140,10 +140,10 @@ export interface PageConfig {
   id?: string;
   bg?: Field<string>;
   bgSuffix?: Field<string>;
-  icon?: string;
-  tileSize?: number;
-  tileMargin?: number;
-  groupMarginCss?: string;
+  icon?: Field<string>;
+  tileSize?: Field<number>;
+  tileMargin?: Field<number>;
+  groupMarginCss?: Field<string>;
   hidden?: Field<boolean>;
   header?: HeaderConfig;
   groups: GroupConfig[];

@@ -70,7 +70,7 @@ function Tile({ item, page }: TileProps) {
   const state = entityState(resolved, entity, entities);
   const loading = isLoading(resolved);
 
-  const base = itemPositionStyles(resolved, pageOpts(page, config));
+  const base = itemPositionStyles(resolved, pageOpts(page, config, entities));
   const custom = resolved.customStyles ?? {};
   const styles = { ...base, ...(custom as React.CSSProperties) };
 

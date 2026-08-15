@@ -1,25 +1,28 @@
 import type { CSSProperties } from 'react';
-import type { GroupConfig, PageConfig, TileBoardConfig, TileConfig } from '../config/types';
+import type { EntityStates, GroupConfig, PageConfig, TileBoardConfig, TileConfig } from '../config/types';
 import { toAbsoluteServerURL } from './misc';
+import { resolveFieldValue } from './fields';
 
 export interface SizeOpts {
   tileSize: number;
   tileMargin: number;
 }
 
-export function calcGroupSize(group: GroupConfig): { width: number; height: number } {
+export function calcGroupSize(group: GroupConfig, states: EntityStates): { width: number; height: number } {
   let width = 0;
   let height = 0;
   for (const item of group.items || []) {
-    height = Math.max(height, item.position[1] + ((item.height as number | undefined) ?? 1));
-    width = Math.max(width, item.position[0] + ((item.width as number | undefined) ?? 1));
+    const w = (resolveFieldValue(item.width, states, item, null) as number | undefined) ?? 1;
+    const h = (resolveFieldValue(item.height, states, item, null) as number | undefined) ?? 1;
+    height = Math.max(height, item.position[1] + h);
+    width = Math.max(width, item.position[0] + w);
   }
   return { width, height };
 }
 
-export function groupSizeStyles(group: GroupConfig, opts: SizeOpts): CSSProperties {
-  const w = group.width ?? calcGroupSize(group).width;
-  const h = group.height ?? calcGroupSize(group).height;
+export function groupSizeStyles(group: GroupConfig, opts: SizeOpts, states: EntityStates): CSSProperties {
+  const w = (group.width as number | undefined) ?? calcGroupSize(group, states).width;
+  const h = (group.height as number | undefined) ?? calcGroupSize(group, states).height;
   return {
     width: `${opts.tileSize * w + opts.tileMargin * (w - 1)}px`,
     height: `${opts.tileSize * h + opts.tileMargin * (h - 1)}px`,
@@ -37,10 +40,16 @@ export function itemPositionStyles(item: TileConfig, opts: SizeOpts): CSSPropert
   };
 }
 
-export function pageOpts(page: PageConfig, config: TileBoardConfig): SizeOpts {
+export function pageOpts(page: PageConfig, config: TileBoardConfig, states: EntityStates): SizeOpts {
   return {
-    tileSize: page.tileSize ?? config.tileSize ?? 150,
-    tileMargin: page.tileMargin ?? config.tileMargin ?? 6,
+    tileSize:
+      (resolveFieldValue(page.tileSize, states, page, null) as number | undefined) ??
+      config.tileSize ??
+      150,
+    tileMargin:
+      (resolveFieldValue(page.tileMargin, states, page, null) as number | undefined) ??
+      config.tileMargin ??
+      6,
   };
 }
 
@@ -48,18 +57,24 @@ export function groupMargin(
   page: PageConfig,
   group: GroupConfig,
   config: TileBoardConfig,
+  states: EntityStates,
 ): string {
-  return page.groupMarginCss ?? group.groupMarginCss ?? config.groupMarginCss ?? '';
+  return (
+    (resolveFieldValue(page.groupMarginCss, states, page, null) as string | undefined) ??
+    (resolveFieldValue(group.groupMarginCss, states, group, null) as string | undefined) ??
+    config.groupMarginCss ??
+    ''
+  );
 }
 
-export function pageBackground(page: PageConfig, config: TileBoardConfig): CSSProperties {
+export function pageBackground(page: PageConfig, config: TileBoardConfig, states: EntityStates): CSSProperties {
   const styles: CSSProperties = {};
-  if (page.bg) {
-    if (typeof page.bg === 'string' && page.bg) {
-      styles.backgroundImage = `url("${page.bg}")`;
-    }
-  } else if (page.bgSuffix && typeof page.bgSuffix === 'string') {
-    styles.backgroundImage = `url("${toAbsoluteServerURL(page.bgSuffix, config.serverUrl)}")`;
+  const bg = resolveFieldValue(page.bg, states, page, null);
+  if (bg) {
+    styles.backgroundImage = `url("${bg}")`;
+  } else if (page.bgSuffix) {
+    const suffix = resolveFieldValue(page.bgSuffix, states, page, null);
+    styles.backgroundImage = `url("${toAbsoluteServerURL(String(suffix), config.serverUrl)}")`;
   }
   return styles;
 }

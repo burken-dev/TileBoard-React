@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import type { HaEntity, PageConfig, TileConfig } from '../../config/types';
 import { useAppStore } from '../../store';
+import { resolveFieldValue } from '../../utils/fields';
 import { staticMapUrl } from '../../utils/maps';
 import { toAbsoluteServerURL } from '../../utils/misc';
 
@@ -12,9 +13,13 @@ interface DeviceTrackerTileProps {
 
 export const DeviceTrackerTile = memo(function DeviceTrackerTile({ item, entity, page }: DeviceTrackerTileProps) {
   const config = useAppStore((s) => s.config);
+  const states = useAppStore((s) => s.entities);
   const attrs = entity.attributes;
   const hasCoords = !!attrs.longitude || !!attrs.latitude;
-  const tileSize = page.tileSize ?? config.tileSize ?? 100;
+  const tileSize =
+    (resolveFieldValue(page.tileSize, states, page, null) as number | undefined) ??
+    config.tileSize ??
+    100;
   const widthPx = tileSize * ((item.width as number | undefined) ?? 1);
   const heightPx = tileSize * ((item.height as number | undefined) ?? 1);
   const zoomLevels = (item.zoomLevels as number[] | undefined) ?? [9, 13];
