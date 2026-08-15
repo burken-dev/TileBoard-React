@@ -94,17 +94,21 @@ export function resolveFields<T extends object>(
   states: EntityStates,
   entity?: HaEntity | null,
 ): T {
+  let changed = false;
   const out: T = { ...obj };
   for (const key of keys) {
     if (!(key in obj)) continue;
-    (out as Record<string, unknown>)[key as string] = resolveFieldValue(
-      (obj as Record<string, unknown>)[key as string],
-      states,
-      obj,
-      entity,
-    );
+    const original = (obj as Record<string, unknown>)[key as string];
+    const value = resolveFieldValue(original, states, obj, entity);
+    if (
+      value !== original &&
+      !(typeof value === 'string' && typeof original === 'string' && value === original)
+    ) {
+      (out as Record<string, unknown>)[key as string] = value;
+      changed = true;
+    }
   }
-  return out;
+  return changed ? out : obj;
 }
 
 export const TILE_FIELDS = [

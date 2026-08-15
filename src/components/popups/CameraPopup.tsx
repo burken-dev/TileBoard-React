@@ -1,6 +1,7 @@
 import { useAppStore } from '../../store';
 import { getCameraList, getFullscreenEntity } from '../../utils/cameras';
 import { entityTitle } from '../../utils/entity';
+import { resolveTile } from '../../utils/fields';
 import { Camera } from '../cameras/Camera';
 import { CameraStream } from '../cameras/CameraStream';
 import { CameraThumbnail } from '../cameras/CameraThumbnail';
@@ -14,8 +15,8 @@ export default function CameraPopup() {
 
   if (!activeCamera) return null;
   const entity = getFullscreenEntity(activeCamera, entities);
-  const fullscreen = activeCamera.fullscreen;
-  if (!entity || !fullscreen) return null;
+  if (!entity || !activeCamera.fullscreen) return null;
+  const fullscreen = resolveTile(activeCamera.fullscreen, entity, entities);
 
   return (
     <div className="camera-popup">
