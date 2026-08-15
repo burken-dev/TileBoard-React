@@ -234,6 +234,18 @@ We divide tiles (cells) into groups on every page. Group object can have the fol
 
 Tile object. [Click here for some real-life examples](TILE_EXAMPLES.md)
 
+Most value settings across the tile, page, group, header, and screensaver configs
+accept either a static value or a function `(item, entity) => value` that is
+resolved at render time with the current entity state (so values can react to
+state changes). This includes fields like `title`, `subtitle`, `width`, `height`,
+`bg`, `bgSize`, `bgOpacity`, `icon`, `value`, `unit`, `refresh`, `bottom`,
+`colorpicker`, `hideSource`, and so on. The functions are called with the same
+context described under *Function context* below.
+
+A small set of keys keep their own fixed signatures and are never auto-resolved:
+`action`, `secondaryAction`, `actionPlus`, `actionMinus`, `filter`, `states`,
+`icons`, and `slider.formatValue` (these take explicit arguments).
+
 ```js
 {
   /* position: The x,y position of the tile inside the group */
@@ -398,7 +410,7 @@ The `type` field accepts the following string literals:
 'cover', 'cover_toggle', 'fan', 'input_boolean', 'light', 'text_list', 'input_number',
 'input_select', 'input_datetime', 'camera', 'camera_thumbnail', 'camera_stream', 'scene',
 'slider', 'iframe', 'door_entry', 'weather', 'climate', 'media_player', 'custom', 'alarm',
-'weather_list', 'vacuum', 'popup_iframe', 'dimmer_switch', 'gauge', 'image'
+'weather_list', 'vacuum', 'popup_iframe', 'dimmer_switch', 'gauge', 'graph', 'image'
 ```
 
 ### Slider config (used for 'slider' tiles and 'light'.sliders)
