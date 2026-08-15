@@ -81,7 +81,13 @@ export interface TileConfig {
   slidesDelay?: Field<number>;
   action?: ConfigFunction;
   secondaryAction?: ConfigFunction;
+  actionPlus?: ConfigFunction;
+  actionMinus?: ConfigFunction;
   hidden?: Field<boolean>;
+  dateTitle?: Field<string>;
+  iconTitle?: Field<string>;
+  primaryTitle?: Field<string>;
+  secondaryTitle?: Field<string>;
   classes?: string[];
   customStyles?: CSSProperties | ConfigFunction<CSSProperties>;
   history?: HistoryConfig;
