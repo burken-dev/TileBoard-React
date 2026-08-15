@@ -2,7 +2,7 @@ Here are some real life examples of Tiles.<br>
 
 #### ALARM
 
-![ALARM](images/tile-screenshots/ALARM.png)
+![ALARM](public/images/tile-screenshots/ALARM.png)
 
 ```js
 {
@@ -30,7 +30,7 @@ Here are some real life examples of Tiles.<br>
 #### AUTOMATION
 Manually trigger an automation
 
-![AUTOMATION](images/tile-screenshots/AUTOMATION.png)
+![AUTOMATION](public/images/tile-screenshots/AUTOMATION.png)
 
 ```js
 {
@@ -89,7 +89,7 @@ Optionally, the fullscreen camera entity can be different from the thumbnail cam
 
 
 #### CLIMATE
-![CLIMATE](images/tile-screenshots/CLIMATE.png)
+![CLIMATE](public/images/tile-screenshots/CLIMATE.png)
 ```js
 {
    position: [0, 2],
@@ -107,7 +107,7 @@ Optionally, the fullscreen camera entity can be different from the thumbnail cam
 #### CUSTOM
 The custom tile type does not have handling for any specific entity types. It can be used to, for example, trigger custom actions on pressing.
 
-![CUSTOM](images/tile-screenshots/CUSTOM.png)
+![CUSTOM](public/images/tile-screenshots/CUSTOM.png)
 
 ```js
 {
@@ -127,7 +127,7 @@ The custom tile type does not have handling for any specific entity types. It ca
 ```
 
 #### DEVICE_TRACKER
-![DEVICE_TRACKER](images/tile-screenshots/DEVICE_TRACKER.png)
+![DEVICE_TRACKER](public/images/tile-screenshots/DEVICE_TRACKER.png)
 
 ```js
 {
@@ -212,7 +212,7 @@ Essentially a door entry tile is a pop-up with a fullscreen camera and a set of 
 #### FAN
 Allows you to toggle a fan on and off, as well as set the speed.
 
-![FAN](images/tile-screenshots/FAN.png)
+![FAN](public/images/tile-screenshots/FAN.png)
 ```js
 {
    position: [0, 2],
@@ -272,7 +272,7 @@ Also alows showing custom HTML content in the tile.
 ```
 
 #### INPUT_SELECT
-![INPUT_SELECT](images/tile-screenshots/INPUT_SELECT.png)
+![INPUT_SELECT](public/images/tile-screenshots/INPUT_SELECT.png)
 ```js
 {
    position: [0, 1],
@@ -282,7 +282,7 @@ Also alows showing custom HTML content in the tile.
 }
 ```
 
-![INPUT_SELECT](images/tile-screenshots/INPUT_SELECT_2.png)
+![INPUT_SELECT](public/images/tile-screenshots/INPUT_SELECT_2.png)
 ```js
 {
    position: [0, 1],
@@ -300,7 +300,7 @@ Also alows showing custom HTML content in the tile.
 
 
 #### INPUT_DATETIME
-![INPUT_DATETIME](images/tile-screenshots/INPUT_DATETIME.png)
+![INPUT_DATETIME](public/images/tile-screenshots/INPUT_DATETIME.png)
 ```js
 {
    position: [0, 3],
@@ -312,9 +312,9 @@ Also alows showing custom HTML content in the tile.
 
 #### LIGHT
 Light switch. You can optionally define sliders to control colour temperature or in fact anything else. Sliders will show up after long press on the tile. Color Picker is also optionally displayed after long press on the tile. Color picker should only be used for lights with rgb_color attribute.<br>
-![LIGHT](images/tile-screenshots/LIGHT.png)
-![LIGHT](images/tile-screenshots/LIGHT_2.png)
-![LIGHT](images/tile-screenshots/LIGHT_3.png)
+![LIGHT](public/images/tile-screenshots/LIGHT.png)
+![LIGHT](public/images/tile-screenshots/LIGHT_2.png)
+![LIGHT](public/images/tile-screenshots/LIGHT_3.png)
 ```js
 {
    position: [0, 2],
@@ -364,7 +364,7 @@ Light switch. You can optionally define sliders to control colour temperature or
 
 #### LOCK
 Locks and unlocks the lock on tap. Also shows icon depending on the state<br>
-![LOCK](images/tile-screenshots/LOCK.png)
+![LOCK](public/images/tile-screenshots/LOCK.png)
 ```js
 {
    position: [0, 1],
@@ -383,7 +383,7 @@ Locks and unlocks the lock on tap. Also shows icon depending on the state<br>
 ```
 
 #### MEDIA_PLAYER
-![MEDIA_PLAYER](images/tile-screenshots/MEDIA_PLAYER.png)
+![MEDIA_PLAYER](public/images/tile-screenshots/MEDIA_PLAYER.png)
 ```js
 {
    position: [0, 3],
@@ -412,7 +412,7 @@ Works almost identical to the SCRIPT. Activates scene in a tap.
 
 #### SCRIPT
 Call script on click/tap<br>
-![SCRIPT](images/tile-screenshots/SCRIPT.png)
+![SCRIPT](public/images/tile-screenshots/SCRIPT.png)
 
 ```js
 {
@@ -428,7 +428,7 @@ Call script on click/tap<br>
 ```
 
 #### SENSOR
-![SENSOR](images/tile-screenshots/SENSOR.png)
+![SENSOR](public/images/tile-screenshots/SENSOR.png)
 ```js
 {
    position: [0, 0],
@@ -446,7 +446,7 @@ Call script on click/tap<br>
 
 #### SENSOR_ICON
 Similar to sensor, but with an icon.<br>
-![SENSOR_ICON](images/tile-screenshots/SENSOR_ICON.png)
+![SENSOR_ICON](public/images/tile-screenshots/SENSOR_ICON.png)
 ```js
 {
    position: [1, 1],
@@ -465,7 +465,7 @@ Similar to sensor, but with an icon.<br>
 ```
 
 #### SLIDER
-![SLIDER](images/tile-screenshots/SLIDER.png)
+![SLIDER](public/images/tile-screenshots/SLIDER.png)
 ```js
 {
    position: [6, 1],
@@ -490,7 +490,7 @@ Similar to sensor, but with an icon.<br>
 
 #### SWITCH
 Toggle switch on tap. Also shows icon depending on the state<br>
-![SWITCH](images/tile-screenshots/SWITCH.png)
+![SWITCH](public/images/tile-screenshots/SWITCH.png)
 ```js
 {
    position: [0, 1],
@@ -511,7 +511,7 @@ Toggle switch on tap. Also shows icon depending on the state<br>
 
 #### TEXT_LIST
 This is a custom tile which can be used for displaying values from different sensors in a list.<br>
-![TEXT_LIST](images/tile-screenshots/TEXT_LIST.png)
+![TEXT_LIST](public/images/tile-screenshots/TEXT_LIST.png)
 ```js
 {
    position: [0, 1],
@@ -542,8 +542,8 @@ This is a custom tile which can be used for displaying values from different sen
 ```
 
 #### WEATHER
-![WEATHER](images/tile-screenshots/WEATHER.png)
-![WEATHER](images/tile-screenshots/WEATHER_2.png)<br>
+![WEATHER](public/images/tile-screenshots/WEATHER.png)
+![WEATHER](public/images/tile-screenshots/WEATHER_2.png)<br>
 ```js
 {
    position: [2, 1],
@@ -596,7 +596,7 @@ This is a custom tile which can be used for displaying values from different sen
 ```
 
 #### WEATHER_LIST
-![WEATHER_LIST](images/tile-screenshots/WEATHER_LIST.png)<br>
+![WEATHER_LIST](public/images/tile-screenshots/WEATHER_LIST.png)<br>
 ```js
 {
    position: [0, 1],
@@ -642,7 +642,7 @@ This is a custom tile which can be used for displaying values from different sen
 ```
 
 #### GAUGE
-![GAUGE](images/tile-screenshots/GAUGE.png)<br>
+![GAUGE](public/images/tile-screenshots/GAUGE.png)<br>
 ```js
 {
    position: [0, 1.5],
@@ -696,7 +696,7 @@ Renders a small history chart on the tile. Tapping opens the graph popup, which 
 
 
 #### IMAGE
-![IMAGE](images/tile-screenshots/IMAGE.png)<br>
+![IMAGE](public/images/tile-screenshots/IMAGE.png)<br>
 ```js
 {
    position: [0, 1],
