@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@testing-library/react';
+import { act, fireEvent, render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { HaEntity, PageConfig, TileConfig } from '../../config/types';
 import { createAppStore, getAppStore } from '../../store';
@@ -71,6 +71,54 @@ describe('interactive tiles', () => {
       option: 'B',
     });
     expect(container.querySelector('.item-select')).toBeNull();
+  });
+
+  it('input_select with a resolvable field opens overlay', () => {
+    setup([
+      { entity_id: 'input_select.x', state: 'A', attributes: { options: ['A', 'B', 'C'] } },
+    ]);
+    const { container } = renderTile({
+      type: 'input_select',
+      id: 'input_select.x',
+      position: [0, 0],
+      title: () => 'X',
+    });
+    expect(container.querySelector('.item-select')).toBeNull();
+
+    tap(container);
+    expect(container.querySelector('.item-select')).not.toBeNull();
+  });
+
+  it('light with a resolvable field opens controls on long press', () => {
+    vi.useFakeTimers();
+    setup([
+      {
+        entity_id: 'light.x',
+        state: 'on',
+        attributes: { brightness: 128, supported_features: 1 },
+      },
+    ]);
+    const { container } = renderTile({
+      type: 'light',
+      id: 'light.x',
+      position: [0, 0],
+      title: () => 'X',
+      sliders: [{ field: 'brightness' }],
+    });
+
+    const root = container.querySelector('.item')!;
+    fireEvent.pointerDown(root);
+    act(() => {
+      vi.advanceTimersByTime(700);
+    });
+    fireEvent.pointerUp(root);
+
+    expect(container.querySelector('.item-entity-sliders')).not.toBeNull();
+
+    fireEvent.click(container.querySelector('.item-entity--back-button')!);
+    expect(container.querySelector('.item-entity-sliders')).toBeNull();
+
+    vi.useRealTimers();
   });
 
   it('climate respects target_temp_step and clamps to max_temp', () => {

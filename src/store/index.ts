@@ -239,7 +239,7 @@ export function createAppStore(config: TileBoardConfig): void {
       }),
     openSelect: (item) => set({ activeSelect: item }),
     closeSelect: () => set({ activeSelect: null }),
-    selectOpened: (item) => get().activeSelect === item,
+    selectOpened: (item) => get().activeSelect?.id === item.id,
     openDatetime: (item) =>
       set((prev) => {
         const entity = entityFor(item, prev.entities);
@@ -282,11 +282,9 @@ export function createAppStore(config: TileBoardConfig): void {
     openLightControls: (item) =>
       set((prev) => ({ lightControls: new Set(prev.lightControls).add(item) })),
     closeLightControls: (item) =>
-      set((prev) => {
-        const next = new Set(prev.lightControls);
-        next.delete(item);
-        return { lightControls: next };
-      }),
+      set((prev) => ({
+        lightControls: new Set([...prev.lightControls].filter((c) => c.id !== item.id)),
+      })),
     openCamera: (item) => set({ activeCamera: item }),
     closeCamera: () => set({ activeCamera: null }),
     setScreensaverShown: (shown) => set({ screensaverShown: shown }),

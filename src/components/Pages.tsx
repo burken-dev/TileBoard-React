@@ -16,6 +16,7 @@ function dragTransform(offset: number, transition: string, menuOnLeft: boolean):
 
 export default function Pages() {
   const config = useAppStore((s) => s.config);
+  const states = useAppStore((s) => s.entities);
   const activePage = useAppStore((s) => s.activePage);
   const openPage = useAppStore((s) => s.openPage);
   const activeSelect = useAppStore((s) => s.activeSelect);
@@ -26,7 +27,7 @@ export default function Pages() {
 
   const visible = config.pages
     .map((page, index) => ({ page, index }))
-    .filter(({ page }) => !isHidden(page, {}));
+    .filter(({ page }) => !isHidden(page, states));
 
   const count = visible.length;
   const activePos = Math.max(

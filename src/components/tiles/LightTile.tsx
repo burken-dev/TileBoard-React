@@ -18,7 +18,7 @@ export const LightTile = memo(function LightTile({ item, entity }: { item: TileC
   const states = useEntities([String(item.id)]);
   const lightControls = useAppStore((s) => s.lightControls);
   const closeLightControls = useAppStore((s) => s.closeLightControls);
-  const controlsEnabled = lightControls.has(item);
+  const controlsEnabled = [...lightControls].some((c) => c.id === item.id);
 
   const onColorChange = useRef(
     debounce((color: { r: number; g: number; b: number }) => {
