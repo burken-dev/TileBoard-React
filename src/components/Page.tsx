@@ -12,13 +12,14 @@ interface PageProps {
 
 export default function Page({ page, index }: PageProps) {
   const config = useAppStore((s) => s.config);
+  const states = useAppStore((s) => s.entities);
   const activePage = useAppStore((s) => s.activePage);
   const setScrolled = useAppStore((s) => s.setScrolled);
 
   const transition = config.transition ?? 'animated';
   const menuPosition = config.menuPosition ?? 'left';
 
-  const styles: React.CSSProperties = pageBackground(page, config);
+  const styles: React.CSSProperties = pageBackground(page, config, states);
   if (transition !== 'simple' && menuPosition !== 'left' && index > 0) {
     styles.position = 'absolute';
     styles.left = `${index * 100}%`;

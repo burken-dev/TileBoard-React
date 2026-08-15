@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import type { GroupConfig, PageConfig } from '../config/types';
 import { useAppStore } from '../store';
-import { isHidden } from '../utils/fields';
+import { GROUP_FIELDS, isHidden, resolveFields } from '../utils/fields';
 import { groupMargin, groupSizeStyles, pageOpts } from '../utils/layout';
 import Tile from './Tile';
 
@@ -12,18 +12,20 @@ interface GroupProps {
 
 function Group({ group, page }: GroupProps) {
   const config = useAppStore((s) => s.config);
-  const opts = pageOpts(page, config);
+  const states = useAppStore((s) => s.entities);
+  const resolved = resolveFields(group, GROUP_FIELDS, states, null);
+  const opts = pageOpts(page, config, states);
 
   const styles = {
-    ...groupSizeStyles(group, opts),
-    margin: groupMargin(page, group, config),
+    ...groupSizeStyles(resolved, opts, states),
+    margin: groupMargin(page, resolved, config, states),
   };
 
   return (
     <div className="group" style={styles}>
-      {group.title ? <div className="group-title">{group.title}</div> : null}
-      {group.items
-        .filter((item) => !isHidden(item, {} as never))
+      {resolved.title ? <div className="group-title">{String(resolved.title)}</div> : null}
+      {resolved.items
+        .filter((item) => !isHidden(item, states))
         .map((item, index) => (
           <Tile key={index} item={item} page={page} />
         ))}

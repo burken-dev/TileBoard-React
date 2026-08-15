@@ -17,7 +17,7 @@ describe('calcGroupSize', () => {
         { type: 'switch', id: 'b', position: [0, 2] },
       ],
     };
-    expect(calcGroupSize(group)).toEqual({ width: 3, height: 3 });
+    expect(calcGroupSize(group, {})).toEqual({ width: 3, height: 3 });
   });
 });
 
@@ -36,7 +36,7 @@ describe('itemPositionStyles', () => {
 describe('groupSizeStyles', () => {
   it('formats width from group dims', () => {
     const group: GroupConfig = { width: 2, height: 3, items: [] };
-    expect(groupSizeStyles(group, { tileSize: 150, tileMargin: 6 }).width).toBe('306px');
+    expect(groupSizeStyles(group, { tileSize: 150, tileMargin: 6 }, {}).width).toBe('306px');
   });
 });
 
