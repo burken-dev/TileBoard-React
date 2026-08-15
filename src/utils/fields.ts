@@ -100,10 +100,7 @@ export function resolveFields<T extends object>(
     if (!(key in obj)) continue;
     const original = (obj as Record<string, unknown>)[key as string];
     const value = resolveFieldValue(original, states, obj, entity);
-    if (
-      value !== original &&
-      !(typeof value === 'string' && typeof original === 'string' && value === original)
-    ) {
+    if (value !== original) {
       (out as Record<string, unknown>)[key as string] = value;
       changed = true;
     }
