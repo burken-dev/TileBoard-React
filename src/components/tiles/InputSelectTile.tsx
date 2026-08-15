@@ -9,7 +9,7 @@ export const InputSelectTile = memo(function InputSelectTile({ item, entity }: {
   const states = useEntities([String(item.id)]);
   const activeSelect = useAppStore((s) => s.activeSelect);
   const closeSelect = useAppStore((s) => s.closeSelect);
-  const opened = activeSelect === item;
+  const opened = activeSelect?.id === item.id;
   const options = entity.attributes.options as string[] | undefined;
   const icon = item.icons ? entityIcon(item, entity, states) : null;
   const unit = entityUnit(item, entity, states);
