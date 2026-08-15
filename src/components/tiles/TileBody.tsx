@@ -10,6 +10,7 @@ import { DeviceTrackerTile } from './DeviceTrackerTile';
 import { DimmerTile } from './DimmerTile';
 import { FanTile } from './FanTile';
 import { GaugeTile } from './GaugeTile';
+import { GraphTile } from './GraphTile';
 import { IconTile } from './IconTile';
 import { IframeTile } from './IframeTile';
 import { ImageTile } from './ImageTile';
@@ -56,6 +57,8 @@ export function TileBody({
       return <ImageTile item={item} entity={entity} />;
     case 'gauge':
       return <GaugeTile item={item} entity={entity} />;
+    case 'graph':
+      return <GraphTile item={item} entity={entity} />;
     case 'input_number':
       return <InputNumberTile item={item} entity={entity} />;
     case 'input_select':

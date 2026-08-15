@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import type { ChartModel } from '../utils/graph';
 
 export interface HaEntity {
   entity_id: string;
@@ -50,7 +51,7 @@ export type TileType =
   | 'input_number' | 'input_select' | 'input_datetime' | 'camera' | 'camera_thumbnail'
   | 'camera_stream' | 'scene' | 'slider' | 'iframe' | 'door_entry' | 'weather'
   | 'climate' | 'media_player' | 'custom' | 'alarm' | 'weather_list' | 'vacuum'
-  | 'popup_iframe' | 'dimmer_switch' | 'gauge' | 'image';
+  | 'popup_iframe' | 'dimmer_switch' | 'gauge' | 'graph' | 'image';
 
 export interface HistoryConfig {
   entity?: Field<string | string[]>;
@@ -58,6 +59,12 @@ export interface HistoryConfig {
   options?: Field<Record<string, unknown>>;
   styles?: Field<CSSProperties>;
   classes?: Field<string>;
+}
+
+export interface GraphConfig {
+  offset?: Field<number>;
+  options?: Field<Record<string, unknown>>;
+  data?: ConfigFunction<ChartModel>;
 }
 
 export interface TileConfig {
@@ -91,6 +98,7 @@ export interface TileConfig {
   classes?: string[];
   customStyles?: CSSProperties | ConfigFunction<CSSProperties>;
   history?: HistoryConfig;
+  graph?: GraphConfig;
   value?: Field<string | number>;
   unit?: Field<string>;
   filter?: (this: FunctionContext, value: unknown, item: TileConfig, entity: HaEntity | null) => unknown;

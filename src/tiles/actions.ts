@@ -62,6 +62,9 @@ export function entityClick(item: TileConfig, entity: HaEntity | null): void {
       }
       return;
     }
+    case 'graph':
+      getAppStore().openGraph(item, entity);
+      return;
   }
 }
 
@@ -70,6 +73,7 @@ export function entityLongPress(item: TileConfig, entity: HaEntity | null): void
     callFunction(item.secondaryAction, [item, entity]);
     return;
   }
+  if (item.type === 'graph') return;
   if (item.history) {
     getAppStore().openGraph(item, entity);
     return;
