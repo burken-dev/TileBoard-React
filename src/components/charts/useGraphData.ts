@@ -17,6 +17,7 @@ export interface GraphData {
 }
 
 const DAY = 24 * 60 * 60 * 1000;
+const REFRESH_MS = 60_000;
 
 function fieldNumber(key: string, states: Record<string, HaEntity>, item: TileConfig, entity: HaEntity | null): number {
   return Number(getItemFieldValue(key, states, item, entity));
@@ -75,20 +76,32 @@ export function useGraphData(item: TileConfig, entity: HaEntity | null, scope: G
 
   useEffect(() => {
     let cancelled = false;
+    let inFlight = false;
+    const load = () => {
+      if (inFlight) return;
+      inFlight = true;
+      loadGraphModel(item, entity, states, scope)
+        .then((result) => {
+          if (cancelled) return;
+          if ('error' in result) setData({ isLoading: false, error: result.error });
+          else setData({ model: result.model, options: result.options, isLoading: false, error: null });
+        })
+        .catch(() => {
+          if (!cancelled) setData({ isLoading: false, error: 'No history data found' });
+        })
+        .finally(() => {
+          inFlight = false;
+        });
+    };
     setData({ isLoading: true, error: null });
-    loadGraphModel(item, entity, states, scope)
-      .then((result) => {
-        if (cancelled) return;
-        if ('error' in result) setData({ isLoading: false, error: result.error });
-        else setData({ model: result.model, options: result.options, isLoading: false, error: null });
-      })
-      .catch(() => {
-        if (!cancelled) setData({ isLoading: false, error: 'No history data found' });
-      });
+    load();
+    const id = setInterval(load, REFRESH_MS);
     return () => {
       cancelled = true;
+      clearInterval(id);
     };
-    // ponytail: fetch once per item/scope; entity/states are read at fetch time.
+    // ponytail: fixed 60s refresh keeps the trailing point current on live dashboards;
+    // switch to a throttled `states` dep if per-change freshness matters more.
   }, [item, scope]);
 
   return data;
