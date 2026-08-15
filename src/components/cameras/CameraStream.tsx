@@ -36,7 +36,7 @@ export function CameraStream({ item, entity, freezed }: CameraStreamProps) {
     if (freezed || !url) return;
     const el = videoRef.current;
     if (!el) return;
-    const len = typeof item.bufferLength !== 'undefined' ? item.bufferLength : 5;
+    const len = typeof item.bufferLength !== 'undefined' ? (item.bufferLength as number) : 5;
     let hls: import('hls.js').default | null = null;
     let cancelled = false;
     (async () => {

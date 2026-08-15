@@ -92,14 +92,14 @@ export function Camera({ item, entity, freezed }: CameraProps) {
       {prev ? (
         <ImageLayer
           url={toAbsoluteServerURL(prev, serverUrl)}
-          backgroundSize={item.bgSize}
+          backgroundSize={item.bgSize as string | undefined}
           visible={false}
         />
       ) : null}
       {cur ? (
         <ImageLayer
           url={toAbsoluteServerURL(cur, serverUrl)}
-          backgroundSize={item.bgSize}
+          backgroundSize={item.bgSize as string | undefined}
           visible
         />
       ) : null}

@@ -10,10 +10,21 @@ export interface SliderRuntime extends SliderConfig {
   step: number;
 }
 
+type RawSlider = {
+  title?: string;
+  field?: string;
+  min?: number;
+  max?: number;
+  step?: number;
+  value?: number;
+  formatValue?: (conf: { value: number }) => string | number;
+  request?: { type?: string; domain: string; service: string; field?: string };
+};
+
 const num = (v: unknown): number => (typeof v === 'number' ? v : Number(v)) || 0;
 
 export function getSliderConf(item: TileConfig, entity: HaEntity): SliderRuntime {
-  const def = item.slider ?? {};
+  const def = (item.slider ?? {}) as RawSlider;
   const attrs = entity.attributes ?? {};
   const field = def.field ?? 'value';
   return {
@@ -27,7 +38,7 @@ export function getSliderConf(item: TileConfig, entity: HaEntity): SliderRuntime
 }
 
 export function getLightSliderConf(slider: SliderConfig, entity: HaEntity): SliderRuntime {
-  const def = slider ?? {};
+  const def = (slider ?? {}) as RawSlider;
   const attrs = entity.attributes ?? {};
   const field = def.field ?? 'value';
   return {
@@ -41,7 +52,7 @@ export function getLightSliderConf(slider: SliderConfig, entity: HaEntity): Slid
 }
 
 function sendSliderValueFn(item: TileConfig, conf: SliderRuntime): void {
-  const { request } = conf;
+  const request = conf.request as RawSlider['request'];
   if (!request) return;
   const data: Record<string, unknown> = { entity_id: item.id };
   data[request.field ?? 'value'] = conf.value;

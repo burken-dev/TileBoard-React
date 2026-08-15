@@ -41,14 +41,14 @@ export const LightTile = memo(function LightTile({ item, entity }: { item: TileC
             <div className="item-slider-container" key={index}>
               {slider.title ? (
                 <div className="item-slider-title">
-                  <span>{slider.title}</span>: <span>{slider.formatValue ? slider.formatValue(conf) : conf.value}</span>
+                  <span>{slider.title as string}</span>: <span>{slider.formatValue ? slider.formatValue(conf) : conf.value}</span>
                 </div>
               ) : null}
               <SliderInput conf={conf} onChange={(value) => sendSliderValue(item, { ...conf, value })} />
             </div>
           );
         })}
-        {item.colorpicker ? (
+        {(item.colorpicker as boolean) ? (
           <div className="item-entity-colorpicker">
             <span>Color:</span>
             <RgbColorPicker color={color} onChange={onColorChange} />

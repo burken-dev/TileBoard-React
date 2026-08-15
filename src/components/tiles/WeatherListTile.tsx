@@ -54,7 +54,7 @@ export const WeatherListTile = memo(function WeatherListTile({ item, entity }: {
     <div className="item-entity-container">
       <div className="weather-list">
         <table>
-          {!item.hideHeader && (
+          {!(item.hideHeader as boolean) && (
             <tr className="weather-list-header">
               <th>
                 <span>{String(itemField('dateTitle', item, entity, states) ?? 'Date')}</span>

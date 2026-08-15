@@ -91,7 +91,7 @@ export const GaugeTile = memo(function GaugeTile({ item, entity }: { item: TileC
   const sizeSetting = getGaugeField('size', item, entity, states);
   const size =
     Number(sizeSetting) ||
-    0.8 * (config.tileSize ?? 100) * Math.min(item.height ?? 1, item.width ?? 1);
+    0.8 * (config.tileSize ?? 100) * Math.min((item.height as number | undefined) ?? 1, (item.width as number | undefined) ?? 1);
 
   const rawValue = Number(entityValue(item, entity, states));
   const value = Number.isFinite(rawValue)
