@@ -1,4 +1,5 @@
-export interface HistoryChartModel {
+export interface ChartModel {
+  type?: 'line' | 'bar';
   datasets: Array<{
     label: string;
     data: Array<{ x: number; y: number | string }>;
@@ -14,13 +15,13 @@ export interface SeriesMeta {
   currentState?: string;
 }
 
-export function buildHistoryDatasets(
+export function buildHistoryModel(
   response: Array<Array<{ state: string; last_changed: string }>>,
   seriesMeta: SeriesMeta[],
   now: number,
-): HistoryChartModel {
-  const datasets: HistoryChartModel['datasets'] = [];
-  const yAxes: HistoryChartModel['yAxes'] = {};
+): ChartModel {
+  const datasets: ChartModel['datasets'] = [];
+  const yAxes: ChartModel['yAxes'] = {};
   const seenUnits = new Set<string>();
 
   response.forEach((states, seriesIndex) => {
@@ -76,4 +77,16 @@ export function buildHistoryDatasets(
     yAxes,
     interactionMode: datasets.length > 1 ? 'nearest' : 'index',
   };
+}
+
+export function deepMerge<T>(base: T, extra: unknown): T {
+  if (extra === null || typeof extra !== 'object' || Array.isArray(extra)) {
+    return extra as T;
+  }
+  const out: Record<string, unknown> = { ...(base as Record<string, unknown>) };
+  for (const key of Object.keys(extra as Record<string, unknown>)) {
+    const value = (extra as Record<string, unknown>)[key];
+    out[key] = key in out ? deepMerge(out[key], value) : value;
+  }
+  return out as T;
 }
