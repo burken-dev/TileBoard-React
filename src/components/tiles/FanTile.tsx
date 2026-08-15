@@ -10,7 +10,7 @@ export const FanTile = memo(function FanTile({ item, entity }: { item: TileConfi
   const activeSelect = useAppStore((s) => s.activeSelect);
   const openSelect = useAppStore((s) => s.openSelect);
   const closeSelect = useAppStore((s) => s.closeSelect);
-  const opened = activeSelect === item;
+  const opened = activeSelect?.id === item.id;
   const icon = entityIcon(item, entity, states);
   const speedList = entity.attributes.speed_list as string[] | undefined;
   const speed = String(entity.attributes.speed ?? '');
