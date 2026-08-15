@@ -1,4 +1,4 @@
-import type { EntityStates, HaEntity, TileConfig } from '../config/types';
+import type { ConfigFunction, EntityStates, HaEntity, TileConfig } from '../config/types';
 import { callFunction } from './functions';
 
 export function parseFieldValue(
@@ -74,4 +74,53 @@ export function isHidden(
   if (!obj || !('hidden' in obj)) return false;
   if (typeof obj.hidden === 'function') return Boolean(callFunction(obj.hidden, [obj, entity]));
   return Boolean(obj.hidden);
+}
+
+// resolveFieldValue preserves falsy values (parseFieldValue maps them to null)
+export function resolveFieldValue(
+  value: unknown,
+  states: EntityStates,
+  item?: unknown,
+  entity?: HaEntity | null,
+): unknown {
+  if (typeof value === 'function') return callFunction(value as ConfigFunction, [item, entity]);
+  if (typeof value === 'string') return parseString(value, states, entity);
+  return value;
+}
+
+export function resolveFields<T extends object>(
+  obj: T,
+  keys: readonly (keyof T)[],
+  states: EntityStates,
+  entity?: HaEntity | null,
+): T {
+  const out: T = { ...obj };
+  for (const key of keys) {
+    if (!(key in obj)) continue;
+    (out as Record<string, unknown>)[key as string] = resolveFieldValue(
+      (obj as Record<string, unknown>)[key as string],
+      states,
+      obj,
+      entity,
+    );
+  }
+  return out;
+}
+
+export const TILE_FIELDS = [
+  'title', 'subtitle', 'bg', 'bgSuffix', 'bgOpacity', 'bgSize', 'slidesDelay', 'hidden',
+  'customStyles', 'value', 'unit', 'refresh', 'url', 'icon', 'iconImage', 'customHtml',
+  'iframeStyles', 'iframeClasses', 'objFit', 'bufferLength', 'bottom', 'colorpicker',
+  'hideSource', 'hideMuteButton', 'map', 'zoomLevels', 'hideEntityPicture', 'hideHeader',
+  'width', 'height',
+] as const;
+
+export const PAGE_FIELDS = ['icon'] as const;
+export const GROUP_FIELDS = ['title', 'width', 'height', 'groupMarginCss'] as const;
+export const HEADER_ITEM_FIELDS = ['format', 'dateFormat', 'styles', 'html'] as const;
+export const SCREENSAVER_FIELDS = ['timeout', 'slidesTimeout', 'slideCacheBust', 'styles'] as const;
+export const SLIDER_FIELDS = ['min', 'max', 'step', 'value', 'title', 'field', 'request'] as const;
+
+export function resolveTile(item: TileConfig, entity: HaEntity | null, states: EntityStates): TileConfig {
+  return resolveFields(item, TILE_FIELDS as readonly (keyof TileConfig)[], states, entity);
 }
