@@ -171,8 +171,8 @@ export interface HeaderConfig {
 }
 
 export interface SlideConfig {
-  bg: string;
-  styles?: CSSProperties;
+  bg: Field<string>;
+  styles?: Field<CSSProperties>;
   leftTop?: HeaderItemConfig[];
   leftBottom?: HeaderItemConfig[];
   rightTop?: HeaderItemConfig[];
@@ -180,10 +180,10 @@ export interface SlideConfig {
 }
 
 export interface ScreensaverConfig {
-  timeout: number;
-  slidesTimeout?: number;
-  slideCacheBust?: number; // seconds; append a rolling cache-bust query to slide bg urls
-  styles?: CSSProperties;
+  timeout: Field<number>;
+  slidesTimeout?: Field<number>;
+  slideCacheBust?: Field<number>; // seconds; append a rolling cache-bust query to slide bg urls
+  styles?: Field<CSSProperties>;
   leftTop?: HeaderItemConfig[];
   leftBottom?: HeaderItemConfig[];
   rightTop?: HeaderItemConfig[];
