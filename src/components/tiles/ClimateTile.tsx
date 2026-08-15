@@ -23,7 +23,7 @@ export const ClimateTile = memo(function ClimateTile({ item, entity }: { item: T
   const activeSelect = useAppStore((s) => s.activeSelect);
   const openSelect = useAppStore((s) => s.openSelect);
   const closeSelect = useAppStore((s) => s.closeSelect);
-  const opened = activeSelect === item;
+  const opened = activeSelect?.id === item.id;
 
   const showButtons = Boolean(entity.attributes.temperature) && entity.state !== 'off';
   const unit = entityUnit(item, entity, states);
