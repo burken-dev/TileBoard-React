@@ -104,4 +104,17 @@ describe('Tile', () => {
     });
     expect(container.querySelector('.item')).not.toBeNull();
   });
+
+  it('resolves function settings with entity context', () => {
+    setup();
+    const item: TileConfig = {
+      type: 'switch',
+      id: 'switch.test',
+      position: [0, 0],
+      icon: () => 'mdi-function-icon',
+    };
+    const { container } = render(<Tile item={item} page={{ groups: [] }} />);
+    const icon = container.querySelector('.item-entity--icon');
+    expect(icon?.className).toContain('mdi-function-icon');
+  });
 });

@@ -11,8 +11,7 @@ import {
   getItemEntity,
   itemClasses,
 } from '../utils/entity';
-import { isHidden, parseFieldValue } from '../utils/fields';
-import { callFunction } from '../utils/functions';
+import { isHidden, parseFieldValue, resolveTile } from '../utils/fields';
 import { itemPositionStyles, pageOpts } from '../utils/layout';
 import { toAbsoluteServerURL } from '../utils/misc';
 import { TileBody } from './tiles/TileBody';
@@ -65,37 +64,33 @@ function Tile({ item, page }: TileProps) {
 
   if (!entity || isHidden(item, entities)) return null;
 
-  const title = entityTitle(item, entity, entities);
-  const subtitle = entitySubtitle(item, entity, entities);
-  const state = entityState(item, entity, entities);
-  const loading = isLoading(item);
+  const resolved = resolveTile(item, entity, entities);
+  const title = entityTitle(resolved, entity, entities);
+  const subtitle = entitySubtitle(resolved, entity, entities);
+  const state = entityState(resolved, entity, entities);
+  const loading = isLoading(resolved);
 
-  const base = itemPositionStyles(item, pageOpts(page, config));
-  let custom: React.CSSProperties = {};
-  if (typeof item.customStyles === 'function') {
-    custom = (callFunction(item.customStyles, [item, entity]) as React.CSSProperties) ?? {};
-  } else if (item.customStyles) {
-    custom = item.customStyles;
-  }
-  const styles = { ...base, ...custom };
+  const base = itemPositionStyles(resolved, pageOpts(page, config));
+  const custom = resolved.customStyles ?? {};
+  const styles = { ...base, ...(custom as React.CSSProperties) };
 
-  const slides = item.slides ?? [];
+  const slides = resolved.slides ?? [];
   const freezed =
     activePage !== config.pages.indexOf(page) || activeCamera !== null || screensaverShown;
 
   return (
     <div
-      className={'item ' + itemClasses(item, entity, loading, selectOpened(item)).join(' ')}
+      className={'item ' + itemClasses(resolved, entity, loading, selectOpened(resolved)).join(' ')}
       style={styles}
       onPointerDown={long.onPointerDown}
       onPointerUp={long.onPointerUp}
       onPointerLeave={long.onPointerLeave}
     >
       <div className="item-clickable" />
-      {(item.bg || item.bgSuffix) && (
+      {(resolved.bg || resolved.bgSuffix) && (
         <div
           className="item-background"
-          style={itemBackgroundStyles(item, entity, entities, config.serverUrl)}
+          style={itemBackgroundStyles(resolved, entity, entities, config.serverUrl)}
         />
       )}
       {title ? <div className="item-title">{title}</div> : null}
@@ -106,8 +101,8 @@ function Tile({ item, page }: TileProps) {
           <div
             className={'item-slides -c' + slides.length}
             style={{
-              animationDelay: `${(item.slidesDelay ?? 0)}s`,
-              opacity: item.bgOpacity as number | undefined,
+              animationDelay: `${(resolved.slidesDelay ?? 0)}s`,
+              opacity: resolved.bgOpacity as number | undefined,
             }}
           >
             {slides.map((slide, index) => {
@@ -123,7 +118,7 @@ function Tile({ item, page }: TileProps) {
           </div>
         </div>
       )}
-      <TileBody item={item} entity={entity} freezed={freezed} page={page} />
+      <TileBody item={resolved} entity={entity} freezed={freezed} page={page} />
     </div>
   );
 }
