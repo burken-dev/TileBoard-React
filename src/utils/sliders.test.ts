@@ -25,9 +25,11 @@ const item: TileConfig = {
   slider: {},
 };
 
+createAppStore({ serverUrl: 'http://h', pages: [] });
+
 describe('getSliderConf', () => {
   it('defaults from entity attributes', () => {
-    const conf = getSliderConf(item, entity);
+    const conf = getSliderConf(item, entity, {});
     expect(conf).toMatchObject({ min: 0, max: 100, step: 5, value: 10 });
   });
 
@@ -35,8 +37,18 @@ describe('getSliderConf', () => {
     const conf = getSliderConf(
       { ...item, slider: { field: 'some' } },
       { ...entity, attributes: { some: 42 } },
+      {},
     );
     expect(conf.value).toBe(42);
+  });
+
+  it('resolves function slider fields', () => {
+    const conf = getSliderConf(
+      { ...item, slider: { min: () => 5 } },
+      { ...entity, attributes: { min: 0, step: 5 } },
+      {},
+    );
+    expect(conf.min).toBe(5);
   });
 });
 
@@ -45,9 +57,20 @@ describe('getLightSliderConf', () => {
     const conf = getLightSliderConf(
       { field: 'brightness' },
       { ...entity, attributes: { brightness: 128 } },
+      {},
     );
     expect(conf.value).toBe(128);
     expect(conf.request).toEqual({ domain: 'input_number', service: 'set_value', field: 'brightness' });
+  });
+
+  it('resolves function title on light sliders', () => {
+    const conf = getLightSliderConf(
+      { title: () => 'Brightness', field: 'brightness' },
+      { ...entity, attributes: { brightness: 128 } },
+      {},
+    );
+    expect(conf.title).toBe('Brightness');
+    expect(conf.value).toBe(128);
   });
 });
 
@@ -63,7 +86,7 @@ describe('sendSliderValue', () => {
   });
 
   it('debounces and sends payload with latest value', () => {
-    const conf = getSliderConf(item, entity);
+    const conf = getSliderConf(item, entity, {});
     sendSliderValue(item, { ...conf, value: 55 });
     sendSliderValue(item, { ...conf, value: 60 });
     expect(callServiceMock).not.toHaveBeenCalled();
