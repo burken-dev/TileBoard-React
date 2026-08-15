@@ -14,9 +14,9 @@ Should you have any ideas or questions please post them on the home-assistant fo
 
 ## Screenshots
 
-![screen](./images/screenshots/default.png)
-![screen](./images/screenshots/transparent.png)
-![screen](./images/screenshots/homekit.jpg)
+![screen](./public/images/screenshots/default.png)
+![screen](./public/images/screenshots/transparent.png)
+![screen](./public/images/screenshots/homekit.jpg)
 
 ## How to use
 
