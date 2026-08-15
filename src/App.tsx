@@ -12,7 +12,7 @@ const AlarmPopup = lazy(() => import('./components/popups/AlarmPopup'));
 const CameraPopup = lazy(() => import('./components/popups/CameraPopup'));
 const DatetimePopup = lazy(() => import('./components/popups/DatetimePopup'));
 const DoorEntryPopup = lazy(() => import('./components/popups/DoorEntryPopup'));
-const HistoryPopup = lazy(() => import('./components/popups/HistoryPopup'));
+const GraphPopup = lazy(() => import('./components/popups/GraphPopup'));
 const IframePopup = lazy(() => import('./components/popups/IframePopup'));
 
 interface AppProps {
@@ -49,7 +49,7 @@ export default function App({ config }: AppProps) {
         <AlarmPopup />
         <DoorEntryPopup />
         <IframePopup />
-        <HistoryPopup />
+        <GraphPopup />
       </Suspense>
       <Notifications />
       <Screensaver />
