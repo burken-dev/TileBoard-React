@@ -671,7 +671,26 @@ This is a custom tile which can be used for displaying values from different sen
       foregroundColor: 'rgba(0, 150, 136, 1)', // Defaults to rgba(0, 150, 136, 1)
       backgroundColor: 'rgba(0, 0, 0, 0.1)', // Defaults to rgba(0, 0, 0, 0.1)
       fractionSize: 0, // Number of decimal places to round the number to. Defaults to current locale formatting
+    },
+}
+```
+
+#### GRAPH
+Renders a small history chart on the tile. Tapping opens the graph popup, which spans a wider range configured via `history.offset`.
+```js
+{
+   position: [0, 0],
+   type: 'graph',
+   id: 'sensor.outdoor_temperature',
+   history: {
+      offset: 24 * 3600 * 1000 * 5 // Popup spans the last 5 days
    },
+   graph: {
+      // offset defaults to history.offset (or one day) for the tile range
+      options: {
+         elements: { point: { radius: 0 } }
+      }
+   }
 }
 ```
 

@@ -299,6 +299,14 @@ Tile object. [Click here for some real-life examples](TILE_EXAMPLES.md)
      styles: { border: '1px solid red' }, // Styles for the popup container
      classes: '-my-class', // Classes for the popup container
   },
+  /* type: 'graph' **/
+  graph: {
+     offset: 24 * 3600 * 1000, // Range shown in the tile. Default: history.offset or one day
+     options: { elements: { point: { radius: 0 } } }, // Chart.js options for the tile
+     data: function (item, entity) { return { datasets: [...], yAxes: {} }; }, // Custom data; skips history fetch
+  },
+  /* Clicking a graph tile opens the graph popup. Configure its (wider) range via
+     history.offset; entity via history.entity. */
   /*** TILE SPECIFIC SETTINGS ***/
   /** type: 'sensor' **/
   value: '&sensor.bathroom_temp.state', // Override the sensor value
