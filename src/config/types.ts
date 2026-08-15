@@ -54,10 +54,10 @@ export type TileType =
 
 export interface HistoryConfig {
   entity?: Field<string | string[]>;
-  offset?: number;
-  options?: Record<string, unknown>;
-  styles?: CSSProperties;
-  classes?: string;
+  offset?: Field<number>;
+  options?: Field<Record<string, unknown>>;
+  styles?: Field<CSSProperties>;
+  classes?: Field<string>;
 }
 
 export interface TileConfig {
@@ -66,8 +66,8 @@ export interface TileConfig {
   position: [number, number];
   title?: Field<string>;
   subtitle?: Field<string>;
-  width?: number;
-  height?: number;
+  width?: Field<number>;
+  height?: Field<number>;
   state?: Field<string> | false;
   states?: Record<string, string> | ConfigFunction<string>;
   icon?: Field<string>;
@@ -75,10 +75,10 @@ export interface TileConfig {
   bg?: Field<string>;
   bgSuffix?: Field<string>;
   bgOpacity?: Field<number>;
-  bgSize?: string;
+  bgSize?: Field<string>;
   theme?: TileType;
   slides?: Array<{ bg: Field<string> }>;
-  slidesDelay?: number;
+  slidesDelay?: Field<number>;
   action?: ConfigFunction;
   secondaryAction?: ConfigFunction;
   hidden?: Field<boolean>;
@@ -90,19 +90,19 @@ export interface TileConfig {
   filter?: (this: FunctionContext, value: unknown, item: TileConfig, entity: HaEntity | null) => unknown;
   slider?: SliderConfig;
   sliders?: SliderConfig[];
-  bottom?: boolean;
-  colorpicker?: boolean;
-  hideSource?: boolean;
-  hideMuteButton?: boolean;
+  bottom?: Field<boolean>;
+  colorpicker?: Field<boolean>;
+  hideSource?: Field<boolean>;
+  hideMuteButton?: Field<boolean>;
   refresh?: Field<number>;
   fullscreen?: TileConfig;
-  objFit?: string;
-  bufferLength?: number;
-  map?: 'google' | 'mapbox' | 'yandex';
-  zoomLevels?: number[];
-  hideEntityPicture?: boolean;
+  objFit?: Field<string>;
+  bufferLength?: Field<number>;
+  map?: Field<'google' | 'mapbox' | 'yandex'>;
+  zoomLevels?: Field<number[]>;
+  hideEntityPicture?: Field<boolean>;
   list?: Array<Record<string, Field<unknown>>>;
-  hideHeader?: boolean;
+  hideHeader?: Field<boolean>;
   fields?: Record<string, Field<unknown>>;
   iconImage?: Field<string>;
   url?: Field<string>;
@@ -116,14 +116,14 @@ export interface TileConfig {
 }
 
 export interface SliderConfig {
-  title?: string;
-  field?: string;
-  min?: number;
-  max?: number;
-  step?: number;
-  value?: number;
+  title?: Field<string>;
+  field?: Field<string>;
+  min?: Field<number>;
+  max?: Field<number>;
+  step?: Field<number>;
+  value?: Field<number>;
   formatValue?: (conf: { value: number }) => string | number;
-  request?: { type?: string; domain: string; service: string; field?: string };
+  request?: Field<{ type?: string; domain: string; service: string; field?: string }>;
 }
 
 export interface GroupConfig {

@@ -11,7 +11,7 @@ export const SliderTile = memo(function SliderTile({ item, entity }: { item: Til
   const unit = entityUnit(item, entity, states);
 
   return (
-    <div className={'item-entity-container' + (item.bottom ? ' -slider-bottom' : '')}>
+    <div className={'item-entity-container' + ((item.bottom as boolean) ? ' -slider-bottom' : '')}>
       <div className="item-entity">
         <span className="item-entity--value">{String(entityValue(item, entity, states) ?? '')}</span>
         {unit ? <span className="item-entity--unit">{unit}</span> : null}

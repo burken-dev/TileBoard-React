@@ -64,7 +64,7 @@ export function CameraThumbnail({ item, entity, freezed }: CameraThumbnailProps)
           className="camera-layer"
           style={{
             backgroundImage: `url("${prev}")`,
-            backgroundSize: item.bgSize ?? 'cover',
+            backgroundSize: (item.bgSize as string | undefined) ?? 'cover',
             backgroundPosition: 'center',
             opacity: 0,
             transition: 'opacity 0.1s ease-in-out',
@@ -81,7 +81,7 @@ export function CameraThumbnail({ item, entity, freezed }: CameraThumbnailProps)
           className="camera-layer"
           style={{
             backgroundImage: `url("${cur}")`,
-            backgroundSize: item.bgSize ?? 'cover',
+            backgroundSize: (item.bgSize as string | undefined) ?? 'cover',
             backgroundPosition: 'center',
             opacity: 1,
             transition: 'opacity 0.1s ease-in-out',

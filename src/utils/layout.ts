@@ -11,8 +11,8 @@ export function calcGroupSize(group: GroupConfig): { width: number; height: numb
   let width = 0;
   let height = 0;
   for (const item of group.items || []) {
-    height = Math.max(height, item.position[1] + (item.height || 1));
-    width = Math.max(width, item.position[0] + (item.width || 1));
+    height = Math.max(height, item.position[1] + ((item.height as number | undefined) ?? 1));
+    width = Math.max(width, item.position[0] + ((item.width as number | undefined) ?? 1));
   }
   return { width, height };
 }
@@ -27,8 +27,8 @@ export function groupSizeStyles(group: GroupConfig, opts: SizeOpts): CSSProperti
 }
 
 export function itemPositionStyles(item: TileConfig, opts: SizeOpts): CSSProperties {
-  const w = item.width ?? 1;
-  const h = item.height ?? 1;
+  const w = (item.width as number | undefined) ?? 1;
+  const h = (item.height as number | undefined) ?? 1;
   return {
     width: `${opts.tileSize * w + opts.tileMargin * (w - 1)}px`,
     height: `${opts.tileSize * h + opts.tileMargin * (h - 1)}px`,

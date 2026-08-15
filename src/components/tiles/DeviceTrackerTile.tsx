@@ -15,10 +15,10 @@ export const DeviceTrackerTile = memo(function DeviceTrackerTile({ item, entity,
   const attrs = entity.attributes;
   const hasCoords = !!attrs.longitude || !!attrs.latitude;
   const tileSize = page.tileSize ?? config.tileSize ?? 100;
-  const widthPx = tileSize * (item.width ?? 1);
-  const heightPx = tileSize * (item.height ?? 1);
-  const zoomLevels = item.zoomLevels ?? [9, 13];
-  const showBg = !!attrs.entity_picture && !item.hideEntityPicture;
+  const widthPx = tileSize * ((item.width as number | undefined) ?? 1);
+  const heightPx = tileSize * ((item.height as number | undefined) ?? 1);
+  const zoomLevels = (item.zoomLevels as number[] | undefined) ?? [9, 13];
+  const showBg = !!attrs.entity_picture && !(item.hideEntityPicture as boolean);
   const count = zoomLevels.length + (showBg ? 1 : 0);
 
   if (hasCoords) {
@@ -28,7 +28,7 @@ export const DeviceTrackerTile = memo(function DeviceTrackerTile({ item, entity,
           <div
             className={'item-slides -c' + count}
             style={{
-              animationDelay: `${item.slidesDelay ?? 0}s`,
+              animationDelay: `${(item.slidesDelay as number | undefined) ?? 0}s`,
               ...(item.bgOpacity ? { opacity: item.bgOpacity as number } : {}),
             }}
           >
@@ -42,7 +42,7 @@ export const DeviceTrackerTile = memo(function DeviceTrackerTile({ item, entity,
             )}
             {zoomLevels.map((zoom, index) => {
               const url = staticMapUrl({
-                provider: item.map ?? 'google',
+                provider: (item.map as 'google' | 'mapbox' | 'yandex' | undefined) ?? 'google',
                 lat: Number(attrs.latitude),
                 lon: Number(attrs.longitude),
                 zoom,

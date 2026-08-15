@@ -52,7 +52,7 @@ export const MediaPlayerTile = memo(function MediaPlayerTile({ item, entity }: {
     (!has(FEATURES.MEDIA_PLAYER.VOLUME_SET) || !('volume_level' in entity.attributes)) &&
     has(FEATURES.MEDIA_PLAYER.VOLUME_STEP) &&
     !off;
-  const showSource = sourceList.length > 0 && !item.hideSource;
+  const showSource = sourceList.length > 0 && !(item.hideSource as boolean);
 
   const onPointerDown = (e: React.PointerEvent): void => e.stopPropagation();
 
@@ -198,7 +198,7 @@ export const MediaPlayerTile = memo(function MediaPlayerTile({ item, entity }: {
             <tr>
               <td colSpan={2} />
               <td className="media-player-table--td-mute">
-                {!off && !item.hideMuteButton && has(FEATURES.MEDIA_PLAYER.VOLUME_MUTE) && (
+                {!off && !(item.hideMuteButton as boolean) && has(FEATURES.MEDIA_PLAYER.VOLUME_MUTE) && (
                   <div
                     className="media-player--button -mute"
                     onPointerDown={onPointerDown}
