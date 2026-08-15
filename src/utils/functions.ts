@@ -1,4 +1,4 @@
-import type { ConfigFunction, FunctionContext } from '../config/types';
+import type { FunctionContext } from '../config/types';
 import { callService, sendMessage } from '../ha/services';
 import { getAppStore } from '../store';
 import { parseFieldValue } from './fields';
@@ -25,7 +25,10 @@ export function getContext(): FunctionContext {
   };
 }
 
-export function callFunction<T>(funcOrValue: T | ConfigFunction<T>, args: unknown[]): unknown {
+export function callFunction<T>(
+  funcOrValue: T | ((this: FunctionContext, ...a: unknown[]) => unknown),
+  args: unknown[],
+): unknown {
   if (typeof funcOrValue !== 'function') return funcOrValue;
   return (funcOrValue as (this: FunctionContext, ...a: unknown[]) => unknown).apply(
     getContext(),

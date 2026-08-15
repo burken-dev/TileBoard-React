@@ -4,7 +4,6 @@ import { useAppStore } from '../store';
 import { resolveFieldValue, resolveFields } from '../utils/fields';
 import { SCREENSAVER_FIELDS } from '../utils/fields';
 import { callFunction } from '../utils/functions';
-import type { ConfigFunction } from '../config/types';
 import type { ScreensaverButtonConfig } from '../config/types';
 import HeaderItem from './HeaderItem';
 import ScreensaverControls from './ScreensaverControls';
@@ -112,7 +111,7 @@ export default function Screensaver() {
         return;
       default:
         if (button.action) {
-          callFunction(button.action as unknown as ConfigFunction, [
+          callFunction(button.action, [
             { bg: activeBg ?? '', index: activeSlide, total: len },
           ]);
         }

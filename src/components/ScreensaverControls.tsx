@@ -8,6 +8,13 @@ function buttonIcon(button: ScreensaverButtonConfig, paused: boolean): string {
   return 'mdi-circle';
 }
 
+function buttonLabel(button: ScreensaverButtonConfig, paused: boolean): string {
+  if (button.type === 'previous') return 'Previous slide';
+  if (button.type === 'play_pause') return paused ? 'Play slideshow' : 'Pause slideshow';
+  if (button.type === 'next') return 'Next slide';
+  return button.icon ?? 'Custom action';
+}
+
 export default function ScreensaverControls({
   buttons,
   position,
@@ -19,18 +26,27 @@ export default function ScreensaverControls({
   paused: boolean;
   onAction: (button: ScreensaverButtonConfig) => void;
 }) {
+  const visible = buttons.filter((b) => b.enabled !== false);
+  if (!visible.length) return null;
   return (
     <div
       className={'screensaver-controls --' + position}
       onClick={(e) => e.stopPropagation()}
     >
-      {buttons
-        .filter((b) => b.enabled !== false)
-        .map((button, i) => (
-          <button key={i} className="screensaver-button" onClick={() => onAction(button)}>
+      {visible.map((button, i) => {
+        const label = buttonLabel(button, paused);
+        return (
+          <button
+            key={i}
+            className="screensaver-button"
+            aria-label={label}
+            title={label}
+            onClick={() => onAction(button)}
+          >
             <i className={'mdi ' + buttonIcon(button, paused)} />
           </button>
-        ))}
+        );
+      })}
     </div>
   );
 }
