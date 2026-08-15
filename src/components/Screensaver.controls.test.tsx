@@ -105,4 +105,15 @@ describe('Screensaver controls', () => {
     fireEvent.click(container.querySelector('.screensaver-controls')!);
     expect(container.querySelector('.screensaver')).toBeTruthy();
   });
+
+  it('custom button action receives the slide context and this.slide', () => {
+    const { container } = render(<Screensaver />);
+    act(() => {
+      vi.advanceTimersByTime(6000);
+    });
+    fireEvent.click(container.querySelectorAll('.screensaver-button')[3]);
+    expect(seen).toEqual([
+      { ctx: { bg: 'a.jpg?t=0', index: 0, total: 2 }, slide: 'a.jpg?t=0' },
+    ]);
+  });
 });
