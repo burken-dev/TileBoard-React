@@ -9,3 +9,5 @@ images/slides/london.png
 .DS_Store
 node_modules
 dist
+
+.worktrees
