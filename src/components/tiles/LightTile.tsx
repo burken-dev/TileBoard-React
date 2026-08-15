@@ -36,12 +36,12 @@ export const LightTile = memo(function LightTile({ item, entity }: { item: TileC
         onClick={(e) => e.stopPropagation()}
       >
         {item.sliders?.map((slider, index) => {
-          const conf = getLightSliderConf(slider, entity);
+          const conf = getLightSliderConf(slider, entity, states);
           return (
             <div className="item-slider-container" key={index}>
-              {slider.title ? (
+              {conf.title ? (
                 <div className="item-slider-title">
-                  <span>{slider.title as string}</span>: <span>{slider.formatValue ? slider.formatValue(conf) : conf.value}</span>
+                  <span>{String(conf.title)}</span>: <span>{slider.formatValue ? slider.formatValue(conf) : conf.value}</span>
                 </div>
               ) : null}
               <SliderInput conf={conf} onChange={(value) => sendSliderValue(item, { ...conf, value })} />

@@ -7,7 +7,7 @@ import { SliderInput } from './SliderInput';
 
 export const SliderTile = memo(function SliderTile({ item, entity }: { item: TileConfig; entity: HaEntity }) {
   const states = useEntities([String(item.id)]);
-  const conf = getSliderConf(item, entity);
+  const conf = getSliderConf(item, entity, states);
   const unit = entityUnit(item, entity, states);
 
   return (
