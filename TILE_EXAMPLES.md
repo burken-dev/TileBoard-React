@@ -121,7 +121,7 @@ The custom tile type does not have handling for any specific entity types. It ca
         fully.startScreensaver();
    },
    secondaryAction: function(item, entity) {
-      return this.$scope.openPopupIframe(item, entity);
+      window.showScreensaver();
    }
 },
 ```
@@ -166,7 +166,6 @@ Essentially a door entry tile is a pop-up with a fullscreen camera and a set of 
         page: {},
         tiles: [{
                 position: [0, 0],
-                theme: ITEM_TRANSPARENT,
                 type: 'switch',
                 id: 'switch.intercom',
                 icons: {
@@ -180,7 +179,6 @@ Essentially a door entry tile is a pop-up with a fullscreen camera and a set of 
             },
             {
                 position: [0, 1],
-                theme: ITEM_TRANSPARENT,
                 type: 'script',
                 id: 'script.front_gate_open',
                 icons: {
@@ -191,7 +189,6 @@ Essentially a door entry tile is a pop-up with a fullscreen camera and a set of 
             },
             {
                 position: [0, 2],
-                theme: ITEM_TRANSPARENT,
                 id: 'switch.outdoor_lights',
                 type: 'switch',
                 title: 'Lights',
@@ -257,7 +254,7 @@ Also alows showing custom HTML content in the tile.
    position: [1, 2],
    width: 1,
    title: 'Radio',
-   classes: [CLASS_BIG],
+   classes: ['-big-entity'],
    type: 'input_boolean',
    id: 'input_boolean.play_radio',
    icons: {
