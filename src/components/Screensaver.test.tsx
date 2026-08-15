@@ -1,7 +1,7 @@
-import { act, fireEvent, render } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { act, cleanup, fireEvent, render } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import Screensaver from './Screensaver';
-import { createAppStore } from '../store';
+import { createAppStore, getAppStore } from '../store';
 import type { TileBoardConfig } from '../config/types';
 
 const config: TileBoardConfig = {
@@ -21,7 +21,13 @@ describe('Screensaver', () => {
     vi.useFakeTimers();
     vi.setSystemTime(0);
     createAppStore(config);
+    getAppStore().setScreensaverSlide(0);
+    getAppStore().setScreensaverPaused(false);
+    getAppStore().setScreensaverShown(false);
+    getAppStore().setScreensaverBg(null);
   });
+
+  afterEach(() => cleanup());
 
   it('is not visible before the timeout', () => {
     const { container } = render(<Screensaver />);
@@ -82,5 +88,16 @@ describe('Screensaver', () => {
     });
     const slide = container.querySelector('.screensaver-slide') as HTMLElement;
     expect(slide.style.backgroundImage).toContain('a.jpg?t=0');
+  });
+
+  it('renders the default control buttons bar', () => {
+    const { container } = render(<Screensaver />);
+    act(() => {
+      vi.advanceTimersByTime(6000);
+    });
+    const controls = container.querySelector('.screensaver-controls');
+    expect(controls).toBeTruthy();
+    expect(controls!.className).toContain('--bottom-center');
+    expect(controls!.querySelectorAll('.screensaver-button')).toHaveLength(3);
   });
 });

@@ -2156,6 +2156,38 @@ camera_stream {
       &--left-top {left: 40px; top: 40px}
    }
 
+   &-controls {
+      position: absolute;
+      bottom: 20px;
+      z-index: 53;
+      display: flex;
+      gap: 12px;
+      padding: 8px 14px;
+      background: rgba(0, 0, 0, 0.45);
+      border-radius: 24px;
+
+      &.--bottom-center { left: 50%; transform: translateX(-50%); }
+      &.--bottom-left { left: 20px; }
+      &.--bottom-right { right: 20px; }
+   }
+
+   &-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border: none;
+      border-radius: 50%;
+      background: transparent;
+      color: #fff;
+      font-size: 26px;
+      cursor: pointer;
+
+      &:hover {
+         background: rgba(255, 255, 255, 0.15);
+      }
+   }
 
    clock {
       font-size: 1.5em;
