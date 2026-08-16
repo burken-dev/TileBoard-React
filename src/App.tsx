@@ -1,5 +1,4 @@
 import { lazy, Suspense, useEffect } from 'react';
-import Header from './components/Header';
 import Notifications from './components/Notifications';
 import Pages from './components/Pages';
 import Screensaver from './components/Screensaver';
@@ -41,7 +40,6 @@ export default function App({ config }: AppProps) {
 
   return (
     <div className="page-container">
-      <Header header={config.header} />
       <Pages />
       <Suspense fallback={null}>
         <DatetimePopup />

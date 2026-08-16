@@ -4,6 +4,7 @@ import { usePanGesture } from '../hooks/usePanGesture';
 import { useAppStore } from '../store';
 import { isHidden } from '../utils/fields';
 import { pageTransform, shouldDrawPage } from '../utils/layout';
+import Header from './Header';
 import Page from './Page';
 import PagesMenu from './PagesMenu';
 
@@ -72,13 +73,12 @@ export default function Pages() {
   };
 
   return (
-    <>
+    <div className="page-container" {...pointerHandlers}>
       <div
         ref={containerRef}
         id="pages"
         className="pages"
         style={containerStyle}
-        {...pointerHandlers}
       >
         {activeSelect ? <div className="page-overlay" onClick={() => closeSelect()} /> : null}
         {visible.map(({ page, index }) =>
@@ -87,7 +87,8 @@ export default function Pages() {
           ) : null,
         )}
       </div>
+      <Header header={config.header} />
       <PagesMenu />
-    </>
+    </div>
   );
 }
