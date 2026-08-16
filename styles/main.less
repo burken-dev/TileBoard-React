@@ -2130,6 +2130,23 @@ body {
       }
    }
 
+   &-slides.-ambient {
+      &-slide {
+         background-size: contain;
+         background-repeat: no-repeat;
+         filter: drop-shadow(black 10px 10px 20px);
+      }
+
+      .screensaver-slide-backdrop {
+         position: absolute;
+         inset: 0;
+         background-size: cover;
+         background-position: center;
+         filter: blur(10px) grayscale(85%);
+         z-index: -1;
+      }
+   }
+
    &-content {
       position: relative;
       z-index: 52;
