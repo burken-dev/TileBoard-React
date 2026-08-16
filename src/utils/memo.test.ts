@@ -35,4 +35,21 @@ describe('memo', () => {
     expect(a).toHaveBeenCalledTimes(1);
     expect(b).toHaveBeenCalledTimes(1);
   });
+
+  it('does not cache empty results so they recompute', () => {
+    const fn = vi.fn(() => []);
+    expect(memo('empty', 60, fn)).toEqual([]);
+    expect(memo('empty', 60, fn)).toEqual([]);
+    expect(fn).toHaveBeenCalledTimes(2);
+  });
+
+  it('caches a non-empty result that followed an empty one', () => {
+    let value: unknown = undefined;
+    const fn = vi.fn(() => value);
+    memo('grow', 60, fn);
+    value = ['data'];
+    expect(memo('grow', 60, fn)).toEqual(['data']);
+    expect(memo('grow', 60, fn)).toEqual(['data']);
+    expect(fn).toHaveBeenCalledTimes(2);
+  });
 });
