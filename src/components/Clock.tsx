@@ -24,12 +24,12 @@ function Clock() {
   }, []);
 
   return (
-    <>
+    <div className="clock">
       <div className="clock--h">{time.h}</div>
       <div className="clock--colon">:</div>
       <div className="clock--m">{time.m}</div>
       <div className="clock--postfix">{time.postfix}</div>
-    </>
+    </div>
   );
 }
 
