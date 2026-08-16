@@ -100,4 +100,33 @@ describe('Screensaver', () => {
     expect(controls!.className).toContain('--bottom-center');
     expect(controls!.querySelectorAll('.screensaver-button')).toHaveLength(3);
   });
+
+  it('renders an ambient backdrop per slide when ambient_backdrop is on', async () => {
+    vi.resetModules();
+    const { createAppStore: createAmbientStore } = await import('../store');
+    const { default: AmbientScreensaver } = await import('./Screensaver');
+    createAmbientStore({
+      ...config,
+      screensaver: { ...config.screensaver!, ambient_backdrop: true },
+    });
+    const { container } = render(<AmbientScreensaver />);
+    act(() => {
+      vi.advanceTimersByTime(6000);
+    });
+    const slides = container.querySelector('.screensaver-slides') as HTMLElement;
+    expect(slides.classList.contains('-ambient')).toBe(true);
+    const backdrops = container.querySelectorAll('.screensaver-slide-backdrop');
+    expect(backdrops).toHaveLength(2);
+    expect((backdrops[0] as HTMLElement).style.backgroundImage).toContain('a.jpg?t=0');
+  });
+
+  it('does not render ambient backdrops by default', () => {
+    const { container } = render(<Screensaver />);
+    act(() => {
+      vi.advanceTimersByTime(6000);
+    });
+    expect(container.querySelectorAll('.screensaver-slide-backdrop')).toHaveLength(0);
+    const slides = container.querySelector('.screensaver-slides') as HTMLElement;
+    expect(slides.classList.contains('-ambient')).toBe(false);
+  });
 });
