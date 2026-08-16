@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { matchEvent } from './connection';
+import { cleanAuthCallbackUrl, matchEvent } from './connection';
 import type { EventConfig } from '../config/types';
 
 const events: EventConfig[] = [
@@ -24,5 +24,22 @@ describe('matchEvent', () => {
 
   it('returns undefined when events undefined', () => {
     expect(matchEvent(undefined, { command: 'x' })).toBeUndefined();
+  });
+});
+
+describe('cleanAuthCallbackUrl', () => {
+  it('strips auth callback params but keeps other query params', () => {
+    const url =
+      '/?auth_callback=1&code=f4b47f6f&state=eyJ&config=garage';
+    expect(cleanAuthCallbackUrl(url)).toBe('/?config=garage');
+  });
+
+  it('returns the pathname when only auth callback params present', () => {
+    expect(cleanAuthCallbackUrl('/?auth_callback=1&code=x&state=y')).toBe('/');
+  });
+
+  it('leaves the url untouched without auth_callback', () => {
+    expect(cleanAuthCallbackUrl('/?config=garage')).toBe('/?config=garage');
+    expect(cleanAuthCallbackUrl('/')).toBe('/');
   });
 });
