@@ -54,19 +54,20 @@ export const WeatherListTile = memo(function WeatherListTile({ item, entity }: {
     <div className="item-entity-container">
       <div className="weather-list">
         <table>
+          <tbody>
           {!(item.hideHeader as boolean) && (
             <tr className="weather-list-header">
               <th>
                 <span>{String(itemField('dateTitle', item, entity, states) ?? 'Date')}</span>
               </th>
               <th className="weather-list-header--icon">
-                <span>{String(itemField('iconTitle', item, entity, states))}</span>
+                <span>{String(itemField('iconTitle', item, entity, states) ?? '')}</span>
               </th>
               <th className="weather-list-header--primary">
                 <span>{String(itemField('primaryTitle', item, entity, states) ?? 'Forecast')}</span>
               </th>
               <th className="weather-list-header--secondary">
-                <span>{String(itemField('secondaryTitle', item, entity, states))}</span>
+                <span>{String(itemField('secondaryTitle', item, entity, states) ?? '')}</span>
               </th>
             </tr>
           )}
@@ -99,6 +100,7 @@ export const WeatherListTile = memo(function WeatherListTile({ item, entity }: {
               </tr>
             );
           })}
+          </tbody>
         </table>
       </div>
     </div>
