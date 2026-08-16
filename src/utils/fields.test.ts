@@ -1,7 +1,7 @@
 import { describe, expect, it, beforeAll } from 'vitest';
-import type { EntityStates, TileConfig } from '../config/types';
+import type { EntityStates, ScreensaverConfig, TileConfig } from '../config/types';
 import { createAppStore, getAppStore } from '../store';
-import { getItemFieldValue, parseFieldValue, parseString, resolveFields, resolveTile } from './fields';
+import { getItemFieldValue, parseFieldValue, parseString, resolveFields, resolveTile, SCREENSAVER_FIELDS } from './fields';
 
 const states: EntityStates = {
   'sensor.k': {
@@ -122,5 +122,22 @@ describe('resolveTile', () => {
     expect(result.bgOpacity).toBe(0.5);
     expect(result.action).toBe(action);
     expect(result.filter).toBe(filter);
+  });
+});
+
+describe('resolveFields with SCREENSAVER_FIELDS', () => {
+  it('resolves a function-valued ambient_backdrop', () => {
+    const conf: ScreensaverConfig = {
+      timeout: 5,
+      slides: [],
+      ambient_backdrop: () => true,
+    };
+    const resolved = resolveFields(
+      conf,
+      SCREENSAVER_FIELDS as readonly (keyof ScreensaverConfig)[],
+      states,
+      null,
+    );
+    expect(resolved.ambient_backdrop).toBe(true);
   });
 });
