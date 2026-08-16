@@ -30,6 +30,7 @@ describe('Header', () => {
     expect(postfix?.textContent).toBe('PM');
     expect(colon?.textContent).toBe(':');
     expect(m?.textContent).toBe('05');
+    expect(container.querySelector('.header-item .clock')?.contains(h as Node)).toBe(true);
   });
 
   it('renders custom_html item', () => {
