@@ -23,6 +23,7 @@ interface AppData {
   config: TileBoardConfig;
   entities: EntityStates;
   status: ConnectionStatus;
+  entitiesLoaded: boolean;
 }
 
 interface AppDataActions {
@@ -187,6 +188,7 @@ export function createAppStore(config: TileBoardConfig): void {
     config,
     entities: {},
     status: 'loading',
+    entitiesLoaded: false,
     activePage: initialPage(config),
     scrolled: { horizontal: false, vertical: false },
     loadingItems: new Set(),
@@ -214,6 +216,7 @@ export function createAppStore(config: TileBoardConfig): void {
     setEntities: (states) => {
       set({
         entities: Object.fromEntries(states.map((state) => [state.entity_id, state])),
+        entitiesLoaded: states.length > 0,
       });
       if (latestAlarmActions.size > 0) {
         states.forEach((state) => {
@@ -405,7 +408,6 @@ export function useEntity(item: TileConfig): HaEntity | null {
 export function useEntities(ids: string[]): EntityStates {
   const idsRef = useRef(ids);
   idsRef.current = ids;
-  const lastRef = useRef<EntityStates | null>(null);
 
   const subscribe = useCallback((onStoreChange: () => void): (() => void) => {
     if (!appStore) throw new Error('createAppStore() must be called before useAppStore()');
@@ -415,18 +417,19 @@ export function useEntities(ids: string[]): EntityStates {
           onStoreChange();
           return;
         }
+        if (state.entities[id] === undefined) {
+          // subscribed id is still missing; fire on any change so a later
+          // arrival is picked up (e.g. tiles with object ids like weather)
+          onStoreChange();
+          return;
+        }
       }
     });
   }, []);
 
   const getSnapshot = useCallback((): EntityStates => {
     if (!appStore) throw new Error('createAppStore() must be called before useAppStore()');
-    const current = appStore.getState().entities;
-    if (lastRef.current && idsRef.current.every((id) => lastRef.current![id] === current[id])) {
-      return lastRef.current;
-    }
-    lastRef.current = current;
-    return current;
+    return appStore.getState().entities;
   }, []);
 
   return useSyncExternalStore(subscribe, getSnapshot, getSnapshot);

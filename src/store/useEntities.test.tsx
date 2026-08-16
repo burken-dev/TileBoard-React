@@ -30,6 +30,17 @@ describe('useEntities', () => {
     expect(container.textContent).toBe('off|on');
   });
 
+  it('refreshes with other entities when a subscribed id never appears', () => {
+    createAppStore({ serverUrl: 'http://h', pages: [] });
+    getAppStore().setEntities([]);
+    const { container } = render(<Probe ids={['never.present']} />);
+    expect(container.textContent).toBe('|');
+    act(() => {
+      getAppStore().setEntities([{ entity_id: 'sensor.a', state: 'x', attributes: {} }]);
+    });
+    expect(container.textContent).toBe('x|');
+  });
+
   it('does not re-render when only unrelated entities change', () => {
     createAppStore({ serverUrl: 'http://h', pages: [] });
     const a = { entity_id: 'sensor.a', state: 'on', attributes: {} };
