@@ -99,7 +99,7 @@ export interface TileConfig {
   primaryTitle?: Field<string>;
   secondaryTitle?: Field<string>;
   classes?: string[];
-  customStyles?: CSSProperties | ConfigFunction<CSSProperties>;
+  customStyles?: Record<string, unknown> | ConfigFunction<Record<string, unknown>>;
   history?: HistoryConfig;
   graph?: GraphConfig;
   value?: Field<string | number>;
