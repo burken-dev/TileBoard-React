@@ -4,12 +4,38 @@ import {
   getAuth,
   subscribeEntities,
 } from 'home-assistant-js-websocket';
-import type { Connection } from 'home-assistant-js-websocket';
+import type { AuthData, Connection } from 'home-assistant-js-websocket';
 import type { EntityStates, EventConfig } from '../config/types';
 import { getAppStore } from '../store';
 import { setConnection, sendMessage, setMockMode } from './services';
 import { callFunction } from '../utils/functions';
 import { startMockSimulator } from './mock';
+
+const TOKENS_KEY = 'hassTokens';
+
+function saveTokens(tokens: AuthData | null): void {
+  if (tokens === null) {
+    localStorage.removeItem(TOKENS_KEY);
+  } else {
+    localStorage.setItem(TOKENS_KEY, JSON.stringify(tokens));
+  }
+}
+
+async function loadTokens(): Promise<AuthData | null> {
+  const stored = localStorage.getItem(TOKENS_KEY);
+  return stored ? JSON.parse(stored) : null;
+}
+
+export function cleanAuthCallbackUrl(url: string): string {
+  const [path, search] = url.split('?');
+  if (search === undefined || !search.includes('auth_callback')) return url;
+  const params = new URLSearchParams(search);
+  params.delete('auth_callback');
+  params.delete('code');
+  params.delete('state');
+  const qs = params.toString();
+  return qs ? `${path}?${qs}` : path;
+}
 
 let initStarted = false;
 
@@ -54,7 +80,14 @@ export function initConnection(): void {
 
   const authPromise = config.authToken
     ? Promise.resolve(createLongLivedTokenAuth(config.serverUrl, config.authToken))
-    : getAuth({ hassUrl: config.serverUrl });
+    : getAuth({
+        hassUrl: config.serverUrl,
+        saveTokens,
+        loadTokens,
+      }).then((auth) => {
+        window.history.replaceState(null, '', cleanAuthCallbackUrl(window.location.href));
+        return auth;
+      });
 
   authPromise
     .then((auth) => createConnection({ auth }))
