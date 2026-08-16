@@ -90,6 +90,7 @@ export default function Screensaver() {
   }, [conf?.timeout, conf?.slidesTimeout, shown, paused, activeSlide, setScreensaverSlide]);
 
   const cacheBust = conf?.slideCacheBust as number | undefined;
+  const ambient = Boolean(conf?.ambient_backdrop);
   const activeBg = slides.length ? slideBg(slides[activeSlide]?.bg ?? '', cacheBust) : undefined;
 
   useEffect(() => {
@@ -124,7 +125,7 @@ export default function Screensaver() {
 
   return (
     <div className="screensaver" style={conf.styles as CSSProperties | undefined} onClick={() => setScreensaverShown(false)}>
-      <div className="screensaver-slides">
+      <div className={'screensaver-slides' + (ambient ? ' -ambient' : '')}>
         {slides.map((slide, index) => {
           const wasActive =
             activeSlide === index + 1 || (slides.length === index + 1 && activeSlide === 0);
@@ -141,6 +142,13 @@ export default function Screensaver() {
                 ...(slide.styles ?? {}),
               }}
             >
+              {ambient ? (
+                <div
+                  key="backdrop"
+                  className="screensaver-slide-backdrop"
+                  style={{ backgroundImage: `url(${slideBgUrl(slide.bg)})` }}
+                />
+              ) : null}
               {slide.rightBottom ? (
                 <div className="screensaver-content--right-bottom">
                   {slide.rightBottom.map((item, i) => (
