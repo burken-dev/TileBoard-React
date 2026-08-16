@@ -119,7 +119,7 @@ export const TILE_FIELDS = [
 export const PAGE_FIELDS = ['icon'] as const;
 export const GROUP_FIELDS = ['title', 'width', 'height', 'groupMarginCss'] as const;
 export const HEADER_ITEM_FIELDS = ['format', 'dateFormat', 'styles', 'html'] as const;
-export const SCREENSAVER_FIELDS = ['timeout', 'slidesTimeout', 'slideCacheBust', 'styles'] as const;
+export const SCREENSAVER_FIELDS = ['timeout', 'slidesTimeout', 'slideCacheBust', 'styles', 'ambient_backdrop'] as const;
 export const SLIDER_FIELDS = ['min', 'max', 'step', 'value', 'title', 'field', 'request'] as const;
 
 export function resolveTile(item: TileConfig, entity: HaEntity | null, states: EntityStates): TileConfig {

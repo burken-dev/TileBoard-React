@@ -220,6 +220,7 @@ export interface ScreensaverConfig {
   timeout: Field<number>;
   slidesTimeout?: Field<number>;
   slideCacheBust?: Field<number>; // seconds; append a rolling cache-bust query to slide bg urls
+  ambient_backdrop?: Field<boolean>; // true = show slide contained with a blurred grayscale backdrop
   styles?: Field<CSSProperties>;
   leftTop?: HeaderItemConfig[];
   leftBottom?: HeaderItemConfig[];
