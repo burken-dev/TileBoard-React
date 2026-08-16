@@ -283,9 +283,10 @@ var CONFIG = {
                   } },
                   { position: [1, 1], type: 'cover_toggle', id: 'cover.living_room_blinds', title: 'Blinds', subtitle: 'cover_toggle' },
                   { position: [2, 1], type: 'input_boolean', id: 'input_boolean.play_radio', title: 'Radio', subtitle: 'input_boolean' },
-                  { position: [3, 1], type: 'fan', id: 'fan.living_room_fan', title: 'Fan', subtitle: 'fan' },
-                  { position: [4, 1], type: 'input_select', id: 'input_select.house_mode', title: 'Mode', subtitle: 'input_select' },
-                  { position: [5, 1], type: 'light', id: 'light.floor_lamp', title: 'Lamp', subtitle: 'light' }
+                   { position: [3, 1], type: 'fan', id: 'fan.living_room_fan', title: 'Fan', subtitle: 'fan' },
+                   { position: [4, 1], type: 'input_select', id: 'input_select.house_mode', title: 'Mode', subtitle: 'input_select' },
+                   { position: [5, 1], type: 'light', id: 'light.floor_lamp', title: 'Lamp', subtitle: 'light' },
+                   { position: [0, 2], width: 2, height: 1, type: 'graph', id: 'sensor.energy_consumption', title: 'Graph', subtitle: 'graph', state: false, graph: { offset: 24 * 3600 * 1000 } }
                ]
             },
             {

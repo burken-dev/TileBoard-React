@@ -35,6 +35,7 @@ export const TILE_TYPES = [
   'popup_iframe',
   'dimmer_switch',
   'gauge',
+  'graph',
   'image',
 ] as const;
 
