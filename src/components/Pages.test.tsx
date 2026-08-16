@@ -100,4 +100,17 @@ describe('Pages', () => {
     const { container } = render(<Pages />);
     expect(container.textContent).toContain('Fn');
   });
+
+  it('renders the global header inside the pan container with the pages', () => {
+    createAppStore({ ...fixture, header: { left: [{ type: 'custom_html', html: 'Hi' }] } });
+    getAppStore().setEntities([
+      { entity_id: 'a', state: 'off', attributes: {} },
+      { entity_id: 'b', state: 'off', attributes: {} },
+      { entity_id: 'c', state: 'off', attributes: {} },
+    ]);
+    const { container } = render(<Pages />);
+    const panContainer = container.querySelector('.page-container');
+    expect(panContainer?.querySelector('#pages')).not.toBeNull();
+    expect(panContainer?.querySelector('.header')?.textContent).toContain('Hi');
+  });
 });
