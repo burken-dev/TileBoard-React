@@ -14,3 +14,4 @@ dist
 
 # local reference config
 /public/config/reference_config.js
+/public/config/reference_config_react.js
