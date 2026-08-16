@@ -27,7 +27,7 @@ export default function Graph({
     chartRef.current?.destroy();
     const c24 = timeFormat !== 12;
     const timeFormats = {
-      datetime: c24 ? 'MMM D, YYYY, H:mm:ss' : 'MMM D, YYYY, h:mm:ss a',
+      datetime: c24 ? 'MMM d, yyyy, H:mm:ss' : 'MMM d, yyyy, h:mm:ss a',
       hour: c24 ? 'H:mm' : 'h:mm a',
       millisecond: c24 ? 'H:mm:ss.SSS' : 'h:mm:ss.SSS a',
       minute: c24 ? 'H:mm' : 'h:mm a',
