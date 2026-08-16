@@ -12,16 +12,24 @@ the active slide's background image onto the slides container.
 
 ## Approach
 
-Per-slide backdrop element rendered declaratively in React. When
-`ambient_backdrop: true`, each `.screensaver-slide` gains a
-`.screensaver-slide-backdrop` child using the same (cache-busted) bg URL.
-CSS scoped under `.screensaver-slides.-ambient` flips the slide to `contain`
-and styles the backdrop as `cover` + `blur(10px) grayscale(85%)` with a
-`drop-shadow` on the foreground image.
+The slides container shows the active slide's image as a `cover` background;
+each slide keeps its sharp `contain` image as its own background;
+`backdrop-filter: blur(10px) grayscale(85%)` on the slide blurs/grayscales
+what is painted behind it (the container's cover image, visible through the
+slide's transparent margins). The slide's own background always paints above
+the container's background (per CSS painting order, an element's own
+background paints before its descendants), so the sharp image stays on top
+with no z-index tricks. The container background updates with the active slide
+(same cache-busted URL via `activeBg`) — matching the original Angular
+behavior where the MutationObserver swapped the parent background when the
+active slide changed.
 
-Because the backdrop is a child of the crossfading slide element, the
-existing `-active`/`-prev` opacity transition applies to both layers in sync
-with no extra logic. The off-path (option unset) rendering is unchanged.
+Because the background is painted by the slides container rather than a child
+of the crossfading slide element, the `-active`/`-prev` opacity transition
+still applies to the sharp foreground in sync; the container backdrop does not
+crossfade but that matches the original Angular behavior (the MutationObserver
+swapped the parent background instantly). The off-path (option unset)
+rendering is unchanged.
 
 ## Config
 
@@ -36,21 +44,24 @@ with no extra logic. The off-path (option unset) rendering is unchanged.
 ## Component (`src/components/Screensaver.tsx`)
 
 - Compute `const ambient = Boolean(conf?.ambient_backdrop)`.
-- Slides container class becomes `screensaver-slides` + ` -ambient` when on.
-- Inside each slide, as the first child, render when `ambient`:
+- Slides container class becomes `screensaver-slides` + ` -ambient` when on,
+  and its inline style carries the active slide's cache-busted URL as the
+  container background:
 
   ```jsx
   <div
-    key="backdrop"
-    className="screensaver-slide-backdrop"
-    style={{ backgroundImage: `url(${slideBgUrl(slide.bg)})` }}
-  />
+    className={'screensaver-slides' + (ambient ? ' -ambient' : '')}
+    style={ambient && activeBg ? { backgroundImage: `url(${activeBg})` } : undefined}
+  >
   ```
 
-- Reuses the existing cache-busted URL helper (`slideBgUrl`), so the backdrop
-  busts on the same cadence as the slide.
-- Per-slide `styles` keep spreading onto the slide div (which holds the
-  contain image), so existing overrides behave as before.
+- There is NO per-slide `.screensaver-slide-backdrop` element; it was removed
+  after review (it painted over the sharp foreground via `z-index: -1`).
+- Slides keep their existing `backgroundImage: url(${slideBgUrl(slide.bg)})`
+  and `...(slide.styles ?? {})` — the slide's own background paints above the
+  container's, keeping the sharp contain image on top.
+- Reuses the existing cache-busted URL helper (`slideBgUrl`), so both the
+  container and the slide bust on the same cadence.
 
 ## Styles (`styles/main.less`)
 
@@ -58,28 +69,33 @@ Scoped under `.screensaver-slides.-ambient`:
 
 ```less
 .screensaver-slides.-ambient {
+  background-size: cover;
+  background-position: center;
+
   .screensaver-slide {
     background-size: contain;
     background-repeat: no-repeat;
     filter: drop-shadow(black 10px 10px 20px);
-  }
-  .screensaver-slide-backdrop {
-    position: absolute;
-    inset: 0;
-    background-size: cover;
-    background-position: center;
-    filter: blur(10px) grayscale(85%);
-    z-index: -1;
+    backdrop-filter: blur(10px) grayscale(85%);
+    -webkit-backdrop-filter: blur(10px) grayscale(85%);
   }
 }
 ```
 
-The `z-index: -1` is safe because `.screensaver-slide` is already
-`position: absolute; z-index: 51`, which creates its own stacking context, so
-the backdrop paints behind the contain image and the slide content. The
-`filter: drop-shadow` on the slide applies to the composited slide output;
-since the backdrop fills the screen its shadow edge is off-screen and
-invisible.
+Note: the slide selector must be written as plain `.screensaver-slide`, not
+`&-slide` — the `&`-prefix form compiles to the dead compound selector
+`.screensaver-slides.-ambient-slide` (fixed in commit e64ee1b).
+
+The container's `cover` background fills the screen behind every slide. Each
+slide keeps its `contain` background as the sharp foreground; per CSS painting
+order (CSS 2.1 Appendix E, steps 1–2) an element's own background paints
+before negative-z-index descendants — which is why the previous `z-index: -1`
+backdrop child painted OVER the foreground. With the backdrop gone, the
+`backdrop-filter: blur(10px) grayscale(85%)` on the slide blurs and
+grayscales the container's cover image visible through the slide's transparent
+margins, while the slide's own contained image stays sharp. The `filter:
+drop-shadow` applies to the slide's own composite (no backdrop child), so it
+correctly shadows the contained foreground image.
 
 ## Docs
 
@@ -91,10 +107,11 @@ invisible.
 
 Extend `src/components/Screensaver.test.tsx`:
 
-- With `ambient_backdrop: true`: slides container has `-ambient` and a
-  `.screensaver-slide-backdrop` exists per slide.
-- With the option absent/false: no `-ambient` class and no
-  `.screensaver-slide-backdrop` elements.
+- With `ambient_backdrop: true`: slides container has `-ambient` and its
+  inline background is the active slide's cache-busted URL (updates as the
+  slide rotates); no `.screensaver-slide-backdrop` elements.
+- With the option absent/false: no `-ambient` class, no inline container
+  background, and no `.screensaver-slide-backdrop` elements.
 
 ## Out of scope
 

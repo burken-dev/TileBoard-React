@@ -125,7 +125,10 @@ export default function Screensaver() {
 
   return (
     <div className="screensaver" style={conf.styles as CSSProperties | undefined} onClick={() => setScreensaverShown(false)}>
-      <div className={'screensaver-slides' + (ambient ? ' -ambient' : '')}>
+      <div
+        className={'screensaver-slides' + (ambient ? ' -ambient' : '')}
+        style={ambient && activeBg ? { backgroundImage: `url(${activeBg})` } : undefined}
+      >
         {slides.map((slide, index) => {
           const wasActive =
             activeSlide === index + 1 || (slides.length === index + 1 && activeSlide === 0);
@@ -142,13 +145,6 @@ export default function Screensaver() {
                 ...(slide.styles ?? {}),
               }}
             >
-              {ambient ? (
-                <div
-                  key="backdrop"
-                  className="screensaver-slide-backdrop"
-                  style={{ backgroundImage: `url(${slideBgUrl(slide.bg)})` }}
-                />
-              ) : null}
               {slide.rightBottom ? (
                 <div className="screensaver-content--right-bottom">
                   {slide.rightBottom.map((item, i) => (
