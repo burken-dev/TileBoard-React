@@ -130,4 +130,17 @@ describe('Tile', () => {
     const root = container.querySelector('.item') as HTMLElement;
     expect(root.style.color).toBe('rgb(1, 2, 3)');
   });
+
+  it('normalizes kebab-case customStyles keys to camelCase', () => {
+    setup();
+    const item: TileConfig = {
+      type: 'switch',
+      id: 'switch.test',
+      position: [0, 0],
+      customStyles: () => ({ 'background-color': 'rgb(1, 2, 3)' }),
+    };
+    const { container } = render(<Tile item={item} page={{ groups: [] }} />);
+    const root = container.querySelector('.item') as HTMLElement;
+    expect(root.style.backgroundColor).toBe('rgb(1, 2, 3)');
+  });
 });

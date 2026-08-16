@@ -12,6 +12,7 @@ import {
   itemClasses,
 } from '../utils/entity';
 import { isHidden, parseFieldValue, resolveTile } from '../utils/fields';
+import { cssStyles } from '../utils/styles';
 import { itemPositionStyles, pageOpts } from '../utils/layout';
 import { toAbsoluteServerURL } from '../utils/misc';
 import { TileBody } from './tiles/TileBody';
@@ -72,7 +73,7 @@ function Tile({ item, page }: TileProps) {
 
   const base = itemPositionStyles(resolved, pageOpts(page, config, entities));
   const custom = resolved.customStyles ?? {};
-  const styles = { ...base, ...(custom as React.CSSProperties) };
+  const styles = { ...base, ...cssStyles(custom as Record<string, unknown>) };
 
   const slides = resolved.slides ?? [];
   const freezed =
