@@ -54,6 +54,7 @@ var CONFIG = {
       slidesTimeout: 10, // 10s for one slide
       slideCacheBust: 300, // append a rolling cache-bust query to slide bgs (optional)
       styles: { fontSize: '40px' },
+      ambient_backdrop: true, // show slide contained, with a blurred grayscale version behind it
       leftBottom: [{ type: 'datetime' }], // put datetime to the left-bottom of screensaver
       rightBottom: [{ type: 'photo_date' }], // show the EXIF date of the current slide
       slides: [
