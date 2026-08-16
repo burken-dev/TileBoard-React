@@ -9,10 +9,10 @@ const warnedIds = new Set<string>();
 export function getItemEntity(item: TileConfig, entities: EntityStates): HaEntity | null {
   if (typeof item.id === 'object') return item.id as HaEntity;
   const entity = entities[item.id] ?? null;
-  if (!entity && !warnedIds.has(item.id)) {
+  const { config, entitiesLoaded, addNotification, notificationSeen } = getAppStore();
+  if (!entity && entitiesLoaded && !warnedIds.has(item.id)) {
     warnedIds.add(item.id);
     console.warn(`Entity "${item.id}" not found`);
-    const { config, addNotification, notificationSeen } = getAppStore();
     if (!config.ignoreErrors) {
       const id = `${item.id}_not_found`;
       if (!notificationSeen(id)) {

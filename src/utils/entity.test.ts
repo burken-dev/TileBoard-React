@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import type { EntityStates, TileConfig } from '../config/types';
-import { createAppStore } from '../store';
+import { createAppStore, getAppStore } from '../store';
 import {
   entityIcon,
   entityState,
@@ -139,5 +139,22 @@ describe('getItemEntity', () => {
   it('returns null for unknown id', () => {
     const item: TileConfig = { type: 'switch', id: 'missing.x', position: [0, 0] };
     expect(getItemEntity(item, states)).toBeNull();
+  });
+
+  it('does not notify before states have loaded', () => {
+    getAppStore().setEntities([]);
+    expect(getAppStore().entitiesLoaded).toBe(false);
+    const item: TileConfig = { type: 'switch', id: 'early.miss', position: [0, 0] };
+    getItemEntity(item, {});
+    expect(getAppStore().notifications).toHaveLength(0);
+  });
+
+  it('notifies when an entity is missing after states have loaded', async () => {
+    getAppStore().setEntities([states['sensor.k']]);
+    expect(getAppStore().entitiesLoaded).toBe(true);
+    const item: TileConfig = { type: 'switch', id: 'late.miss', position: [0, 0] };
+    getItemEntity(item, {});
+    await new Promise((r) => setTimeout(r, 10));
+    expect(getAppStore().notifications.some((n) => n.title === 'Entity not found')).toBe(true);
   });
 });
