@@ -131,7 +131,11 @@ var CONFIG = {
                   { position: [1, 3], type: 'sensor_icon', id: 'sensor.hot_water', title: 'Hot water', subtitle: 'sensor_icon', icons: { on: 'mdi-hot-tub', off: 'mdi-hot-tub' }, states: { on: 'On', off: 'Off' } },
                   { position: [2, 0], width: 2, type: 'vacuum', id: 'vacuum.roborock', title: 'Roborock', subtitle: 'vacuum', icon: 'mdi-roomba', state: '@attributes.status' },
                   { position: [2, 2], type: 'custom', id: {}, title: 'Custom', subtitle: 'custom', icon: 'mdi-monitor', state: false, customHtml: '<b>Hi</b>' },
-                  { position: [3, 0], width: 2, height: 2, type: 'gauge', id: 'sensor.my_sample_sensor', title: 'Energy', subtitle: 'gauge', state: false, settings: { type: 'full', min: 0, max: 25000, thick: 8, label: 'kWh', append: ' W', thresholds: { 0: { color: 'green' }, 80: { color: 'red' } } } }
+                  { position: [3, 0], width: 2, height: 2, type: 'gauge', id: 'sensor.my_sample_sensor', title: 'Energy', subtitle: 'gauge', state: false, settings: { type: 'full', min: 0, max: 25000, thick: 8, label: 'kWh', append: ' W', thresholds: { 0: { color: 'green' }, 80: { color: 'red' } } } },
+                  { position: [3, 2], type: 'multi', id: 'multi.demo', title: 'Multi', subtitle: 'multi', autorotate: 3000, items: [
+                     { type: 'switch', id: 'switch.kitchen_spotlights', position: [0, 0], key: 'spotlights', title: 'Spotlights' },
+                     { type: 'sensor', id: 'sensor.outdoor_temperature', position: [0, 0], key: 'temp', title: 'Outdoor', unit: 'C' },
+                  ] }
                ]
             },
             {
