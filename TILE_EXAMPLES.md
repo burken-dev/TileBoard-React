@@ -395,6 +395,35 @@ Locks and unlocks the lock on tap. Also shows icon depending on the state<br>
 },
 ```
 
+#### MULTI
+Shows one child tile at a time. Use `setUiState('multi:<id>', ...)` in tap/timer
+actions to switch: pass a `number` to step, or a child `key` to jump to that child.
+Children inherit the multi tile's size unless overridden.
+```js
+{
+   position: [0, 0],
+   id: 'panels',
+   type: 'multi',
+   width: 2,
+   height: 1,
+   autorotate: 10000,
+   items: [
+      {
+         type: 'switch',
+         id: 'switch.lamp',
+         position: [0, 0],
+         key: 'lamp',
+      },
+      {
+         type: 'sensor',
+         id: 'sensor.temp',
+         position: [0, 0],
+         key: 'temp',
+      },
+   ],
+},
+```
+
 #### SCENE
 Works almost identical to the SCRIPT. Activates scene in a tap.
 ```js
