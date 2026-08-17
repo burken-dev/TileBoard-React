@@ -1,7 +1,5 @@
 import { callService as haCallService } from 'home-assistant-js-websocket';
 import type { Connection, MessageBase } from 'home-assistant-js-websocket';
-import { getAppStore } from '../store';
-import { toAbsoluteServerURL } from '../utils/misc';
 import { mockCallService, mockGetHistory } from './mock';
 
 let conn: Connection | null = null;
@@ -43,12 +41,36 @@ export function getHistory(
       ? mockGetHistory(entityIds, startDate)
       : Promise.reject(new Error('not connected'));
   }
-  const { config } = getAppStore();
-  const ids = Array.isArray(entityIds) ? entityIds.join(',') : entityIds;
-  let url = `/api/history/period/${startDate}?end_time=${endDate ?? new Date(Date.now()).toISOString()}`;
-  url += `&filter_entity_id=${ids}`;
-  const token = conn.options.auth?.accessToken;
-  return fetch(toAbsoluteServerURL(url, config.serverUrl), {
-    headers: { Authorization: `Bearer ${token}` },
-  }).then((response) => response.json());
+  const ids = Array.isArray(entityIds) ? entityIds : [entityIds];
+  return sendMessage<Record<string, Array<Record<string, unknown>>>>({
+    type: 'history/history_during_period',
+    start_time: startDate,
+    end_time: endDate,
+    entity_ids: ids,
+    significant_changes_only: false,
+  }).then((byEntity) =>
+    ids
+      .map((id) => (byEntity[id] ?? []).map((state) => toFullState(id, state)))
+      .filter((series) => series.length > 0),
+  );
+}
+
+// ponytail: the websocket history command returns compressed states ({c,a,lu,lc}),
+// this expands them back to the REST shape the graph code already consumes.
+function toFullState(
+  entityId: string,
+  state: Record<string, unknown>,
+): Record<string, unknown> {
+  const toIso = (key: string): string | undefined => {
+    const ts = Number(state[key]);
+    return Number.isFinite(ts) && ts > 0 ? new Date(ts * 1000).toISOString() : undefined;
+  };
+  const lastUpdated = toIso('lu');
+  return {
+    entity_id: entityId,
+    state: state.c,
+    attributes: (state.a ?? {}) as Record<string, unknown>,
+    last_changed: toIso('lc') ?? lastUpdated,
+    last_updated: lastUpdated,
+  };
 }
