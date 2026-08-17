@@ -19,7 +19,7 @@ describe('buildHistoryModel', () => {
     expect(model.datasets[0].yAxisID).toBe('linear-°C');
     expect(model.datasets[0].data).toHaveLength(3);
     expect(model.datasets[0].data[2].x).toBe(NOW);
-    expect(model.datasets[0].data[2].y).toBe('22');
+    expect(model.datasets[0].data[2].y).toBe(22);
     expect(model.yAxes['linear-°C'].type).toBe('linear');
     expect(model.interactionMode).toBe('index');
   });

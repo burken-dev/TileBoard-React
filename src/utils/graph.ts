@@ -26,16 +26,19 @@ export function buildHistoryModel(
 
   response.forEach((states, seriesIndex) => {
     const meta = seriesMeta[seriesIndex] ?? { name: '' };
-    const data = states.map((state) => ({
+    const data: Array<{ x: number; y: number | string }> = states.map((state) => ({
       x: new Date(state.last_changed).getTime(),
       y: state.state,
     }));
-    data.push({ x: now, y: meta.currentState ?? '' });
+    data.push({ x: now, y: meta.currentState ?? data[data.length - 1]?.y ?? '' });
 
     const lastY = data[data.length - 1].y;
-    const yAxisType: 'linear' | 'category' = Number.isNaN(parseFloat(String(lastY)))
-      ? 'category'
-      : 'linear';
+    const isNumeric = !Number.isNaN(parseFloat(String(lastY)));
+    const yAxisType: 'linear' | 'category' = isNumeric ? 'linear' : 'category';
+
+    if (isNumeric) {
+      for (const pt of data) pt.y = Number(pt.y);
+    }
     const yAxisId = yAxisType + '-' + (meta.unit ?? '');
 
     let createYAxis = false;
