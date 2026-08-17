@@ -45,7 +45,12 @@ export default function Graph({
       },
       scales: {
         x: { type: 'time', time: { displayFormats: timeFormats } },
-        ...model.yAxes,
+        ...Object.fromEntries(
+          Object.entries(model.yAxes).map(([id, axis]) => [
+            id,
+            { ...axis, ticks: { maxTicksLimit: 7, ...axis.ticks } },
+          ]),
+        ),
       },
       plugins: {
         legend: { align: 'start' },
@@ -72,5 +77,9 @@ export default function Graph({
     };
   }, [model, options, timeFormat]);
 
-  return <canvas ref={canvasRef} className="chart chart-line" />;
+  return (
+    <div style={{ width: '100%', height: '100%' }}>
+      <canvas ref={canvasRef} className="chart chart-line" />
+    </div>
+  );
 }

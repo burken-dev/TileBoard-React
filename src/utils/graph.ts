@@ -4,8 +4,12 @@ export interface ChartModel {
     label: string;
     data: Array<{ x: number; y: number | string }>;
     yAxisID: string;
+    stepped?: boolean;
+    pointRadius?: number;
+    pointHitRadius?: number;
+    borderWidth?: number;
   }>;
-  yAxes: Record<string, { type: 'linear' | 'category'; labels?: string[] }>;
+  yAxes: Record<string, { type: 'linear' | 'category'; labels?: string[]; ticks?: { maxTicksLimit?: number } }>;
   interactionMode: 'nearest' | 'index';
 }
 
@@ -72,6 +76,10 @@ export function buildHistoryModel(
       label: meta.unit ? `${meta.name} / ${meta.unit}` : meta.name,
       data,
       yAxisID: yAxisId,
+      stepped: true,
+      pointRadius: 0,
+      pointHitRadius: 5,
+      borderWidth: 1,
     });
   });
 
