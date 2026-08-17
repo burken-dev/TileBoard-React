@@ -16,3 +16,6 @@ tsconfig.tsbuildinfo
 # local reference config
 /public/config/reference_config.js
 /public/config/reference_config_react.js
+
+# compiled CSS (generated from main.less by Vite)
+/styles/main.css
