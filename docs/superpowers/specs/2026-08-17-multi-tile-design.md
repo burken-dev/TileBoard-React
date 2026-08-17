@@ -64,7 +64,11 @@ Examples:
   "entity not found" warnings for skipped children: a child is selectable if
   `!isHidden(child, entities)` and it has a resolvable entity (object-id
   children always count; string-id children need the entity present).
-- Step/rotation count only among visible children and wrap around.
+- Step/rotation count only among visible children and wrap around. If the
+  currently stored active child is not visible (hidden or missing entity),
+  a step counts from the first visible child. When rendering nothing (active
+  child hidden), no normalized write-back happens — the stored key is left
+  pointing at the hidden child.
 - Active child becomes hidden at runtime → render nothing (no auto-advance).
 - All children hidden → render nothing.
 
