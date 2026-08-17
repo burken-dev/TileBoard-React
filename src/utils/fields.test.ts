@@ -141,3 +141,17 @@ describe('resolveFields with SCREENSAVER_FIELDS', () => {
     expect(resolved.ambient_backdrop).toBe(true);
   });
 });
+
+describe('resolveTile with multi autorotate', () => {
+  it('resolves a function-valued autorotate', () => {
+    const item: TileConfig = {
+      type: 'multi',
+      id: 'm',
+      position: [0, 0],
+      autorotate: () => 5000,
+      items: [],
+    };
+    const resolved = resolveTile(item, null, states);
+    expect(resolved.autorotate).toBe(5000);
+  });
+});

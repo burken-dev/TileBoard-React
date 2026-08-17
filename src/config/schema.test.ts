@@ -217,4 +217,31 @@ describe('validateConfig', () => {
     const result = validateConfig(config);
     expect(result.ok).toBe(true);
   });
+
+  it('accepts a multi tile with items and autorotate', () => {
+    const config = {
+      ...minimalValidConfig,
+      pages: [
+        {
+          groups: [
+            {
+              items: [
+                {
+                  type: 'multi' as const,
+                  id: 'main',
+                  position: [0, 0],
+                  autorotate: 5000,
+                  items: [
+                    { type: 'switch' as const, id: 'switch.test', position: [0, 0], key: 'a' },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+    const result = validateConfig(config);
+    expect(result.ok).toBe(true);
+  });
 });

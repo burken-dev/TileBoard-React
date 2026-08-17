@@ -113,7 +113,7 @@ export const TILE_FIELDS = [
   'customStyles', 'value', 'unit', 'refresh', 'url', 'icon', 'iconImage', 'customHtml',
   'iframeStyles', 'iframeClasses', 'objFit', 'bufferLength', 'bottom', 'colorpicker',
   'hideSource', 'hideMuteButton', 'map', 'zoomLevels', 'hideEntityPicture', 'hideHeader',
-  'width', 'height',
+  'width', 'height', 'autorotate',
 ] as const;
 
 export const PAGE_FIELDS = ['icon'] as const;

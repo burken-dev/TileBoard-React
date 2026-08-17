@@ -37,6 +37,7 @@ export const TILE_TYPES = [
   'gauge',
   'graph',
   'image',
+  'multi',
 ] as const;
 
 const tileSchema = z.object({
