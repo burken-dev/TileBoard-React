@@ -136,3 +136,26 @@ describe('MultiTile switching', () => {
     expect(getAppStore().uiState['multi:main']).toBe('b');
   });
 });
+
+describe('MultiTile autorotate', () => {
+  it('advances through children on the interval', () => {
+    vi.useFakeTimers();
+    setup([entityA, entityB]);
+    const { container } = renderMulti({ autorotate: 1000 });
+    expect(container.querySelector('.item.-multi .item-title')).toHaveTextContent('Switch A');
+    act(() => vi.advanceTimersByTime(1000));
+    expect(container.querySelector('.item.-multi .item-title')).toHaveTextContent('Switch B');
+    act(() => vi.advanceTimersByTime(1000));
+    expect(container.querySelector('.item.-multi .item-title')).toHaveTextContent('Switch A');
+    vi.useRealTimers();
+  });
+
+  it('does not rotate when autorotate is absent', () => {
+    vi.useFakeTimers();
+    setup([entityA, entityB]);
+    const { container } = renderMulti();
+    act(() => vi.advanceTimersByTime(5000));
+    expect(container.querySelector('.item.-multi .item-title')).toHaveTextContent('Switch A');
+    vi.useRealTimers();
+  });
+});

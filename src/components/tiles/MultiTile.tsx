@@ -61,6 +61,13 @@ export function MultiTile({ item, page }: { item: TileConfig; page: PageConfig }
     if (key !== value) setUiState(uiKey, key);
   });
 
+  const autorotate = (resolved.autorotate as number | undefined) ?? -1;
+  useEffect(() => {
+    if (autorotate < 0 || visibleChildren.length === 0) return;
+    const timer = setInterval(() => setUiState(uiKey, 1), autorotate);
+    return () => clearInterval(timer);
+  }, [autorotate, uiKey, targetIndex, visibleChildren.length]);
+
   if (targetIndex === null) return null;
 
   const child = children[targetIndex];
