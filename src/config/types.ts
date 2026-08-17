@@ -54,7 +54,7 @@ export type TileType =
   | 'input_number' | 'input_select' | 'input_datetime' | 'camera' | 'camera_thumbnail'
   | 'camera_stream' | 'scene' | 'slider' | 'iframe' | 'door_entry' | 'weather'
   | 'climate' | 'media_player' | 'custom' | 'alarm' | 'weather_list' | 'vacuum'
-  | 'popup_iframe' | 'dimmer_switch' | 'gauge' | 'graph' | 'image';
+  | 'popup_iframe' | 'dimmer_switch' | 'gauge' | 'graph' | 'image' | 'multi';
 
 export interface HistoryConfig {
   entity?: Field<string | string[]>;
@@ -130,6 +130,9 @@ export interface TileConfig {
   layout?: { camera: TileConfig; tiles: TileConfig[]; page?: PageConfig };
   loading?: boolean;
   controlsEnabled?: boolean;
+  items?: TileConfig[]; // multi tile: child tiles to rotate between
+  autorotate?: Field<number>; // multi tile: ms per child, -1/absent = off
+  key?: string; // multi child: stable identifier used by setUiState('multi:<id>', key)
 }
 
 export interface SliderConfig {
