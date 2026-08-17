@@ -2,6 +2,7 @@ import { act, cleanup, render } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { HaEntity, PageConfig, TileConfig } from '../../config/types';
 import { createAppStore, getAppStore } from '../../store';
+import Tile from '../Tile';
 import { MultiTile } from './MultiTile';
 
 vi.mock('../../ha/services', () => ({
@@ -157,5 +158,13 @@ describe('MultiTile autorotate', () => {
     act(() => vi.advanceTimersByTime(5000));
     expect(container.querySelector('.item.-multi .item-title')).toHaveTextContent('Switch A');
     vi.useRealTimers();
+  });
+});
+
+describe('Tile integration', () => {
+  it('routes a multi tile through the Tile component', () => {
+    setup([entityA, entityB]);
+    const { container } = render(<Tile item={multiItem} page={page} />);
+    expect(container.querySelector('.item.-multi .item-title')).toHaveTextContent('Switch A');
   });
 });
