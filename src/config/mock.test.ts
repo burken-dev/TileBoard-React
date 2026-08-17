@@ -19,6 +19,7 @@ function collectTiles(config: TileBoardConfig): TileConfig[] {
       if (item.layout?.tiles) walk(item.layout.tiles);
       if (item.layout?.camera) walk([item.layout.camera]);
       if (item.fullscreen) walk([item.fullscreen]);
+      if (item.items) walk(item.items);
     }
   };
   for (const page of config.pages) {
@@ -55,7 +56,7 @@ describe('test config coverage', () => {
     const mockIds = new Set((CONFIG.mock?.entities ?? []).map((e) => e.entity_id));
     const missing: string[] = [];
     for (const tile of collectTiles(CONFIG)) {
-      if (typeof tile.id === 'string' && !mockIds.has(tile.id)) missing.push(tile.id);
+      if (typeof tile.id === 'string' && tile.type !== 'multi' && !mockIds.has(tile.id)) missing.push(tile.id);
       const values: unknown[] = [];
       collectStrings(tile, values);
       for (const v of values) {
