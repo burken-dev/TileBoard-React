@@ -16,6 +16,7 @@ import { cssStyles } from '../utils/styles';
 import { itemPositionStyles, pageOpts } from '../utils/layout';
 import { toAbsoluteServerURL } from '../utils/misc';
 import { TileBody } from './tiles/TileBody';
+import { MultiTile } from './tiles/MultiTile';
 
 interface TileProps {
   item: TileConfig;
@@ -52,7 +53,7 @@ function Tile({ item, page }: TileProps) {
   const screensaverShown = useAppStore((s) => s.screensaverShown);
   useAppStore((s) => s.uiState);
 
-  const entity = getItemEntity(item, entities);
+  const entity = item.type === 'multi' ? null : getItemEntity(item, entities);
 
   const long = useLongPress(
     () => {
@@ -62,6 +63,8 @@ function Tile({ item, page }: TileProps) {
       if (entity) entityClick(item, entity);
     },
   );
+
+  if (item.type === 'multi') return <MultiTile item={item} page={page} />;
 
   if (!entity || isHidden(item, entities)) return null;
 
