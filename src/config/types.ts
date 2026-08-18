@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react';
-import type { ChartModel } from '../utils/graph';
+import type { ChartModel, GraphStyleObject } from '../utils/graph';
 
 export interface HaEntity {
   entity_id: string;
@@ -68,6 +68,7 @@ export interface GraphConfig {
   offset?: Field<number>;
   options?: Field<Record<string, unknown>>;
   data?: ConfigFunction<ChartModel>;
+  style?: Field<string | GraphStyleObject>;
 }
 
 export interface TileConfig {

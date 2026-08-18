@@ -90,6 +90,48 @@ export function buildHistoryModel(
   };
 }
 
+export interface GraphStyleObject {
+  bg?: string;
+  lineColor?: string;
+  fillColor?: string;
+  textColor?: string;
+  secondaryTextColor?: string;
+  gridColor?: string;
+}
+
+const GRAPH_STYLE_PRESETS: Record<string, GraphStyleObject> = {
+  green: {
+    bg: '#335744',
+    lineColor: '#7EE787',
+    fillColor: 'rgba(126,231,135,0.2)',
+    textColor: '#FFFFFF',
+    secondaryTextColor: '#C6DACD',
+    gridColor: '#4B6B58',
+  },
+  blue: {
+    bg: '#3A4A5E',
+    lineColor: '#64B5FF',
+    fillColor: 'rgba(100,181,255,0.2)',
+    textColor: '#FFFFFF',
+    secondaryTextColor: '#B8C4D8',
+    gridColor: '#5C6E82',
+  },
+  brown: {
+    bg: '#5A4521',
+    lineColor: '#FFC857',
+    fillColor: 'rgba(255,200,87,0.2)',
+    textColor: '#FFFFFF',
+    secondaryTextColor: '#E1D3A6',
+    gridColor: '#7D6330',
+  },
+};
+
+export function resolveGraphStyle(value: string | GraphStyleObject | undefined): GraphStyleObject {
+  if (!value) return GRAPH_STYLE_PRESETS.green;
+  if (typeof value === 'string') return GRAPH_STYLE_PRESETS[value] ?? GRAPH_STYLE_PRESETS.green;
+  return { ...GRAPH_STYLE_PRESETS.green, ...value };
+}
+
 export function deepMerge<T>(base: T, extra: unknown): T {
   if (extra === null || typeof extra !== 'object' || Array.isArray(extra)) {
     return extra as T;
