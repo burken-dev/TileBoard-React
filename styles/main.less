@@ -173,16 +173,12 @@ body {
 }
 
 .page-align {
-   height: 100%;
-   width: 0;
-   vertical-align: middle;
-   display: inline-block;
-   margin-left: @pageMenuWidth;
+   display: none;
 }
 
 .-menu-bottom {
    .page-align {
-      margin-left: 0;
+      display: none;
    }
 }
 
@@ -200,9 +196,10 @@ body {
    box-sizing: border-box;
    background-size: cover;
    background-position: center;
-   white-space: nowrap;
+   display: flex;
+   align-items: center;
+   flex-wrap: nowrap;
    overflow-x: auto;
-   font-size: 0;
 }
 
 .-hide-scrollbar {
@@ -355,11 +352,13 @@ body {
 
 .-groups-align-vertically {
    .page {
-      white-space: normal;
+      flex-direction: column;
+      align-items: flex-start;
       padding-left: 120px;
+      overflow-x: hidden;
+      overflow-y: auto;
 
       .page-align {
-         height: 0;
          display: none;
       }
 
@@ -474,7 +473,6 @@ body {
 .group {
    display: inline-block;
    font-size: 0;
-   vertical-align: middle;
    margin: @groupMargin;
    position: relative;
 
@@ -1126,9 +1124,23 @@ body {
    display: flex;
    align-items: center;
    justify-content: center;
-}
 
-.item-graph {
+   &--value {
+      font-size: 28px;
+      font-weight: 500;
+      line-height: 1.2;
+      white-space: nowrap;
+   }
+
+   &--label {
+      font-size: 12px;
+      opacity: 0.7;
+      margin-top: 4px;
+      white-space: nowrap;
+   }
+ }
+
+ .item-graph {
    height: 100%;
    width: 100%;
    position: relative;

@@ -78,8 +78,8 @@ export default function Graph({
   }, [model, options, timeFormat]);
 
   return (
-    <div style={{ width: '100%', height: '100%' }}>
-      <canvas ref={canvasRef} className="chart chart-line" />
+    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'stretch' }}>
+      <canvas ref={canvasRef} className="chart chart-line" style={{ width: '100%', height: '100%' }} />
     </div>
   );
 }

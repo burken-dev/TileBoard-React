@@ -120,8 +120,8 @@ export const GaugeTile = memo(function GaugeTile({ item, entity }: { item: TileC
   };
 
   return (
-    <div className="item-gauge" style={{ position: 'relative', width: size, height: size }}>
-      <svg viewBox="0 0 100 100" width={size} height={size}>
+    <div className="item-gauge" style={{ position: 'relative', width: '100%', height: '100%' }}>
+      <svg viewBox="0 0 100 100" width={size} height={size} style={{ display: 'block', margin: '0 auto' }}>
         <path d={d} fill="none" stroke={backgroundColor} strokeWidth={thick} strokeLinecap={linecap} />
         <path
           data-foreground

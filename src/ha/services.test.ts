@@ -44,7 +44,7 @@ describe('services', () => {
   it('fetches history via websocket and expands compressed states', async () => {
     createAppStore({ serverUrl: 'http://h', pages: [] });
     const sendMessagePromise = vi.fn<(msg: unknown) => Promise<Record<string, unknown[]>>>(async () => ({
-      'sensor.temp': [{ c: '20', a: { unit_of_measurement: '°C' }, lu: 1704067200 }],
+      'sensor.temp': [{ s: '20', a: { unit_of_measurement: '°C' }, lu: 1704067200 }],
     }));
     setConnection({ sendMessagePromise } as unknown as Connection);
     const result = await getHistory('2024-01-01T00:00:00Z', 'sensor.temp', '2024-01-02T00:00:00Z');
