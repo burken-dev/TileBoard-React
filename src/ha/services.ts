@@ -68,7 +68,7 @@ function toFullState(
   const lastUpdated = toIso('lu');
   return {
     entity_id: entityId,
-    state: state.c,
+    state: state.s,
     attributes: (state.a ?? {}) as Record<string, unknown>,
     last_changed: toIso('lc') ?? lastUpdated,
     last_updated: lastUpdated,
