@@ -36,7 +36,7 @@ A Docker image is provided. It builds the app and serves the static files with n
 docker build -t tileboard .
 docker run -d \
   -p 8080:80 \
-  -v /path/to/config:/usr/share/nginx/html/config:ro \
+  -v /path/to/config:/app/config \
   --name tileboard \
   tileboard
 ```
@@ -45,14 +45,11 @@ Then open `http://localhost:8080`.
 
 If you previously mounted single files (at `/usr/share/nginx/html/config.js` and `/usr/share/nginx/html/styles/custom.css`), put those files into a mounted `config/` folder instead.
 
-The image ships defaults inside `config/`: `config.js` (a copy of the example),
-an empty `config/styles/custom.css`, the `config/manifest.webmanifest`, and
-example backgrounds in `config/images/`. Mount your own `config/` folder to
-override any of them at once:
+The image seeds default files into the `config/` volume on startup (only files that don't already exist): `config.example.js`, the `manifest.webmanifest`, reference configs, and example backgrounds in `images/`. Mount your own `config/` folder to customize:
 
-* `config/config.js` — your dashboard configuration. Start from the shipped example (`/usr/share/nginx/html/config/config.example.js`) if you want a reference.
-* `config/styles/custom.css` — your custom CSS, loaded at runtime (see *Custom CSS Styles* below). The image ships an empty placeholder so the no-mount default is clean; include `styles/custom.css` (even empty) in your mounted folder to avoid a 404.
-* `config/images/` — any additional images your config references (reference them as `config/images/...`).
+* `config/config.js` — your dashboard configuration. Copy from the seeded `config/config.example.js` as a starting point.
+* `config/styles/custom.css` — your custom CSS, loaded at runtime (see *Custom CSS Styles* below). Create this file in your mounted folder to enable custom styles.
+* `config/images/` — any additional images your config references (reference them as `config/images/...`). Example backgrounds are seeded by default.
 * `config/manifest.webmanifest` — the PWA manifest.
 
 Everything else under the served root is bundled and should not be overridden.
@@ -63,7 +60,7 @@ TileBoard is configured with a `config.js` file that sets the global `window.CON
 
 * **Development:** copy `public/config/config.example.js` to `public/config/config.js`
 * **Deployed build:** copy `dist/config/config.example.js` to `dist/config/config.js` (before or after `npm run build`)
-* **Docker:** mount your own `config/` folder at `/usr/share/nginx/html/config` (see the Docker section)
+* **Docker:** mount your own `config/` folder at `/app/config` (see the Docker section)
 
 To run multiple dashboards, add a `?config=<name>` query parameter to the URL and it loads
 `/config/<name>.js` instead of the default `config.js`. For example, `/?config=garage`
