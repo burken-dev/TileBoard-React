@@ -18,8 +18,9 @@ export default function PhotoDate({ bg, format: fmt = 'dd MMMM yyyy' }: PhotoDat
       setText('');
       return;
     }
+    const url = new URL(bg, location.href).href;
     import('exifreader')
-      .then(({ default: ExifReader }) => ExifReader.load(bg))
+      .then(({ default: ExifReader }) => ExifReader.load(url))
       .then((tags: Record<string, unknown>) => {
         if (cancelled) return;
         const tag = tags['DateTimeOriginal'] as

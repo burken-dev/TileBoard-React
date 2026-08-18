@@ -720,6 +720,41 @@ Renders a small history chart on the tile. Tapping opens the graph popup, which 
 }
 ```
 
+#### GRAPH with custom data (from entity attributes)
+Use `graph.data` to supply your own data instead of fetching entity history. The function receives `(item, entity)` and has access to all entity states via `this.states`. Return a `ChartModel` object.
+```js
+{
+   position: [0, 0],
+   type: 'graph',
+   id: 'sensor.electricity_price',
+   title: '',           // hide entity name
+   state: false,        // hide state value
+   graph: {
+      style: 'blue',
+      options: {
+         plugins: { legend: { display: false } }  // hide legend
+      },
+      data: function (item, entity) {
+         const periods = entity.attributes.data.periods;
+         return {
+            type: 'bar',
+            datasets: [{
+               label: 'Total price',
+               data: periods.map(p => ({
+                  x: new Date(p.start).getTime(),
+                  y: p.total
+               })),
+               yAxisID: 'y'
+            }],
+            yAxes: {
+               y: { type: 'linear' }
+            },
+            interactionMode: 'index'
+         };
+      }
+   }
+}
+```
 
 #### IMAGE
 ![IMAGE](public/images/tile-screenshots/IMAGE.png)<br>

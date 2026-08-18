@@ -42,6 +42,6 @@ describe('Screensaver photo_date', () => {
     const pd = container.querySelector('.screensaver-content--right-bottom .photo-date');
     expect(pd).toBeTruthy();
     expect(pd!.textContent).toContain('2020');
-    expect(exifLoad).toHaveBeenCalledWith('a.jpg');
+    expect(exifLoad).toHaveBeenCalledWith(new URL('a.jpg', location.href).href);
   });
 });
