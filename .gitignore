@@ -16,6 +16,8 @@ tsconfig.tsbuildinfo
 # local reference config
 /public/config/reference_config.js
 /public/config/reference_config_react.js
+/public/config/garage.js
+/public/config/stugan.js
 
 # compiled CSS (generated from .less by Vite)
 /styles/main.css
