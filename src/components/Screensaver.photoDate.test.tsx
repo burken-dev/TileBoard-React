@@ -6,7 +6,7 @@ import type { TileBoardConfig } from '../config/types';
 
 const { exifLoad } = vi.hoisted(() => ({
   exifLoad: vi.fn().mockResolvedValue({
-    DateTimeOriginal: { value: '2020:01:02 03:04:05' },
+    DateTimeOriginal: { value: ['2020:01:02 03:04:05'] },
   }),
 }));
 

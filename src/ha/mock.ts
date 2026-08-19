@@ -88,7 +88,7 @@ export function mockCallService(
     if (service === 'select_option') state = String(serviceData?.option ?? state);
   } else if (domain === 'climate') {
     if (service === 'set_temperature') write('temperature');
-    else if (service === 'set_preset_mode') write('preset_mode');
+    else if (service === 'set_hvac_mode') state = String(serviceData?.hvac_mode ?? state);
   } else if (domain === 'alarm_control_panel') {
     if (service === 'alarm_arm_home') state = 'armed_home';
     else if (service === 'alarm_arm_away') state = 'armed_away';
