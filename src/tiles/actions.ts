@@ -169,8 +169,8 @@ export function setFanSpeed(item: TileConfig, _entity: HaEntity | null, speed: s
   sendItemData(item, 'fan', 'set_speed', { speed });
 }
 
-export function setClimateOption(item: TileConfig, _entity: HaEntity | null, preset: string): void {
-  sendItemData(item, 'climate', 'set_preset_mode', { preset_mode: preset });
+export function setClimateOption(item: TileConfig, _entity: HaEntity | null, hvac: string): void {
+  sendItemData(item, 'climate', 'set_hvac_mode', { hvac_mode: hvac });
 }
 
 export function setClimateTemp(item: TileConfig, value: number): void {

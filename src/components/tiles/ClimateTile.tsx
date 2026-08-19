@@ -28,8 +28,8 @@ export const ClimateTile = memo(function ClimateTile({ item, entity }: { item: T
   const showButtons = Boolean(entity.attributes.temperature) && entity.state !== 'off';
   const unit = entityUnit(item, entity, states);
   const target = climateTarget(item, entity);
-  const presetMode = entity.attributes.preset_mode as string | undefined;
-  const presetModes = entity.attributes.preset_modes as string[] | undefined;
+  const hvacMode = entity.state as string | undefined;
+  const hvacModes = entity.attributes.hvac_modes as string[] | undefined;
 
   return (
     <div className="item-entity-container">
@@ -64,7 +64,7 @@ export const ClimateTile = memo(function ClimateTile({ item, entity }: { item: T
           <span>{String(target ?? '')}</span>
           {unit ? <span className="item-climate--target--unit">{unit}</span> : null}
         </div>
-        {presetMode ? (
+        {hvacMode ? (
           <div
             className="item-climate--mode"
             onPointerDown={(e) => e.stopPropagation()}
@@ -73,13 +73,13 @@ export const ClimateTile = memo(function ClimateTile({ item, entity }: { item: T
               openSelect(item);
             }}
           >
-            <span>{presetMode}</span>
+            <span>{hvacMode}</span>
           </div>
         ) : null}
       </div>
       {opened ? (
         <SelectOverlay
-          options={presetModes}
+          options={hvacModes}
           active={entity.state}
           onChoose={(option) => {
             setClimateOption(item, entity, option);

@@ -26,7 +26,8 @@ export default function PhotoDate({ bg, format: fmt = 'dd MMMM yyyy' }: PhotoDat
         const tag = tags['DateTimeOriginal'] as
           | { value?: unknown; description?: unknown }
           | undefined;
-        const raw = tag && typeof tag === 'object' ? (tag.value ?? tag.description) : tag;
+        let raw = tag && typeof tag === 'object' ? (tag.value ?? tag.description) : tag;
+        if (Array.isArray(raw)) raw = raw[0];
         if (typeof raw !== 'string') return;
         const date = parse(raw, 'yyyy:MM:dd HH:mm:ss', new Date());
         if (!isNaN(date.getTime())) setText(format(date, fmt, { locale: getDateLocale(locale) }));

@@ -6,7 +6,7 @@ import { createAppStore } from '../store';
 vi.mock('exifreader', () => {
   const load = vi.fn(() =>
     Promise.resolve({
-      DateTimeOriginal: { value: '2023:04:12 10:30:00', description: '2023-04-12 10:30:00' },
+      DateTimeOriginal: { value: ['2023:04:12 10:30:00'], description: '2023-04-12 10:30:00' },
     }),
   );
   return { load, default: { load } };

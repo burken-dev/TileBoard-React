@@ -141,12 +141,12 @@ describe('interactive tiles', () => {
     });
   });
 
-  it('climate preset select opens overlay and sends preset_mode', () => {
+  it('climate hvac mode select opens overlay and sends set_hvac_mode', () => {
     setup([
       {
         entity_id: 'climate.x',
         state: 'heat',
-        attributes: { preset_mode: 'comfort', preset_modes: ['comfort', 'eco'] },
+        attributes: { hvac_modes: ['heat', 'cool'] },
       },
     ]);
     const { container } = renderTile({ type: 'climate', id: 'climate.x', position: [0, 0] });
@@ -154,9 +154,9 @@ describe('interactive tiles', () => {
     const options = container.querySelectorAll('.item-select--option');
     expect(options).toHaveLength(2);
     fireEvent.click(options[1]!);
-    expect(callServiceMock).toHaveBeenCalledWith('climate', 'set_preset_mode', {
+    expect(callServiceMock).toHaveBeenCalledWith('climate', 'set_hvac_mode', {
       entity_id: 'climate.x',
-      preset_mode: 'eco',
+      hvac_mode: 'cool',
     });
   });
 
