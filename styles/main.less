@@ -2145,9 +2145,13 @@ body {
          transition: 0.5s ease opacity;
       }
 
+      // ponytail: hold prev visible while active fades in, then fade it out;
+      // keeps the crossfade without the old image leaking around contained
+      // (portrait/landscape mismatch) slides in ambient mode
       &.-prev {
-         opacity: 1;
+         opacity: 0;
          z-index: 51;
+         transition: 0.5s ease opacity 0.5s;
       }
    }
 
@@ -2155,12 +2159,21 @@ body {
       background-size: cover;
       background-position: center;
 
+      // real blurred layer instead of backdrop-filter: works on kiosk/Android
+      // webviews where backdrop-filter silently no-ops, and costs one static
+      // filter pass per image instead of re-filtering every fade frame
+      &::before {
+         content: '';
+         position: absolute;
+         inset: -10px; // hide blur edge vignette
+         background: inherit;
+         filter: blur(10px) grayscale(85%);
+      }
+
       .screensaver-slide {
          background-size: contain;
          background-repeat: no-repeat;
          filter: drop-shadow(black 10px 10px 20px);
-         backdrop-filter: blur(10px) grayscale(85%);
-         -webkit-backdrop-filter: blur(10px) grayscale(85%);
       }
    }
 

@@ -131,7 +131,8 @@ export default function Screensaver() {
       >
         {slides.map((slide, index) => {
           const wasActive =
-            activeSlide === index + 1 || (slides.length === index + 1 && activeSlide === 0);
+            activeSlide !== index &&
+            (activeSlide === index + 1 || (slides.length === index + 1 && activeSlide === 0));
           return (
             <div
               key={index}
