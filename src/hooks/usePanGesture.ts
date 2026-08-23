@@ -107,6 +107,11 @@ export function usePanGesture(opts: PanOptions) {
 
       d.isDragging = true;
       setDragging(true);
+      try {
+        (e.target as HTMLElement)?.setPointerCapture?.(e.pointerId);
+      } catch {
+        // Pointer capture may fail or not be supported in some environments
+      }
     }
 
     const pos = axisPos(e);
@@ -120,6 +125,13 @@ export function usePanGesture(opts: PanOptions) {
   }
 
   function finish(e: React.PointerEvent): void {
+    try {
+      if ((e.target as HTMLElement)?.hasPointerCapture?.(e.pointerId)) {
+        (e.target as HTMLElement)?.releasePointerCapture?.(e.pointerId);
+      }
+    } catch {
+      // Ignore errors releasing pointer capture
+    }
     const d = drag.current;
     if (!d) return;
     const wasDragging = d.isDragging;
