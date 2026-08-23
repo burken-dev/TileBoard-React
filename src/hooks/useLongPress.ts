@@ -11,10 +11,12 @@ export function useLongPress(
   onPointerUp(e: React.PointerEvent): void;
   onPointerLeave(e: React.PointerEvent): void;
   onPointerCancel(e: React.PointerEvent): void;
+  onClick(e: React.MouseEvent): void;
 } {
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fired = useRef(false);
   const start = useRef<{ x: number; y: number } | null>(null);
+  const handled = useRef(false);
 
   function clear(): void {
     if (timer.current) {
@@ -26,6 +28,7 @@ export function useLongPress(
   function onPointerDown(e: React.PointerEvent): void {
     start.current = { x: e.clientX, y: e.clientY };
     fired.current = false;
+    handled.current = false;
     clear();
     timer.current = setTimeout(() => {
       fired.current = true;
@@ -45,14 +48,17 @@ export function useLongPress(
     clear();
     const s = start.current;
     start.current = null;
-    if (!s) return;
     if (fired.current) {
-      fired.current = false;
       return;
     }
-    const moved = Math.abs(e.clientX - s.x) > 10 || Math.abs(e.clientY - s.y) > 10;
-    if (moved) return;
-    onClick();
+    if (s && (Math.abs(e.clientX - s.x) > 10 || Math.abs(e.clientY - s.y) > 10)) {
+      return;
+    }
+    // In environments where pointerup fires before click, trigger and record handled
+    if (!handled.current) {
+      handled.current = true;
+      onClick();
+    }
   }
 
   function onPointerLeave(): void {
@@ -62,8 +68,27 @@ export function useLongPress(
   function onPointerCancel(): void {
     clear();
     start.current = null;
-    fired.current = false;
+    // Don't reset fired here so a trailing click event after long press doesn't trigger onClick
   }
 
-  return { onPointerDown, onPointerMove, onPointerUp, onPointerLeave, onPointerCancel };
+  function handleClick(_e: React.MouseEvent): void {
+    if (fired.current) {
+      fired.current = false;
+      return;
+    }
+    if (handled.current) {
+      handled.current = false;
+      return;
+    }
+    onClick();
+  }
+
+  return {
+    onPointerDown,
+    onPointerMove,
+    onPointerUp,
+    onPointerLeave,
+    onPointerCancel,
+    onClick: handleClick,
+  };
 }
