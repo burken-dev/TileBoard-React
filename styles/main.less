@@ -1349,7 +1349,6 @@ body {
    }
 }
 
-@alarmHeight: 423px;
 @alarmWidth: 280px;
 .alarm-popup, .datetime-popup {
    position: fixed;
@@ -1372,26 +1371,16 @@ body {
 
    &-container {
       background: #111;
-      //height: @alarmHeight;
       width: @alarmWidth;
       overflow: hidden;
       white-space: nowrap;
       position: absolute;
       left: 50%;
       top: 50%;
-      margin-left: -@alarmWidth / 2;
-      margin-top: -@alarmHeight / 2;
+      transform: translate(-50%, -50%);
       z-index: 12;
       box-sizing: border-box;
       padding: 10px;
-
-      &.-no-code {
-         margin-top: -80px;
-      }
-   }
-
-   .datetime-popup-container {
-      margin-top: -180px;
    }
 
    &-state {
