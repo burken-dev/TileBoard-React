@@ -87,6 +87,7 @@ function Tile({ item, page }: TileProps) {
       className={'item ' + itemClasses(resolved, entity, loading, selectOpened(resolved)).join(' ')}
       style={styles}
       onPointerDown={long.onPointerDown}
+      onPointerMove={long.onPointerMove}
       onPointerUp={long.onPointerUp}
       onPointerLeave={long.onPointerLeave}
     >

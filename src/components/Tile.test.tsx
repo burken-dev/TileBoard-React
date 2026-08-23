@@ -67,6 +67,27 @@ describe('Tile', () => {
     vi.advanceTimersByTime(700);
     fireEvent.pointerUp(container.querySelector('.item')!);
     expect(secondaryAction).toHaveBeenCalled();
+    vi.useRealTimers();
+  });
+
+  it('cancels secondaryAction on pointer move during scroll/drag', () => {
+    vi.useFakeTimers();
+    setup();
+    const secondaryAction = vi.fn();
+    const item: TileConfig = {
+      type: 'switch',
+      id: 'switch.test',
+      position: [0, 0],
+      secondaryAction,
+    };
+    const { container } = render(<Tile item={item} page={{ groups: [] }} />);
+    const itemEl = container.querySelector('.item')!;
+    fireEvent.pointerDown(itemEl, { clientX: 100, clientY: 100 });
+    fireEvent.pointerMove(itemEl, { clientX: 100, clientY: 130 });
+    vi.advanceTimersByTime(700);
+    fireEvent.pointerUp(itemEl, { clientX: 100, clientY: 130 });
+    expect(secondaryAction).not.toHaveBeenCalled();
+    vi.useRealTimers();
   });
 
   it('renders nothing for hidden tiles', () => {

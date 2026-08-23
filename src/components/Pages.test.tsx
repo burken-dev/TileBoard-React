@@ -113,4 +113,39 @@ describe('Pages', () => {
     expect(panContainer?.querySelector('#pages')).not.toBeNull();
     expect(panContainer?.querySelector('.header')?.textContent).toContain('Hi');
   });
+
+  it('does not pan page when dragging inside a scrollable tile container', () => {
+    createAppStore({
+      ...fixture,
+      pages: [
+        {
+          title: 'P1',
+          groups: [
+            {
+              title: 'G1',
+              items: [
+                {
+                  type: 'custom',
+                  id: 'a',
+                  position: [0, 0],
+                  customHtml: () =>
+                    '<div class="electricity-longlist" style="overflow-y: auto;"><div class="item-list--item">Price</div></div>',
+                },
+              ],
+            },
+          ],
+        },
+        fixture.pages[1],
+      ],
+    });
+    getAppStore().setEntities([{ entity_id: 'a', state: 'off', attributes: {} }]);
+    const { container } = render(<Pages />);
+    const pagesEl = container.querySelector('#pages') as HTMLElement;
+    const scrollItem = container.querySelector('.item-list--item')!;
+
+    fireEvent.pointerDown(scrollItem, { clientY: 300 });
+    fireEvent.pointerMove(scrollItem, { clientY: 100 });
+    // Transform should NOT be set on drag since target is in a scrollable element
+    expect(pagesEl.style.transform).toBe('translate(0, 0%)');
+  });
 });

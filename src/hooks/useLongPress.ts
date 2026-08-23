@@ -7,6 +7,7 @@ export function useLongPress(
   ms = 600,
 ): {
   onPointerDown(e: React.PointerEvent): void;
+  onPointerMove(e: React.PointerEvent): void;
   onPointerUp(e: React.PointerEvent): void;
   onPointerLeave(e: React.PointerEvent): void;
 } {
@@ -31,6 +32,14 @@ export function useLongPress(
     }, ms);
   }
 
+  function onPointerMove(e: React.PointerEvent): void {
+    const s = start.current;
+    if (!s) return;
+    if (Math.abs(e.clientX - s.x) > 10 || Math.abs(e.clientY - s.y) > 10) {
+      clear();
+    }
+  }
+
   function onPointerUp(e: React.PointerEvent): void {
     clear();
     const s = start.current;
@@ -49,5 +58,5 @@ export function useLongPress(
     clear();
   }
 
-  return { onPointerDown, onPointerUp, onPointerLeave };
+  return { onPointerDown, onPointerMove, onPointerUp, onPointerLeave };
 }
