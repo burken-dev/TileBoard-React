@@ -91,6 +91,7 @@ function Tile({ item, page }: TileProps) {
       onPointerUp={long.onPointerUp}
       onPointerLeave={long.onPointerLeave}
       onPointerCancel={long.onPointerCancel}
+      onClick={long.onClick}
     >
       <div className="item-clickable" />
       {(resolved.bg || resolved.bgSuffix) && (
