@@ -434,3 +434,69 @@ export function useEntities(ids: string[]): EntityStates {
 
   return useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 }
+
+export function useEntitiesSelector(ids: string[]): EntityStates {
+  const idsRef = useRef(ids);
+  idsRef.current = ids;
+
+  const cacheRef = useRef<{
+    ids: string[];
+    snapshot: EntityStates;
+  }>({
+    ids: [],
+    snapshot: {},
+  });
+
+  const subscribe = useCallback((onStoreChange: () => void): (() => void) => {
+    if (!appStore) throw new Error('createAppStore() must be called before useAppStore()');
+    return appStore.subscribe((state, prev) => {
+      for (const id of idsRef.current) {
+        if (prev.entities[id] !== state.entities[id]) {
+          onStoreChange();
+          return;
+        }
+      }
+    });
+  }, []);
+
+  const getSnapshot = useCallback((): EntityStates => {
+    if (!appStore) throw new Error('createAppStore() must be called before useAppStore()');
+    const allEntities = appStore.getState().entities;
+    const currentIds = idsRef.current;
+    const cache = cacheRef.current;
+
+    const idsChanged =
+      currentIds.length !== cache.ids.length ||
+      currentIds.some((id, i) => id !== cache.ids[i]);
+
+    let entitiesChanged = idsChanged;
+    if (!entitiesChanged) {
+      for (const id of currentIds) {
+        if (cache.snapshot[id] !== allEntities[id]) {
+          entitiesChanged = true;
+          break;
+        }
+      }
+    }
+
+    if (entitiesChanged) {
+      const nextSnapshot: EntityStates = {};
+      for (const id of currentIds) {
+        const entity = allEntities[id];
+        if (entity !== undefined) {
+          nextSnapshot[id] = entity;
+        }
+      }
+      cacheRef.current = {
+        ids: [...currentIds],
+        snapshot: nextSnapshot,
+      };
+      return nextSnapshot;
+    }
+
+    return cache.snapshot;
+  }, []);
+
+  return useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+}
+
