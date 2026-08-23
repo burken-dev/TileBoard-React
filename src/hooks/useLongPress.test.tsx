@@ -19,6 +19,7 @@ function TestComponent({
       onPointerMove={long.onPointerMove}
       onPointerUp={long.onPointerUp}
       onPointerLeave={long.onPointerLeave}
+      onPointerCancel={long.onPointerCancel}
     >
       Tile
     </div>
@@ -72,6 +73,25 @@ describe('useLongPress', () => {
     fireEvent.pointerMove(el, { clientX: 100, clientY: 130 });
     vi.advanceTimersByTime(650);
     fireEvent.pointerUp(el, { clientX: 100, clientY: 130 });
+
+    expect(onLongPress).not.toHaveBeenCalled();
+    expect(onClick).not.toHaveBeenCalled();
+    vi.useRealTimers();
+  });
+
+  it('cancels state on pointerCancel', () => {
+    vi.useFakeTimers();
+    const onLongPress = vi.fn();
+    const onClick = vi.fn();
+    const { container } = render(
+      <TestComponent onLongPress={onLongPress} onClick={onClick} />,
+    );
+    const el = container.querySelector('[data-testid="target"]')!;
+
+    fireEvent.pointerDown(el, { clientX: 100, clientY: 100 });
+    fireEvent.pointerCancel(el);
+    vi.advanceTimersByTime(650);
+    fireEvent.pointerUp(el, { clientX: 100, clientY: 100 });
 
     expect(onLongPress).not.toHaveBeenCalled();
     expect(onClick).not.toHaveBeenCalled();

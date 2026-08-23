@@ -107,4 +107,37 @@ describe('usePanGesture', () => {
     expect(onDrag).not.toHaveBeenCalled();
     expect(onSettle).not.toHaveBeenCalled();
   });
+
+  it('does NOT pan page on micro-movements (< 10px threshold) like touch taps', () => {
+    const onDrag = vi.fn();
+    const onSettle = vi.fn();
+    const { container } = render(
+      <TestPanComponent onDrag={onDrag} onSettle={onSettle} />,
+    );
+    const tile = container.querySelector('[data-testid="regular-tile"]')!;
+
+    // Tap with 3px jitter (typical touch panel tap)
+    fireEvent.pointerDown(tile, { clientY: 200 });
+    fireEvent.pointerMove(tile, { clientY: 203 });
+    fireEvent.pointerUp(tile, { clientY: 203 });
+
+    expect(onDrag).not.toHaveBeenCalled();
+    expect(onSettle).not.toHaveBeenCalled();
+  });
+
+  it('handles pointerCancel gracefully without settling if not dragging', () => {
+    const onDrag = vi.fn();
+    const onSettle = vi.fn();
+    const { container } = render(
+      <TestPanComponent onDrag={onDrag} onSettle={onSettle} />,
+    );
+    const tile = container.querySelector('[data-testid="regular-tile"]')!;
+
+    fireEvent.pointerDown(tile, { clientY: 200 });
+    fireEvent.pointerMove(tile, { clientY: 202 });
+    fireEvent.pointerCancel(tile);
+
+    expect(onDrag).not.toHaveBeenCalled();
+    expect(onSettle).not.toHaveBeenCalled();
+  });
 });

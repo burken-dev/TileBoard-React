@@ -45,7 +45,10 @@ export default function Pages() {
     disabled: false,
     onDrag: (offset) => {
       const el = containerRef.current;
-      if (el) el.style.transform = dragTransform(offset, transition, menuOnLeft);
+      if (el) {
+        el.style.transition = 'none';
+        el.style.transform = dragTransform(offset, transition, menuOnLeft);
+      }
     },
     onSettle: (targetPos) => {
       const el = containerRef.current;
@@ -62,11 +65,7 @@ export default function Pages() {
   };
 
   const pointerHandlers = {
-    onPointerDown: (e: React.PointerEvent) => {
-      const el = containerRef.current;
-      if (el) el.style.transition = 'none';
-      pan.onPointerDown(e);
-    },
+    onPointerDown: pan.onPointerDown,
     onPointerMove: pan.onPointerMove,
     onPointerUp: pan.onPointerUp,
     onPointerCancel: pan.onPointerCancel,
