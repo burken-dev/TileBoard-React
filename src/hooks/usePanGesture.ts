@@ -15,7 +15,10 @@ interface DragState {
   last: number;
   lastTime: number;
   initial: number;
+  isDragging: boolean;
 }
+
+const DRAG_THRESHOLD = 10; // px threshold before initiating page pan
 
 function isScrollableElement(el: Element, axis: 'x' | 'y'): boolean {
   if (!(el instanceof HTMLElement)) return false;
@@ -74,14 +77,23 @@ export function usePanGesture(opts: PanOptions) {
       last: pos,
       lastTime: Date.now(),
       initial: -opts.active * 100,
+      isDragging: false,
     };
-    setDragging(true);
   }
 
   function onPointerMove(e: React.PointerEvent): void {
     const d = drag.current;
     if (!d) return;
     const delta = axisPos(e) - d.start;
+
+    if (!d.isDragging) {
+      if (Math.abs(delta) < DRAG_THRESHOLD) {
+        return;
+      }
+      d.isDragging = true;
+      setDragging(true);
+    }
+
     const offset = -opts.active * 100 + (delta / viewport()) * 100;
     const max = -(opts.count - 1) * 100;
     const clamped = Math.max(max, Math.min(0, offset));
@@ -93,8 +105,13 @@ export function usePanGesture(opts: PanOptions) {
   function finish(e: React.PointerEvent): void {
     const d = drag.current;
     if (!d) return;
+    const wasDragging = d.isDragging;
     drag.current = null;
     setDragging(false);
+
+    if (!wasDragging) {
+      return;
+    }
 
     const pos = axisPos(e);
     const panPercent = ((pos - d.start) / viewport()) * 100;
@@ -117,9 +134,13 @@ export function usePanGesture(opts: PanOptions) {
   }
 
   function onPointerCancel(): void {
+    const d = drag.current;
+    const wasDragging = d?.isDragging;
     drag.current = null;
     setDragging(false);
-    opts.onSettle(opts.active);
+    if (wasDragging) {
+      opts.onSettle(opts.active);
+    }
   }
 
   return {

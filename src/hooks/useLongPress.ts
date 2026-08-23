@@ -10,6 +10,7 @@ export function useLongPress(
   onPointerMove(e: React.PointerEvent): void;
   onPointerUp(e: React.PointerEvent): void;
   onPointerLeave(e: React.PointerEvent): void;
+  onPointerCancel(e: React.PointerEvent): void;
 } {
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fired = useRef(false);
@@ -58,5 +59,11 @@ export function useLongPress(
     clear();
   }
 
-  return { onPointerDown, onPointerMove, onPointerUp, onPointerLeave };
+  function onPointerCancel(): void {
+    clear();
+    start.current = null;
+    fired.current = false;
+  }
+
+  return { onPointerDown, onPointerMove, onPointerUp, onPointerLeave, onPointerCancel };
 }

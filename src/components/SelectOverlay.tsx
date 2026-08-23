@@ -18,12 +18,16 @@ export function SelectOverlay({
 }) {
   if (!options) return null;
   return (
-    <div className="item-select" style={style}>
+    <div
+      className="item-select"
+      style={style}
+      onPointerDown={(e: React.PointerEvent) => e.stopPropagation()}
+      onPointerUp={(e: React.PointerEvent) => e.stopPropagation()}
+    >
       {options.map((option, index) => (
         <div
           key={index}
           className={'item-select--option' + (option === active ? ' -active' : '')}
-          onPointerDown={(e: React.PointerEvent) => e.stopPropagation()}
           onClick={(e) => {
             e.stopPropagation();
             onChoose(option);
