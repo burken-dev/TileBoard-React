@@ -60,49 +60,67 @@ function TestPanComponent({
 }
 
 describe('usePanGesture', () => {
-  it('pans page when dragging on standard tile', () => {
+  it('pans page when dragging on primary axis (Y when menu is left)', () => {
     const onDrag = vi.fn();
     const onSettle = vi.fn();
     const { container } = render(
-      <TestPanComponent onDrag={onDrag} onSettle={onSettle} />,
+      <TestPanComponent axis="y" onDrag={onDrag} onSettle={onSettle} />,
     );
     const tile = container.querySelector('[data-testid="regular-tile"]')!;
 
-    fireEvent.pointerDown(tile, { clientY: 200 });
-    fireEvent.pointerMove(tile, { clientY: 100 });
-    fireEvent.pointerUp(tile, { clientY: 100 });
+    fireEvent.pointerDown(tile, { clientX: 100, clientY: 200 });
+    fireEvent.pointerMove(tile, { clientX: 102, clientY: 100 });
+    fireEvent.pointerUp(tile, { clientX: 102, clientY: 100 });
 
     expect(onDrag).toHaveBeenCalled();
     expect(onSettle).toHaveBeenCalled();
   });
 
-  it('does NOT pan page when dragging inside a scrollable container (e.g. electricity list)', () => {
+  it('aborts pan gesture when scrolling along cross axis (X when menu is left) so page scrolling works', () => {
     const onDrag = vi.fn();
     const onSettle = vi.fn();
     const { container } = render(
-      <TestPanComponent onDrag={onDrag} onSettle={onSettle} />,
+      <TestPanComponent axis="y" onDrag={onDrag} onSettle={onSettle} />,
     );
-    const listItem = container.querySelector('[data-testid="list-item"]')!;
+    const tile = container.querySelector('[data-testid="regular-tile"]')!;
 
-    fireEvent.pointerDown(listItem, { clientY: 200 });
-    fireEvent.pointerMove(listItem, { clientY: 100 });
-    fireEvent.pointerUp(listItem, { clientY: 100 });
+    // User swipes horizontally 60px with small 12px vertical deviation
+    fireEvent.pointerDown(tile, { clientX: 200, clientY: 100 });
+    fireEvent.pointerMove(tile, { clientX: 140, clientY: 112 });
+    fireEvent.pointerUp(tile, { clientX: 140, clientY: 112 });
 
     expect(onDrag).not.toHaveBeenCalled();
     expect(onSettle).not.toHaveBeenCalled();
   });
 
-  it('does NOT pan page when clicking inputs', () => {
+  it('aborts pan gesture when scrolling along cross axis (Y when menu is bottom) so page scrolling works', () => {
     const onDrag = vi.fn();
     const onSettle = vi.fn();
     const { container } = render(
-      <TestPanComponent onDrag={onDrag} onSettle={onSettle} />,
+      <TestPanComponent axis="x" onDrag={onDrag} onSettle={onSettle} />,
     );
-    const input = container.querySelector('[data-testid="text-input"]')!;
+    const tile = container.querySelector('[data-testid="regular-tile"]')!;
 
-    fireEvent.pointerDown(input, { clientY: 200 });
-    fireEvent.pointerMove(input, { clientY: 100 });
-    fireEvent.pointerUp(input, { clientY: 100 });
+    // User swipes vertically 60px with small 12px horizontal deviation
+    fireEvent.pointerDown(tile, { clientX: 100, clientY: 200 });
+    fireEvent.pointerMove(tile, { clientX: 112, clientY: 140 });
+    fireEvent.pointerUp(tile, { clientX: 112, clientY: 140 });
+
+    expect(onDrag).not.toHaveBeenCalled();
+    expect(onSettle).not.toHaveBeenCalled();
+  });
+
+  it('does NOT pan page when dragging inside a scrollable tile container', () => {
+    const onDrag = vi.fn();
+    const onSettle = vi.fn();
+    const { container } = render(
+      <TestPanComponent axis="y" onDrag={onDrag} onSettle={onSettle} />,
+    );
+    const listItem = container.querySelector('[data-testid="list-item"]')!;
+
+    fireEvent.pointerDown(listItem, { clientX: 100, clientY: 200 });
+    fireEvent.pointerMove(listItem, { clientX: 100, clientY: 100 });
+    fireEvent.pointerUp(listItem, { clientX: 100, clientY: 100 });
 
     expect(onDrag).not.toHaveBeenCalled();
     expect(onSettle).not.toHaveBeenCalled();
@@ -112,30 +130,29 @@ describe('usePanGesture', () => {
     const onDrag = vi.fn();
     const onSettle = vi.fn();
     const { container } = render(
-      <TestPanComponent onDrag={onDrag} onSettle={onSettle} />,
+      <TestPanComponent axis="y" onDrag={onDrag} onSettle={onSettle} />,
     );
     const tile = container.querySelector('[data-testid="regular-tile"]')!;
 
-    // Tap with 3px jitter (typical touch panel tap)
-    fireEvent.pointerDown(tile, { clientY: 200 });
-    fireEvent.pointerMove(tile, { clientY: 203 });
-    fireEvent.pointerUp(tile, { clientY: 203 });
+    fireEvent.pointerDown(tile, { clientX: 100, clientY: 200 });
+    fireEvent.pointerMove(tile, { clientX: 101, clientY: 203 });
+    fireEvent.pointerUp(tile, { clientX: 101, clientY: 203 });
 
     expect(onDrag).not.toHaveBeenCalled();
     expect(onSettle).not.toHaveBeenCalled();
   });
 
-  it('handles pointerCancel gracefully without settling if not dragging', () => {
+  it('does NOT pan page when interacting with inputs', () => {
     const onDrag = vi.fn();
     const onSettle = vi.fn();
     const { container } = render(
-      <TestPanComponent onDrag={onDrag} onSettle={onSettle} />,
+      <TestPanComponent axis="y" onDrag={onDrag} onSettle={onSettle} />,
     );
-    const tile = container.querySelector('[data-testid="regular-tile"]')!;
+    const input = container.querySelector('[data-testid="text-input"]')!;
 
-    fireEvent.pointerDown(tile, { clientY: 200 });
-    fireEvent.pointerMove(tile, { clientY: 202 });
-    fireEvent.pointerCancel(tile);
+    fireEvent.pointerDown(input, { clientX: 100, clientY: 200 });
+    fireEvent.pointerMove(input, { clientX: 100, clientY: 100 });
+    fireEvent.pointerUp(input, { clientX: 100, clientY: 100 });
 
     expect(onDrag).not.toHaveBeenCalled();
     expect(onSettle).not.toHaveBeenCalled();

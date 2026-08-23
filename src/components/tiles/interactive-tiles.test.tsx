@@ -28,6 +28,7 @@ function tap(container: HTMLElement) {
   const root = container.querySelector('.item')!;
   fireEvent.pointerDown(root);
   fireEvent.pointerUp(root);
+  fireEvent.click(root);
 }
 
 beforeEach(() => callServiceMock.mockClear());

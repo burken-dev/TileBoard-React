@@ -77,4 +77,22 @@ describe('AlarmPopup', () => {
     expect(container.querySelector('.alarm-popup-button.-icon.-home')).toBeNull();
     expect(container.querySelector('.alarm-popup-button.-icon.-disarm')).toBeTruthy();
   });
+
+  it('closes alarm popup when clicking close button', () => {
+    setup('armed_home');
+    const { container } = render(<AlarmPopup />);
+    expect(getAppStore().activeAlarm).not.toBeNull();
+
+    fireEvent.click(container.querySelector('.alarm-popup-close')!);
+    expect(getAppStore().activeAlarm).toBeNull();
+  });
+
+  it('closes alarm popup when clicking overlay', () => {
+    setup('armed_home');
+    const { container } = render(<AlarmPopup />);
+    expect(getAppStore().activeAlarm).not.toBeNull();
+
+    fireEvent.click(container.querySelector('.alarm-popup-overlay')!);
+    expect(getAppStore().activeAlarm).toBeNull();
+  });
 });
