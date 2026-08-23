@@ -17,6 +17,43 @@ interface DragState {
   initial: number;
 }
 
+function isScrollableElement(el: Element, axis: 'x' | 'y'): boolean {
+  if (!(el instanceof HTMLElement)) return false;
+  const style = window.getComputedStyle(el);
+  const overflow = axis === 'y' ? style.overflowY : style.overflowX;
+  if (overflow === 'auto' || overflow === 'scroll') return true;
+  const inlineOverflow = axis === 'y' ? el.style.overflowY : el.style.overflowX;
+  const inlineGeneral = el.style.overflow;
+  return (
+    inlineOverflow === 'auto' ||
+    inlineOverflow === 'scroll' ||
+    inlineGeneral === 'auto' ||
+    inlineGeneral === 'scroll'
+  );
+}
+
+function hasScrollableAncestor(
+  target: Element | null,
+  container: Element | null,
+  axis: 'x' | 'y',
+): boolean {
+  let current: Element | null = target;
+  while (current && current !== container) {
+    if (
+      current.classList.contains('page') ||
+      current.classList.contains('pages') ||
+      current.id === 'pages'
+    ) {
+      break;
+    }
+    if (isScrollableElement(current, axis)) {
+      return true;
+    }
+    current = current.parentElement;
+  }
+  return false;
+}
+
 export function usePanGesture(opts: PanOptions) {
   const [dragging, setDragging] = useState(false);
   const drag = useRef<DragState | null>(null);
@@ -27,9 +64,10 @@ export function usePanGesture(opts: PanOptions) {
   const viewport = (): number => (opts.axis === 'y' ? window.innerHeight : window.innerWidth);
 
   function onPointerDown(e: React.PointerEvent): void {
-    if (opts.disabled) return;
-    const target = e.target as HTMLElement;
+    if (opts.disabled || opts.count <= 1) return;
+    const target = e.target as HTMLElement | null;
     if (target && ['INPUT', 'TEXTAREA', 'SELECT'].indexOf(target.tagName) !== -1) return;
+    if (hasScrollableAncestor(target, e.currentTarget as HTMLElement | null, opts.axis)) return;
     const pos = axisPos(e);
     drag.current = {
       start: pos,
