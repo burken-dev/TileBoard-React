@@ -49,6 +49,7 @@ describe('Tile', () => {
     const { container } = render(<Tile item={item} page={{ groups: [] }} />);
     fireEvent.pointerDown(container.querySelector('.item')!);
     fireEvent.pointerUp(container.querySelector('.item')!);
+    fireEvent.click(container.querySelector('.item')!);
     expect(action).toHaveBeenCalled();
   });
 

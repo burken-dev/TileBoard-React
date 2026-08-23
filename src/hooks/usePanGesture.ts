@@ -11,8 +11,9 @@ export interface PanOptions {
 }
 
 interface DragState {
-  start: number;
-  last: number;
+  startX: number;
+  startY: number;
+  lastPos: number;
   lastTime: number;
   initial: number;
   isDragging: boolean;
@@ -71,10 +72,11 @@ export function usePanGesture(opts: PanOptions) {
     const target = e.target as HTMLElement | null;
     if (target && ['INPUT', 'TEXTAREA', 'SELECT'].indexOf(target.tagName) !== -1) return;
     if (hasScrollableAncestor(target, e.currentTarget as HTMLElement | null, opts.axis)) return;
-    const pos = axisPos(e);
+
     drag.current = {
-      start: pos,
-      last: pos,
+      startX: e.clientX,
+      startY: e.clientY,
+      lastPos: axisPos(e),
       lastTime: Date.now(),
       initial: -opts.active * 100,
       isDragging: false,
@@ -84,21 +86,36 @@ export function usePanGesture(opts: PanOptions) {
   function onPointerMove(e: React.PointerEvent): void {
     const d = drag.current;
     if (!d) return;
-    const delta = axisPos(e) - d.start;
+
+    const deltaX = e.clientX - d.startX;
+    const deltaY = e.clientY - d.startY;
+    const deltaPrimary = opts.axis === 'y' ? deltaY : deltaX;
+    const deltaCross = opts.axis === 'y' ? deltaX : deltaY;
 
     if (!d.isDragging) {
-      if (Math.abs(delta) < DRAG_THRESHOLD) {
+      // If movement in cross axis is greater than primary axis and exceeds threshold,
+      // this is a cross-axis scroll (e.g. horizontal page scroll when menu is on left),
+      // so abort pan gesture completely to allow native scrolling.
+      if (Math.abs(deltaCross) >= DRAG_THRESHOLD && Math.abs(deltaCross) > Math.abs(deltaPrimary)) {
+        drag.current = null;
         return;
       }
+
+      if (Math.abs(deltaPrimary) < DRAG_THRESHOLD) {
+        return;
+      }
+
       d.isDragging = true;
       setDragging(true);
     }
 
+    const pos = axisPos(e);
+    const delta = pos - (opts.axis === 'y' ? d.startY : d.startX);
     const offset = -opts.active * 100 + (delta / viewport()) * 100;
     const max = -(opts.count - 1) * 100;
     const clamped = Math.max(max, Math.min(0, offset));
     opts.onDrag(clamped);
-    d.last = axisPos(e);
+    d.lastPos = pos;
     d.lastTime = Date.now();
   }
 
@@ -106,6 +123,7 @@ export function usePanGesture(opts: PanOptions) {
     const d = drag.current;
     if (!d) return;
     const wasDragging = d.isDragging;
+    const startPos = opts.axis === 'y' ? d.startY : d.startX;
     drag.current = null;
     setDragging(false);
 
@@ -114,9 +132,9 @@ export function usePanGesture(opts: PanOptions) {
     }
 
     const pos = axisPos(e);
-    const panPercent = ((pos - d.start) / viewport()) * 100;
+    const panPercent = ((pos - startPos) / viewport()) * 100;
     const dt = Date.now() - d.lastTime;
-    const velocity = dt > 0 ? (pos - d.last) / dt : 0;
+    const velocity = dt > 0 ? (pos - d.lastPos) / dt : 0;
 
     let target = opts.active;
     if (

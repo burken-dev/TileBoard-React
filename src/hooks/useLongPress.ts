@@ -16,7 +16,7 @@ export function useLongPress(
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fired = useRef(false);
   const start = useRef<{ x: number; y: number } | null>(null);
-  const handled = useRef(false);
+  const moved = useRef(false);
 
   function clear(): void {
     if (timer.current) {
@@ -28,7 +28,7 @@ export function useLongPress(
   function onPointerDown(e: React.PointerEvent): void {
     start.current = { x: e.clientX, y: e.clientY };
     fired.current = false;
-    handled.current = false;
+    moved.current = false;
     clear();
     timer.current = setTimeout(() => {
       fired.current = true;
@@ -41,6 +41,7 @@ export function useLongPress(
     if (!s) return;
     if (Math.abs(e.clientX - s.x) > 10 || Math.abs(e.clientY - s.y) > 10) {
       clear();
+      moved.current = true;
     }
   }
 
@@ -48,16 +49,8 @@ export function useLongPress(
     clear();
     const s = start.current;
     start.current = null;
-    if (fired.current) {
-      return;
-    }
     if (s && (Math.abs(e.clientX - s.x) > 10 || Math.abs(e.clientY - s.y) > 10)) {
-      return;
-    }
-    // In environments where pointerup fires before click, trigger and record handled
-    if (!handled.current) {
-      handled.current = true;
-      onClick();
+      moved.current = true;
     }
   }
 
@@ -68,7 +61,7 @@ export function useLongPress(
   function onPointerCancel(): void {
     clear();
     start.current = null;
-    // Don't reset fired here so a trailing click event after long press doesn't trigger onClick
+    moved.current = true;
   }
 
   function handleClick(_e: React.MouseEvent): void {
@@ -76,8 +69,8 @@ export function useLongPress(
       fired.current = false;
       return;
     }
-    if (handled.current) {
-      handled.current = false;
+    if (moved.current) {
+      moved.current = false;
       return;
     }
     onClick();
