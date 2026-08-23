@@ -128,6 +128,7 @@ export interface TileConfig {
   iframeClasses?: Field<string | string[]>;
   settings?: Record<string, Field<unknown>>;
   customHtml?: Field<string>;
+  entities?: string[];
   layout?: { camera: TileConfig; tiles: TileConfig[]; page?: PageConfig };
   loading?: boolean;
   controlsEnabled?: boolean;
