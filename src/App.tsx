@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect } from 'react';
+import ConnectionOverlay from './components/ConnectionOverlay';
 import Notifications from './components/Notifications';
 import Pages from './components/Pages';
 import Screensaver from './components/Screensaver';
@@ -51,6 +52,7 @@ export default function App({ config }: AppProps) {
       </Suspense>
       <Notifications />
       <Screensaver />
+      <ConnectionOverlay />
     </div>
   );
 }

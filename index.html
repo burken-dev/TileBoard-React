@@ -19,9 +19,60 @@
   <link rel="shortcut icon" sizes="16x16 24x24 32x32 48x48 64x64" href="/favicon.png">
 
   <link rel="stylesheet" href="/config/styles/custom.css">
+  <style>
+    #tb-offline{position:fixed;bottom:24px;right:24px;z-index:9999;display:none;align-items:center;gap:12px;padding:12px 16px;background:rgba(30,30,30,.95);color:#fff;border-radius:8px;font-family:"Segoe UI",Roboto,sans-serif;font-size:14px;box-shadow:0 2px 12px rgba(0,0,0,.4);max-width:90vw}
+    #tb-offline button{background:#1e88e5;color:#fff;border:none;padding:8px 14px;border-radius:4px;cursor:pointer;font-size:14px}
+    #tb-offline button:active{background:#1565c0}
+    #tb-offline span{opacity:.9}
+    @media(max-width:600px){#tb-offline{left:12px;right:12px;bottom:12px;justify-content:space-between}}
+  </style>
 </head>
 <body>
   <div id="root">Loading TileBoard...</div>
+  <div id="tb-offline" role="status" aria-live="polite"><span id="tb-offline-status">Offline</span><button id="tb-offline-reload" type="button">Reload</button></div>
+  <script>
+    // ponytail: tiny offline shell — survives React crashes, offers manual Reload + auto-reload
+    (function(){
+      var overlay=document.getElementById('tb-offline');
+      var statusEl=document.getElementById('tb-offline-status');
+      var btn=document.getElementById('tb-offline-reload');
+      var autoTimer=null,ready=false,serverUrl=null;
+      function show(msg){if(msg)statusEl.textContent=msg;overlay.style.display='flex';}
+      function hide(){if(ready)overlay.style.display='none';}
+      function setStatus(m){statusEl.textContent=m;}
+      btn.onclick=function(){location.reload();};
+      window.addEventListener('tb-ready',function(){ready=true;hide();stopAuto();});
+      window.addEventListener('tb-reconnecting',function(){ready=true;show('Reconnecting…');});
+      window.addEventListener('tb-offline',function(e){ready=true;show(e.detail||'Offline');startAuto();});
+      window.addEventListener('tb-config-error',function(){ready=true;show('Config error');});
+      window.addEventListener('tb-config-not-found',function(){ready=true;show('Config not found');});
+      window.addEventListener('tb-server-url',function(e){serverUrl=e.detail;});
+      window.addEventListener('offline',function(){show('Offline');startAuto();});
+      window.addEventListener('online',function(){setStatus('Back online — reloading…');pingAndReload();});
+      // if bundle never loads, surface the button
+      setTimeout(function(){if(!ready)show('Loading failed — check connection');},7000);
+      function pingAndReload(){
+        var url=serverUrl||location.href;
+        fetch(url,{method:'HEAD',cache:'no-store'}).then(function(r){
+          if(r.ok)location.reload();
+          else if(serverUrl)fetch(location.href,{method:'HEAD',cache:'no-store'}).then(function(r2){if(r2.ok)location.reload();}).catch(function(){});
+        }).catch(function(){
+          if(serverUrl)fetch(location.href,{method:'HEAD',cache:'no-store'}).then(function(r2){if(r2.ok)location.reload();}).catch(function(){});
+        });
+      }
+      function startAuto(){
+        if(autoTimer)return;
+        autoTimer=setInterval(function(){
+          if(navigator.onLine===false)return;
+          pingAndReload();
+        },10000);
+        setTimeout(pingAndReload,2000);
+      }
+      function stopAuto(){if(autoTimer){clearInterval(autoTimer);autoTimer=null;}}
+      window.addEventListener('focus',function(){if(overlay.style.display!=='none')pingAndReload();});
+      if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(function(){});}
+    })();
+  </script>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 </html>

@@ -22,6 +22,10 @@ window.onerror = (error, file, line, col) => {
   } catch {
     // store not ready yet
   }
+  window.dispatchEvent(new CustomEvent('tb-offline', { detail: 'Error — Reload' }));
+};
+window.onunhandledrejection = () => {
+  window.dispatchEvent(new CustomEvent('tb-offline', { detail: 'Error — Reload' }));
 };
 
 async function start() {
@@ -29,6 +33,7 @@ async function start() {
   try {
     await loadConfigScript(name);
   } catch {
+    window.dispatchEvent(new CustomEvent('tb-config-not-found'));
     createRoot(document.getElementById('root')!).render(
       <StrictMode>
         <ConfigNotFound name={name} />
@@ -40,6 +45,8 @@ async function start() {
   const result = loadConfig();
   if (result.ok) {
     createAppStore(result.config);
+    window.dispatchEvent(new CustomEvent('tb-server-url', { detail: result.config.serverUrl }));
+    window.dispatchEvent(new CustomEvent('tb-ready'));
     for (const url of result.config.scripts ?? []) {
       try {
         await loadScript(url);
@@ -52,6 +59,8 @@ async function start() {
         });
       }
     }
+  } else {
+    window.dispatchEvent(new CustomEvent('tb-config-error'));
   }
 
   createRoot(document.getElementById('root')!).render(

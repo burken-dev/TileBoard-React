@@ -9,6 +9,7 @@ export default function ConfigError({ errors }: ConfigErrorProps) {
       {errors.map((error) => (
         <p key={error}>{error}</p>
       ))}
+      <button onClick={() => window.location.reload()}>Reload</button>
     </div>
   );
 }
