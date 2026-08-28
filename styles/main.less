@@ -2152,20 +2152,18 @@ body {
       z-index: 51;
       opacity: 0;
       font-size: 35px;
+      will-change: opacity;
 
       &.-active {
          opacity: 1;
          z-index: 52;
-         transition: 0.5s ease opacity;
+         transition: opacity 0.5s ease;
       }
 
-      // ponytail: hold prev visible while active fades in, then fade it out;
-      // keeps the crossfade without the old image leaking around contained
-      // (portrait/landscape mismatch) slides in ambient mode
       &.-prev {
          opacity: 0;
          z-index: 51;
-         transition: 0.5s ease opacity 0.5s;
+         transition: opacity 0.5s ease;
       }
    }
 
@@ -2182,12 +2180,16 @@ body {
          inset: -10px; // hide blur edge vignette
          background: inherit;
          filter: blur(10px) grayscale(85%);
+         z-index: 0;
       }
 
       .screensaver-slide {
          background-size: contain;
          background-repeat: no-repeat;
-         filter: drop-shadow(black 10px 10px 20px);
+         // ponytail: drop-shadow is expensive and can hide the layer on low-mem kiosks;
+         // box-shadow is cheaper and always visible
+         filter: none;
+         box-shadow: 0 10px 30px rgba(0,0,0,0.4);
       }
    }
 
