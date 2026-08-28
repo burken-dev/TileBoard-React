@@ -11,6 +11,7 @@ import ScreensaverControls from './ScreensaverControls';
 let lastActivity = Date.now();
 
 function slideBg(bg: string, cacheBust?: number): string {
+  if (!bg) return bg;
   if (!cacheBust) return bg;
   const base = bg.replace(/\?.*$/, '');
   const bucket = Math.floor(Date.now() / 1000 / cacheBust);
@@ -91,7 +92,8 @@ export default function Screensaver() {
 
   const cacheBust = conf?.slideCacheBust as number | undefined;
   const ambient = Boolean(conf?.ambient_backdrop);
-  const activeBg = slides.length ? slideBg(slides[activeSlide]?.bg ?? '', cacheBust) : undefined;
+  const safeActive = slides.length ? ((activeSlide % slides.length) + slides.length) % slides.length : 0;
+  const activeBg = slides.length ? slideBg(slides[safeActive]?.bg ?? '', cacheBust) : undefined;
 
   useEffect(() => {
     setScreensaverBg(activeBg ?? null);
@@ -102,10 +104,10 @@ export default function Screensaver() {
     if (!len) return;
     switch (button.type) {
       case 'previous':
-        setScreensaverSlide((activeSlide - 1 + len) % len);
+        setScreensaverSlide((safeActive - 1 + len) % len);
         return;
       case 'next':
-        setScreensaverSlide((activeSlide + 1) % len);
+        setScreensaverSlide((safeActive + 1) % len);
         return;
       case 'play_pause':
         setScreensaverPaused(!paused);
@@ -113,7 +115,7 @@ export default function Screensaver() {
       default:
         if (button.action) {
           callFunction(button.action, [
-            { bg: activeBg ?? '', index: activeSlide, total: len },
+            { bg: activeBg ?? '', index: safeActive, total: len },
           ]);
         }
     }
@@ -131,18 +133,18 @@ export default function Screensaver() {
       >
         {slides.map((slide, index) => {
           const wasActive =
-            activeSlide !== index &&
-            (activeSlide === index + 1 || (slides.length === index + 1 && activeSlide === 0));
+            safeActive !== index &&
+            (safeActive === index + 1 || (slides.length === index + 1 && safeActive === 0));
           return (
             <div
               key={index}
               className={
                 'screensaver-slide' +
-                (activeSlide === index ? ' -active' : '') +
+                (safeActive === index ? ' -active' : '') +
                 (wasActive ? ' -prev' : '')
               }
               style={{
-                backgroundImage: `url(${slideBgUrl(slide.bg)})`,
+                ...(slide.bg ? { backgroundImage: `url(${slideBgUrl(slide.bg)})` } : {}),
                 ...(slide.styles ?? {}),
               }}
             >
