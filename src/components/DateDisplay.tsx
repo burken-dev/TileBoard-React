@@ -12,7 +12,10 @@ export default function DateDisplay({ format: fmt }: DateDisplayProps) {
   const locale = useAppStore((s) => s.config.locale);
 
   useEffect(() => {
-    const id = window.setInterval(() => setNow(new Date()), 60 * 1000);
+    const id = window.setInterval(() => {
+      if (document.hidden) return;
+      setNow(new Date());
+    }, 60 * 1000);
     return () => window.clearInterval(id);
   }, []);
 

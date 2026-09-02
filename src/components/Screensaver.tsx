@@ -71,24 +71,23 @@ export default function Screensaver() {
   }, [conf?.timeout, setScreensaverShown]);
 
   useEffect(() => {
-    if (!conf?.timeout) return;
+    if (!conf?.timeout || shown) return;
     const id = window.setInterval(() => {
-      if (shown) return;
       const inactivity = Date.now() - lastActivity;
       setScreensaverShown((conf.timeout as number) < inactivity / 1000);
     }, 1000);
     return () => window.clearInterval(id);
   }, [conf?.timeout, setScreensaverShown, shown]);
 
+  const slidesLen = conf?.slides?.length ?? 0;
   useEffect(() => {
-    if (!conf?.timeout || !shown || paused) return;
-    const slides = conf.slides ?? [];
-    if (!slides.length) return;
+    if (!conf?.timeout || !shown || paused || !slidesLen) return;
+    const ms = ((conf.slidesTimeout as number | undefined) ?? 1) * 1000;
     const id = window.setInterval(() => {
-      setScreensaverSlide((activeSlide + 1) % slides.length);
-    }, ((conf.slidesTimeout as number | undefined) ?? 1) * 1000);
+      setScreensaverSlide((activeSlide + 1) % slidesLen);
+    }, ms);
     return () => window.clearInterval(id);
-  }, [conf?.timeout, conf?.slidesTimeout, shown, paused, activeSlide, setScreensaverSlide]);
+  }, [conf?.timeout, conf?.slidesTimeout, shown, paused, activeSlide, setScreensaverSlide, slidesLen]);
 
   const cacheBust = conf?.slideCacheBust as number | undefined;
   const ambient = Boolean(conf?.ambient_backdrop);
@@ -132,6 +131,13 @@ export default function Screensaver() {
         style={ambient && activeBg ? { backgroundImage: `url(${activeBg})` } : undefined}
       >
         {slides.map((slide, index) => {
+          // ponytail: keep only active + neighbours in DOM to save decode/memory on Pi
+          if (slides.length > 3) {
+            const isActive = index === safeActive;
+            const isPrev = index === (safeActive - 1 + slides.length) % slides.length;
+            const isNext = index === (safeActive + 1) % slides.length;
+            if (!isActive && !isPrev && !isNext) return null;
+          }
           const wasActive =
             safeActive !== index &&
             (safeActive === index + 1 || (slides.length === index + 1 && safeActive === 0));

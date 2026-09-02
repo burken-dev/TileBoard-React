@@ -211,6 +211,7 @@ body {
    position: relative;
    z-index: 1;
    transition: 0.25s ease-out transform;
+   will-change: transform;
 }
 
 .page {
@@ -223,6 +224,8 @@ body {
    align-items: center;
    flex-wrap: nowrap;
    overflow-x: auto;
+   content-visibility: auto;
+   contain-intrinsic-size: 800px 600px;
 }
 
 .-hide-scrollbar {
