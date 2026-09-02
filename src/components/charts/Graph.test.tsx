@@ -4,14 +4,32 @@ import { createAppStore } from '../../store';
 import type { TileBoardConfig } from '../../config/types';
 import Graph from './Graph';
 
-const { chartInstances } = vi.hoisted(() => ({ chartInstances: [] as Array<{ destroy: ReturnType<typeof vi.fn> }> }));
-
-vi.mock('chart.js/auto', () => ({
-  default: vi.fn().mockImplementation(function ChartMock() {
+const { chartInstances, ChartMock } = vi.hoisted(() => {
+  const chartInstances = [] as Array<{ destroy: ReturnType<typeof vi.fn> }>;
+  const ChartMock = vi.fn().mockImplementation(function ChartMock() {
     const inst = { destroy: vi.fn() };
     chartInstances.push(inst);
-    return inst;
-  }),
+    return inst as unknown;
+  }) as unknown as ReturnType<typeof vi.fn> & { register: ReturnType<typeof vi.fn> };
+  (ChartMock as unknown as { register: unknown }).register = vi.fn();
+  return { chartInstances, ChartMock };
+});
+
+vi.mock('chart.js', () => ({
+  Chart: ChartMock,
+  BarController: {},
+  BarElement: {},
+  CategoryScale: {},
+  Legend: {},
+  LineController: {},
+  LineElement: {},
+  LinearScale: {},
+  PointElement: {},
+  TimeScale: {},
+  Tooltip: {},
+}));
+vi.mock('chart.js/auto', () => ({
+  default: ChartMock,
 }));
 
 vi.mock('chartjs-adapter-date-fns', () => ({}));
@@ -34,7 +52,8 @@ describe('Graph', () => {
   });
 
   it('creates a chart with the model datasets and merged options', async () => {
-    const ChartMock = (await import('chart.js/auto')).default as unknown as ReturnType<typeof vi.fn>;
+    const { Chart } = await import('chart.js');
+    const ChartMock = Chart as unknown as ReturnType<typeof vi.fn>;
     render(<Graph model={model} options={{ plugins: { legend: { display: false } } }} />);
     expect(ChartMock).toHaveBeenCalledTimes(1);
     const configArg = ChartMock.mock.calls[0][1];

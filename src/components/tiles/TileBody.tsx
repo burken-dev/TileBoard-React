@@ -1,4 +1,4 @@
-import type { ReactElement } from 'react';
+import { lazy, Suspense, type ReactElement } from 'react';
 import type { HaEntity, PageConfig, TileConfig } from '../../config/types';
 import { Camera } from '../cameras/Camera';
 import { CameraStream } from '../cameras/CameraStream';
@@ -10,7 +10,6 @@ import { DeviceTrackerTile } from './DeviceTrackerTile';
 import { DimmerTile } from './DimmerTile';
 import { FanTile } from './FanTile';
 import { GaugeTile } from './GaugeTile';
-import { GraphTile } from './GraphTile';
 import { IconTile } from './IconTile';
 import { IframeTile } from './IframeTile';
 import { ImageTile } from './ImageTile';
@@ -24,6 +23,10 @@ import { SliderTile } from './SliderTile';
 import { TextListTile } from './TextListTile';
 import { WeatherListTile } from './WeatherListTile';
 import { WeatherTile } from './WeatherTile';
+
+const GraphTile = lazy(() =>
+  import('./GraphTile').then((m) => ({ default: m.GraphTile })),
+);
 
 export function TileBody({
   item,
@@ -58,7 +61,11 @@ export function TileBody({
     case 'gauge':
       return <GaugeTile item={item} entity={entity} />;
     case 'graph':
-      return <GraphTile item={item} entity={entity} />;
+      return (
+        <Suspense fallback={null}>
+          <GraphTile item={item} entity={entity} />
+        </Suspense>
+      );
     case 'input_number':
       return <InputNumberTile item={item} entity={entity} />;
     case 'input_select':

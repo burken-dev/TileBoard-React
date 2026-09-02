@@ -5,14 +5,32 @@ import { createAppStore, getAppStore } from '../../store';
 import { getHistory } from '../../ha/services';
 import GraphPopup from './GraphPopup';
 
-const { chartInstances } = vi.hoisted(() => ({ chartInstances: [] as Array<{ destroy: ReturnType<typeof vi.fn> }> }));
-
-vi.mock('chart.js/auto', () => ({
-  default: vi.fn().mockImplementation(function ChartMock() {
+const { chartInstances, ChartMock } = vi.hoisted(() => {
+  const chartInstances = [] as Array<{ destroy: ReturnType<typeof vi.fn> }>;
+  const ChartMock = vi.fn().mockImplementation(function ChartMock() {
     const inst = { destroy: vi.fn() };
     chartInstances.push(inst);
-    return inst;
-  }),
+    return inst as unknown;
+  }) as unknown as ReturnType<typeof vi.fn> & { register: ReturnType<typeof vi.fn> };
+  (ChartMock as unknown as { register: unknown }).register = vi.fn();
+  return { chartInstances, ChartMock };
+});
+
+vi.mock('chart.js', () => ({
+  Chart: ChartMock,
+  BarController: {},
+  BarElement: {},
+  CategoryScale: {},
+  Legend: {},
+  LineController: {},
+  LineElement: {},
+  LinearScale: {},
+  PointElement: {},
+  TimeScale: {},
+  Tooltip: {},
+}));
+vi.mock('chart.js/auto', () => ({
+  default: ChartMock,
 }));
 vi.mock('chartjs-adapter-date-fns', () => ({}));
 vi.mock('../../ha/services', async (importOriginal) => {

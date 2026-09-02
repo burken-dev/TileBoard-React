@@ -1,10 +1,35 @@
 import { useEffect, useRef } from 'react';
-import Chart from 'chart.js/auto';
+import {
+  BarController,
+  BarElement,
+  CategoryScale,
+  Chart,
+  Legend,
+  LineController,
+  LineElement,
+  LinearScale,
+  PointElement,
+  TimeScale,
+  Tooltip,
+} from 'chart.js';
 import 'chartjs-adapter-date-fns';
 import type { ChartConfiguration } from 'chart.js';
 import { useAppStore } from '../../store';
 import { deepMerge } from '../../utils/graph';
 import type { ChartModel } from '../../utils/graph';
+
+Chart.register(
+  BarController,
+  BarElement,
+  CategoryScale,
+  Legend,
+  LineController,
+  LineElement,
+  LinearScale,
+  PointElement,
+  TimeScale,
+  Tooltip,
+);
 
 const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
 

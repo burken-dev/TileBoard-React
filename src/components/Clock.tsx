@@ -19,7 +19,10 @@ function Clock() {
   const [time, setTime] = useState(currentTime);
 
   useEffect(() => {
-    const id = window.setInterval(() => setTime(currentTime()), 1000);
+    const id = window.setInterval(() => {
+      if (document.hidden) return;
+      setTime(currentTime());
+    }, 1000);
     return () => window.clearInterval(id);
   }, []);
 

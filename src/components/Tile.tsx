@@ -46,11 +46,12 @@ function itemBackgroundStyles(
 function Tile({ item, page }: TileProps) {
   const config = useAppStore((s) => s.config);
   const entities = useEntities([String(item.id)]);
-  const isLoading = useAppStore((s) => s.isLoading);
-  const selectOpened = useAppStore((s) => s.selectOpened);
+  const loading = useAppStore((s) => s.loadingItems.has(item));
+  const isSelectOpened = useAppStore((s) => s.activeSelect?.id === item.id);
   const activePage = useAppStore((s) => s.activePage);
   const activeCamera = useAppStore((s) => s.activeCamera);
   const screensaverShown = useAppStore((s) => s.screensaverShown);
+  // ponytail: hidden may use uiState; keep subscription for correctness (rare writes)
   useAppStore((s) => s.uiState);
 
   const entity = item.type === 'multi' ? null : getItemEntity(item, entities);
@@ -72,7 +73,6 @@ function Tile({ item, page }: TileProps) {
   const title = entityTitle(resolved, entity, entities);
   const subtitle = entitySubtitle(resolved, entity, entities);
   const state = entityState(resolved, entity, entities);
-  const loading = isLoading(resolved);
 
   const base = itemPositionStyles(resolved, pageOpts(page, config, entities));
   const custom = resolved.customStyles ?? {};
@@ -84,7 +84,7 @@ function Tile({ item, page }: TileProps) {
 
   return (
     <div
-      className={'item ' + itemClasses(resolved, entity, loading, selectOpened(resolved)).join(' ')}
+      className={'item ' + itemClasses(resolved, entity, loading, isSelectOpened).join(' ')}
       style={styles}
       onPointerDown={long.onPointerDown}
       onPointerMove={long.onPointerMove}
