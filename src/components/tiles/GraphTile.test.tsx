@@ -21,6 +21,7 @@ vi.mock('chart.js', () => ({
   BarController: {},
   BarElement: {},
   CategoryScale: {},
+  Colors: { id: 'colors' },
   Decimation: {},
   Filler: {},
   Legend: {},

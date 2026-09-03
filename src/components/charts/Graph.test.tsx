@@ -20,6 +20,7 @@ vi.mock('chart.js', () => ({
   BarController: {},
   BarElement: {},
   CategoryScale: {},
+  Colors: { id: 'colors' },
   Decimation: {},
   Filler: {},
   Legend: {},
@@ -69,5 +70,12 @@ describe('Graph', () => {
     expect(chartInstances).toHaveLength(1);
     unmount();
     expect(chartInstances[0].destroy).toHaveBeenCalledTimes(1);
+  });
+
+  it('registers the Colors plugin so history datasets get auto-colors', async () => {
+    const { Chart, Colors } = await import('chart.js');
+    const registerMock = (Chart as unknown as { register: ReturnType<typeof vi.fn> }).register;
+    expect(registerMock).toHaveBeenCalled();
+    expect(registerMock.mock.calls[0]).toContain(Colors);
   });
 });
