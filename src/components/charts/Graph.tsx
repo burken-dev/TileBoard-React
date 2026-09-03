@@ -4,12 +4,15 @@ import {
   BarElement,
   CategoryScale,
   Chart,
+  Decimation,
+  Filler,
   Legend,
   LineController,
   LineElement,
   LinearScale,
   PointElement,
   TimeScale,
+  Title,
   Tooltip,
 } from 'chart.js';
 import 'chartjs-adapter-date-fns';
@@ -22,12 +25,15 @@ Chart.register(
   BarController,
   BarElement,
   CategoryScale,
+  Decimation,
+  Filler,
   Legend,
   LineController,
   LineElement,
   LinearScale,
   PointElement,
   TimeScale,
+  Title,
   Tooltip,
 );
 

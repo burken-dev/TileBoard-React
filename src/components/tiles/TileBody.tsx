@@ -62,7 +62,13 @@ export function TileBody({
       return <GaugeTile item={item} entity={entity} />;
     case 'graph':
       return (
-        <Suspense fallback={null}>
+        <Suspense
+          fallback={
+            <div className="item-graph" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.5)', fontSize: '14px' }}>
+              Loading...
+            </div>
+          }
+        >
           <GraphTile item={item} entity={entity} />
         </Suspense>
       );

@@ -20,16 +20,16 @@ vi.mock('chart.js', () => ({
   BarController: {},
   BarElement: {},
   CategoryScale: {},
+  Decimation: {},
+  Filler: {},
   Legend: {},
   LineController: {},
   LineElement: {},
   LinearScale: {},
   PointElement: {},
   TimeScale: {},
+  Title: {},
   Tooltip: {},
-}));
-vi.mock('chart.js/auto', () => ({
-  default: ChartMock,
 }));
 
 vi.mock('chartjs-adapter-date-fns', () => ({}));

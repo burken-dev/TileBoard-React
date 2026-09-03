@@ -12,11 +12,16 @@ export default function DateDisplay({ format: fmt }: DateDisplayProps) {
   const locale = useAppStore((s) => s.config.locale);
 
   useEffect(() => {
-    const id = window.setInterval(() => {
+    const tick = () => {
       if (document.hidden) return;
       setNow(new Date());
-    }, 60 * 1000);
-    return () => window.clearInterval(id);
+    };
+    const id = window.setInterval(tick, 60 * 1000);
+    document.addEventListener('visibilitychange', tick);
+    return () => {
+      window.clearInterval(id);
+      document.removeEventListener('visibilitychange', tick);
+    };
   }, []);
 
   return <div className="date">{format(now, fmt ?? 'EEEE, LLLL dd', { locale: getDateLocale(locale) })}</div>;

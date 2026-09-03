@@ -1,10 +1,13 @@
-import type { CSSProperties } from 'react';
+import { lazy, Suspense, type CSSProperties } from 'react';
 import type { TileConfig } from '../../config/types';
 import { useAppStore } from '../../store';
 import { entityTitle, getItemEntity } from '../../utils/entity';
 import { getItemFieldValue } from '../../utils/fields';
-import Graph from '../charts/Graph';
 import { useGraphData } from '../charts/useGraphData';
+
+// ponytail: lazy Graph so the chart chunk only loads when the popup opens,
+// not at startup (App mounts GraphPopup which returns null when closed).
+const Graph = lazy(() => import('../charts/Graph'));
 
 export default function GraphPopup() {
   const activeGraph = useAppStore((s) => s.activeGraph);
@@ -42,7 +45,11 @@ function GraphPopupContent({ item }: { item: TileConfig }) {
               {isLoading && !error && <span>Loading history data...</span>}
               {error && <span>{error}</span>}
             </div>
-            {!isLoading && !error && model && <Graph model={model} options={options} />}
+            {!isLoading && !error && model && (
+              <Suspense fallback={null}>
+                <Graph model={model} options={options} />
+              </Suspense>
+            )}
           </div>
         </div>
       </div>
