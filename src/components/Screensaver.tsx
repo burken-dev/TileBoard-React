@@ -98,6 +98,15 @@ export default function Screensaver() {
     setScreensaverBg(activeBg ?? null);
   }, [activeBg, setScreensaverBg]);
 
+  // ponytail: warm-decode the next slide so the fade never waits on network/decode
+  useEffect(() => {
+    if (!shown || slides.length < 2 || typeof Image === 'undefined') return;
+    const url = slideBg(slides[(safeActive + 1) % slides.length]?.bg ?? '', cacheBust);
+    if (!url) return;
+    const img = new Image();
+    img.src = url;
+  }, [shown, slides, safeActive, cacheBust]);
+
   const handleControl = (button: ScreensaverButtonConfig): void => {
     const len = slides.length;
     if (!len) return;
