@@ -403,7 +403,7 @@ body {
    left: 0;
    right: 0;
    top: 0;
-   height: 1000%;
+   bottom: 0;
 }
 
 .pages-menu {
@@ -454,8 +454,6 @@ body {
    }
 
    &--items {
-      //position: relative;
-      //top: 50%;
       display: inline-block;
       vertical-align: middle;
    }
@@ -479,11 +477,6 @@ body {
       margin: @pageMenuIconVerticalMargin auto;
       vertical-align: middle;
       cursor: pointer;
-
-      /*&:hover {
-         background-color: rgba(0,0,0,.2);
-         opacity: 0.8;
-      }*/
 
       &:active {
          background-color: rgba(0,0,0,.3);
@@ -522,7 +515,6 @@ body {
    background-size: cover;
    background-position: center;
    touch-action: manipulation;
-   /*overflow: hidden;*/
 
    &.-multi {
       background-color: transparent;
@@ -634,12 +626,6 @@ body {
    &.-dimmer_switch,
    &.-scene {
       cursor: pointer;
-
-      /*&:hover {
-         margin-top: -2px;
-         margin-left: -2px;
-         border: 2px solid rgba(200,200,200,.6);
-      }*/
 
       &:active {
          margin-top: -2px;
@@ -762,10 +748,6 @@ body {
    cursor: pointer;
    font-weight: bold;
 
-   /*&:hover {
-      background: rgba(0,0,0,.2);
-   }*/
-
    &:active {
       background: rgba(0,0,0,.4);
    }
@@ -786,7 +768,6 @@ body {
    right: 0;
    height: 24px;
    font-weight: 500;
-   text-shadow: 1px 1px 0 rgba(0,0,0,.01);
    z-index: 2;
    overflow: hidden;
    white-space: nowrap;
@@ -829,7 +810,6 @@ body {
    position: absolute;
    height: @entitySize;
    line-height: @entitySize;
-   //top: (@tileSize - @entitySize) / 2 - 5px;
    top: ~'calc(50% - @{entityTop})';
    left: 0;
    right: 0;
@@ -837,8 +817,6 @@ body {
    overflow: hidden;
 
    &.-select {
-      /*height: 90px;
-      top: 20px;*/
       text-align: left;
    }
 
@@ -1130,10 +1108,6 @@ body {
       white-space: nowrap;
       text-align: left;
 
-      /*&:hover {
-         background: #444;
-      }*/
-
       &:active, &.-active {
          background: #666;
 
@@ -1155,7 +1129,6 @@ body {
 
    &--value {
       font-size: 28px;
-      /*font-weight: 500;*/
       line-height: 1.2;
       white-space: nowrap;
    }
@@ -1271,10 +1244,6 @@ body {
       overflow: hidden;
       color: #bbb;
       cursor: pointer;
-
-      /*&:hover {
-         background: #222;
-      }*/
 
       &.-active {
          color: #eee;
@@ -1782,13 +1751,7 @@ body {
 
 
 .media-player {
-   //padding: 15px 7px;
-
    &--main-button {
-      //position: absolute;
-      //left: 5px;
-      //top: 20px;
-
       span {
          display: inline-block;
          width: 55px;
@@ -1835,12 +1798,6 @@ body {
    }
 
    &--source {
-      //position: absolute;
-      //padding: 5px 8px 5px 5px;
-      //cursor: pointer;
-      //right: 5px;
-      //top: 68px;
-
       &:active {
          background: rgba(0,0,0,0.3);
       }
@@ -1932,7 +1889,6 @@ body {
             }
             &-buttons {
                vertical-align: bottom;
-               //padding-top: 15px;
             }
          }
       }
@@ -1940,7 +1896,6 @@ body {
       &.-has-subtitle {
          .media-player-table--td {
             &-mute {
-               //height: 50px;
                padding-top: 21px;
                width: 32px;
                height: 32px;
@@ -2025,7 +1980,6 @@ body {
 
 .noty {
    width: @notyWidth;
-   //border: 1px solid;
    margin: 15px 0;
    color: #fff;
    position: relative;
@@ -2035,12 +1989,6 @@ body {
       opacity: 1;
       transition: 0.2s ease-out opacity;
    }
-
-   /*&:hover {
-      .noty-lifetime-line {
-         animation-play-state: paused;
-      }
-   }*/
 
    &-header {
       padding: 10px;
@@ -2255,6 +2203,12 @@ body {
    .screensaver-slide.-prev {
       transition: none;
    }
+   .clock--colon,
+   .item-slides.-c2,
+   .item-slides.-c3,
+   .noty-lifetime-line {
+      animation: none;
+   }
 }
 
 @rangeBg: rgba(195, 214, 217, 0.3);
@@ -2273,11 +2227,10 @@ input[type=range]:focus {
 input[type=range]::-webkit-slider-runnable-track {
    width: 100%;
    height: @rangeHeight;
-   border-radius: 0px;
+   border-radius: 0;
    cursor: pointer;
-   box-shadow: 0px 0px 1px rgba(0,0,0,0.3);
    background: @rangeBg;
-   border: 0px solid #000101;
+   border: 0;
 }
 input[type=range]::-webkit-slider-thumb {
    height: 16px;
@@ -2297,8 +2250,7 @@ input[type=range]::-moz-range-track {
    width: 100%;
    height: @rangeHeight;
    cursor: pointer;
-   box-shadow:  0px 0px 1px rgba(0,0,0,0.5);
-   border-radius: 0px;
+   border-radius: 0;
    background: @rangeBg;
 }
 input[type=range]::-moz-range-thumb {
@@ -2340,4 +2292,3 @@ input[type=range]::-moz-range-thumb {
    0%   { width: 100%; }
    100%   { width: 0; }
 }
-//*/ы
