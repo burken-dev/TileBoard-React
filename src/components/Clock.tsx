@@ -19,11 +19,16 @@ function Clock() {
   const [time, setTime] = useState(currentTime);
 
   useEffect(() => {
-    const id = window.setInterval(() => {
+    const tick = () => {
       if (document.hidden) return;
       setTime(currentTime());
-    }, 1000);
-    return () => window.clearInterval(id);
+    };
+    const id = window.setInterval(tick, 1000);
+    document.addEventListener('visibilitychange', tick);
+    return () => {
+      window.clearInterval(id);
+      document.removeEventListener('visibilitychange', tick);
+    };
   }, []);
 
   return (

@@ -46,7 +46,12 @@ function itemBackgroundStyles(
 function Tile({ item, page }: TileProps) {
   const config = useAppStore((s) => s.config);
   const entities = useEntities([String(item.id)]);
-  const loading = useAppStore((s) => s.loadingItems.has(item));
+  // ponytail: compare by id — withLoading stores the resolved clone (R),
+  // while this subscribes with the prop object (O); ref equality misses when resolveTile clones.
+  const loading = useAppStore((s) => {
+    for (const i of s.loadingItems) if (i.id === item.id) return true;
+    return false;
+  });
   const isSelectOpened = useAppStore((s) => s.activeSelect?.id === item.id);
   const activePage = useAppStore((s) => s.activePage);
   const activeCamera = useAppStore((s) => s.activeCamera);
