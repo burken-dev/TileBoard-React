@@ -143,6 +143,7 @@ body {
    -ms-user-select: none;
    -khtml-user-select: none;
    -webkit-user-select: none;
+   user-select: none;
    -webkit-touch-callout: none;
 }
 
@@ -242,10 +243,6 @@ body {
    top: 0;
 
    color: #fff;
-
-   &-content {
-
-   }
 
    &--left {
       float: left;
@@ -477,7 +474,6 @@ body {
       text-align: center;
       opacity: 0.5;
       margin: @pageMenuIconVerticalMargin auto;
-      vertical-align: middle;
       cursor: pointer;
 
       /*&:hover {
@@ -1180,10 +1176,6 @@ body {
       vertical-align: middle;
    }
 
-   &--hour, &--minute {
-
-   }
-
    &--colon {
       animation: blink 2s step-start 0s infinite;
       font-size: 0.93em;
@@ -1258,8 +1250,6 @@ body {
 
    &--list {
       width: 200px;
-      display: inline-block;
-      vertical-align: top;
       margin: 10px;
       float: left;
    }
@@ -1353,9 +1343,6 @@ body {
 }
 
 .door-entry-popup {
-
-   &-container {
-   }
 
    &--tiles {
       position: absolute;
@@ -1554,6 +1541,7 @@ body {
       box-sizing: border-box;
       margin: 0;
       -webkit-appearance: none;
+      appearance: none;
    }
 
    &-container {
@@ -1804,16 +1792,6 @@ body {
       }
    }
 
-   &--buttons {
-      //position: absolute;
-      //right: 5px;
-      //top: 25px;
-      //width: (@tileSize * 2) - 70px;
-      //white-space: normal;
-      //text-align: right;
-
-   }
-
    &--button {
       width: 35px;
       height: 35px;
@@ -1828,10 +1806,6 @@ body {
       &:active {
          background: rgba(0,0,0,0.3);
       }
-   }
-
-   &--volume {
-      //margin-top: @tileSize - 65px;
    }
 
    &--source {
@@ -2065,9 +2039,7 @@ body {
       height: @notyIconSize;
       width: @notyIconSize;
       margin: 0 15px 0 5px;
-      display: inline-block;
       float: left;
-      vertical-align: middle;
    }
 
    &-message {
@@ -2262,6 +2234,7 @@ body {
 
 input[type=range] {
    -webkit-appearance: none;
+   appearance: none;
    width: 100%;
    margin: 3px 0;
    height: 18px;
