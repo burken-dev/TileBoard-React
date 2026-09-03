@@ -2154,7 +2154,8 @@ body {
       z-index: 51;
       opacity: 0;
       font-size: 35px;
-      will-change: opacity, filter;
+      // ponytail: opacity-only so fades stay composited; filter is static per slide
+      will-change: opacity;
 
       &.-active {
          opacity: 1;
@@ -2246,6 +2247,13 @@ body {
 
    .clock {
       font-size: 1.5em;
+   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+   .screensaver-slide.-active,
+   .screensaver-slide.-prev {
+      transition: none;
    }
 }
 

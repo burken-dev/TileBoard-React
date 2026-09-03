@@ -122,6 +122,20 @@ describe('Screensaver', () => {
     expect(slides.style.backgroundImage).toContain('b.jpg?t=0');
   });
 
+  it('preloads the next slide image so the fade starts decoded', () => {
+    const seen: string[] = [];
+    vi.stubGlobal('Image', class { set src(v: string) { seen.push(v); } });
+    try {
+      render(<Screensaver />);
+      act(() => {
+        vi.advanceTimersByTime(6000);
+      });
+      expect(seen.some((s) => s.includes('b.jpg'))).toBe(true);
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
   it('does not render ambient backdrops by default', () => {
     const { container } = render(<Screensaver />);
     act(() => {
