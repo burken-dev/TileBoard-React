@@ -6,7 +6,7 @@ import { useAppStore, useEntities } from '../../store';
 import { mutePlayer, sendPlayer, setSourcePlayer, withLoading } from '../../tiles/actions';
 import { entityState, entitySubtitle } from '../../utils/entity';
 import { debounce } from '../../utils/misc';
-import { selectStyles } from '../SelectOverlay';
+import { SelectOverlay, selectStyles } from '../SelectOverlay';
 import { SliderInput } from './SliderInput';
 
 const sendVolume = debounce((item: TileConfig, value: number) => {
@@ -22,7 +22,7 @@ export const MediaPlayerTile = memo(function MediaPlayerTile({ item, entity }: {
   const entities = useEntities([String(item.id)]);
   const openSelect = useAppStore((s) => s.openSelect);
   const closeSelect = useAppStore((s) => s.closeSelect);
-  const selectOpened = useAppStore((s) => s.selectOpened);
+  const opened = useAppStore((s) => s.activeSelect?.id === item.id);
 
   const off = entity.state === 'off';
   const playing = entity.state === 'playing';
@@ -216,22 +216,16 @@ export const MediaPlayerTile = memo(function MediaPlayerTile({ item, entity }: {
         </table>
       </div>
 
-      {selectOpened(item) && (
-        <div className="item-select" style={selectStyles(sourceList)}>
-          {sourceList.map((option, index) => (
-            <div
-              key={index}
-              className={'item-select--option' + (option === source ? ' -active' : '')}
-              onClick={(e) => {
-                e.stopPropagation();
-                setSourcePlayer(item, entity, option);
-                closeSelect();
-              }}
-            >
-              <span>{option}</span>
-            </div>
-          ))}
-        </div>
+      {opened && (
+        <SelectOverlay
+          options={sourceList}
+          active={source}
+          style={selectStyles(sourceList)}
+          onChoose={(option) => {
+            setSourcePlayer(item, entity, option);
+            closeSelect();
+          }}
+        />
       )}
     </div>
   );
