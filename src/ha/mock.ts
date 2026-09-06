@@ -84,7 +84,7 @@ export function mockCallService(
     else if (service === 'volume_unmute') attributes.is_volume_muted = false;
   } else if (domain === 'input_number') {
     if (service === 'set_value') state = String(serviceData?.value ?? state);
-  } else if (domain === 'input_select') {
+  } else if (domain === 'input_select' || domain === 'select') {
     if (service === 'select_option') state = String(serviceData?.option ?? state);
   } else if (domain === 'climate') {
     if (service === 'set_temperature') write('temperature');

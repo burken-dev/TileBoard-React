@@ -2,12 +2,22 @@ import { fireEvent, render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { TileBoardConfig } from '../config/types';
 
+vi.mock('../ha/services', () => ({
+  callService: vi.fn(() => Promise.resolve()),
+  sendMessage: vi.fn(() => Promise.resolve()),
+}));
+
+import { callService } from '../ha/services';
+
+const callServiceMock = vi.mocked(callService);
+
 let createAppStore: typeof import('../store').createAppStore;
 let getAppStore: typeof import('../store').getAppStore;
 let Pages: typeof import('./Pages').default;
 
 beforeEach(async () => {
   vi.resetModules();
+  callServiceMock.mockClear();
   ({ createAppStore, getAppStore } = await import('../store'));
   ({ default: Pages } = await import('./Pages'));
 });
@@ -147,5 +157,93 @@ describe('Pages', () => {
     fireEvent.pointerMove(scrollItem, { clientY: 100 });
     // Transform should NOT be set on drag since target is in a scrollable element
     expect(pagesEl.style.transform).toBe('translate(0, 0%)');
+  });
+
+  it('input_select opens select overlay with page-overlay, choosing option calls service and closes', () => {
+    createAppStore({
+      serverUrl: 'http://h',
+      pages: [
+        {
+          title: 'P1',
+          groups: [
+            {
+              items: [
+                { type: 'input_select', id: 'input_select.mode', position: [0, 0] },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+    getAppStore().setEntities([
+      {
+        entity_id: 'input_select.mode',
+        state: 'Eco',
+        attributes: { options: ['Eco', 'Comfort', 'Boost'] },
+      },
+    ]);
+    const { container } = render(<Pages />);
+    expect(container.querySelector('.page-overlay')).toBeNull();
+    expect(container.querySelector('.item-select')).toBeNull();
+
+    // Click tile to open select
+    const tile = container.querySelector('.item')!;
+    fireEvent.pointerDown(tile);
+    fireEvent.pointerUp(tile);
+    fireEvent.click(tile);
+
+    expect(container.querySelector('.page-overlay')).not.toBeNull();
+    const select = container.querySelector('.item-select');
+    expect(select).not.toBeNull();
+    const options = select!.querySelectorAll('.item-select--option');
+    expect(options).toHaveLength(3);
+
+    // Clicking an option selects it, calls service, and closes overlay
+    fireEvent.click(options[1]);
+    expect(callServiceMock).toHaveBeenCalledWith('input_select', 'select_option', {
+      entity_id: 'input_select.mode',
+      option: 'Comfort',
+    });
+    expect(container.querySelector('.page-overlay')).toBeNull();
+    expect(container.querySelector('.item-select')).toBeNull();
+  });
+
+  it('clicking page-overlay closes active select without calling service', () => {
+    createAppStore({
+      serverUrl: 'http://h',
+      pages: [
+        {
+          title: 'P1',
+          groups: [
+            {
+              items: [
+                { type: 'input_select', id: 'input_select.mode', position: [0, 0] },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+    getAppStore().setEntities([
+      {
+        entity_id: 'input_select.mode',
+        state: 'Eco',
+        attributes: { options: ['Eco', 'Comfort', 'Boost'] },
+      },
+    ]);
+    const { container } = render(<Pages />);
+
+    const tile = container.querySelector('.item')!;
+    fireEvent.pointerDown(tile);
+    fireEvent.pointerUp(tile);
+    fireEvent.click(tile);
+
+    const overlay = container.querySelector('.page-overlay')!;
+    expect(overlay).not.toBeNull();
+
+    fireEvent.click(overlay);
+    expect(callServiceMock).not.toHaveBeenCalled();
+    expect(container.querySelector('.page-overlay')).toBeNull();
+    expect(container.querySelector('.item-select')).toBeNull();
   });
 });

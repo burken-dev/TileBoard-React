@@ -76,4 +76,30 @@ describe('MediaPlayerTile', () => {
       is_volume_muted: true,
     });
   });
+
+  it('renders source selector, opens SelectOverlay, and selects option', () => {
+    setup({
+      source_list: ['Radio', 'TV', 'Spotify'],
+      source: 'Radio',
+    });
+    const { container } = renderTile();
+    const sourceBtn = container.querySelector('.media-player--source')!;
+    expect(sourceBtn).toBeTruthy();
+    expect(container.querySelector('.item-select')).toBeNull();
+
+    // Click source button to open SelectOverlay
+    fireEvent.click(sourceBtn);
+    const select = container.querySelector('.item-select');
+    expect(select).not.toBeNull();
+    const options = select!.querySelectorAll('.item-select--option');
+    expect(options).toHaveLength(3);
+
+    // Choose option
+    fireEvent.click(options[2]);
+    expect(callServiceMock).toHaveBeenCalledWith('media_player', 'select_source', {
+      entity_id: 'media.x',
+      source: 'Spotify',
+    });
+    expect(container.querySelector('.item-select')).toBeNull();
+  });
 });

@@ -31,7 +31,14 @@ function tap(container: HTMLElement) {
   fireEvent.click(root);
 }
 
-beforeEach(() => callServiceMock.mockClear());
+beforeEach(() => {
+  callServiceMock.mockClear();
+  try {
+    getAppStore().closeSelect();
+  } catch {
+    // Store may not be initialized yet
+  }
+});
 
 describe('interactive tiles', () => {
   it('input_number increases and clamps at max', () => {
@@ -72,6 +79,71 @@ describe('interactive tiles', () => {
       option: 'B',
     });
     expect(container.querySelector('.item-select')).toBeNull();
+  });
+
+  it('input_select option click on span child triggers selection', () => {
+    setup([
+      { entity_id: 'input_select.x', state: 'A', attributes: { options: ['A', 'B', 'C'] } },
+    ]);
+    const { container } = renderTile({
+      type: 'input_select',
+      id: 'input_select.x',
+      position: [0, 0],
+    });
+
+    tap(container);
+    const overlay = container.querySelector('.item-select');
+    expect(overlay).not.toBeNull();
+
+    const span = overlay!.querySelectorAll('.item-select--option span')[2]!;
+    fireEvent.click(span);
+    expect(callServiceMock).toHaveBeenCalledWith('input_select', 'select_option', {
+      entity_id: 'input_select.x',
+      option: 'C',
+    });
+    expect(container.querySelector('.item-select')).toBeNull();
+  });
+
+  it('select domain entity opens overlay and sends select_option', () => {
+    setup([
+      { entity_id: 'select.mode', state: 'Eco', attributes: { options: ['Eco', 'Comfort'] } },
+    ]);
+    const { container } = renderTile({
+      type: 'input_select',
+      id: 'select.mode',
+      position: [0, 0],
+    });
+
+    tap(container);
+    const overlay = container.querySelector('.item-select');
+    expect(overlay).not.toBeNull();
+
+    fireEvent.click(overlay!.querySelectorAll('.item-select--option')[1]!);
+    expect(callServiceMock).toHaveBeenCalledWith('select', 'select_option', {
+      entity_id: 'select.mode',
+      option: 'Comfort',
+    });
+    expect(container.querySelector('.item-select')).toBeNull();
+  });
+
+  it('clicking item-select container does not close select or re-toggle', () => {
+    setup([
+      { entity_id: 'input_select.x', state: 'A', attributes: { options: ['A', 'B'] } },
+    ]);
+    const { container } = renderTile({
+      type: 'input_select',
+      id: 'input_select.x',
+      position: [0, 0],
+    });
+
+    tap(container);
+    const overlay = container.querySelector('.item-select')!;
+    expect(overlay).not.toBeNull();
+
+    fireEvent.click(overlay);
+    expect(callServiceMock).not.toHaveBeenCalled();
+    expect(container.querySelector('.item-select')).not.toBeNull();
+    getAppStore().closeSelect();
   });
 
   it('input_select with a resolvable field opens overlay', () => {

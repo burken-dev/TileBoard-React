@@ -160,9 +160,10 @@ export function toggleSelect(item: TileConfig): void {
   else store.openSelect(item);
 }
 
-export function setSelectOption(item: TileConfig, _entity: HaEntity | null, option: string): void {
-  const domain = typeof item.id === 'string' ? item.id.split('.')[0] : 'input_select';
-  sendItemData(item, domain, 'select_option', { option });
+export function setSelectOption(item: TileConfig, entity: HaEntity | null, option: string): void {
+  const entityId = typeof item.id === 'string' ? item.id : (entity?.entity_id ?? '');
+  const domain = entityId ? entityId.split('.')[0] : 'input_select';
+  sendItemData(typeof item.id === 'string' ? item : { ...item, id: entityId }, domain, 'select_option', { option });
 }
 
 export function setFanSpeed(item: TileConfig, _entity: HaEntity | null, speed: string): void {

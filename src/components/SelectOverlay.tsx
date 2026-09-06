@@ -23,6 +23,7 @@ export function SelectOverlay({
       style={style}
       onPointerDown={(e: React.PointerEvent) => e.stopPropagation()}
       onPointerUp={(e: React.PointerEvent) => e.stopPropagation()}
+      onClick={(e: React.MouseEvent) => e.stopPropagation()}
     >
       {options.map((option, index) => (
         <div
