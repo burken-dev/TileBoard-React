@@ -196,9 +196,13 @@ body {
    touch-action: pan-x pan-y;
    display: flex;
    flex-direction: column;
+   position: relative;
 
    > .header {
-      flex-shrink: 0;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
    }
 }
 
