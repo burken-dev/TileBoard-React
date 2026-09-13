@@ -221,7 +221,7 @@ body {
    background-size: cover;
    background-position: center;
    display: flex;
-   align-items: center;
+   align-items: safe center;
    flex-wrap: nowrap;
    overflow-x: auto;
 }
@@ -486,6 +486,7 @@ body {
 
 .group {
    display: inline-block;
+   flex-shrink: 0; // ponytail: fixed-size groups scroll instead of squeezing (tiles are absolute, shrink = overlap)
    font-size: 0;
    margin: @groupMargin;
    position: relative;
