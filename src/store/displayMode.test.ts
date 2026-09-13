@@ -23,6 +23,11 @@ describe('displayMode', () => {
     expect(getAppStore().displayMode).toBe('scale');
   });
 
+  it('sanitizes bogus displayMode to fixed on init', async () => {
+    await freshStore({ serverUrl: 'http://h', pages, displayMode: 'bogus' as DisplayMode });
+    expect(getAppStore().displayMode).toBe('fixed');
+  });
+
   it('setDisplayMode accepts both modes and ignores garbage', async () => {
     await freshStore({ serverUrl: 'http://h', pages });
     getAppStore().setDisplayMode('scale');
