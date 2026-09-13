@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import type { StoreApi, UseBoundStore } from 'zustand';
 import { useCallback, useRef, useSyncExternalStore } from 'react';
 import type {
+  DisplayMode,
   EntityStates,
   HaEntity,
   NotificationData,
@@ -37,6 +38,12 @@ interface NavigationSlice {
   scrolled: { horizontal: boolean; vertical: boolean };
   openPage(index: number, preventAnimation?: boolean): void;
   setScrolled(scroll: { horizontal: boolean; vertical: boolean }): void;
+}
+
+interface DisplayModeSlice {
+  displayMode: DisplayMode;
+  setDisplayMode(mode: DisplayMode): void;
+  toggleDisplayMode(): void;
 }
 
 interface LoadingSlice {
@@ -135,6 +142,7 @@ interface ScreensaverSlice {
 export type AppStore = AppData &
   AppDataActions &
   NavigationSlice &
+  DisplayModeSlice &
   LoadingSlice &
   SelectSlice &
   DatetimeSlice &
@@ -191,6 +199,13 @@ export function createAppStore(config: TileBoardConfig): void {
     entitiesLoaded: false,
     activePage: initialPage(config),
     scrolled: { horizontal: false, vertical: false },
+    displayMode: config.displayMode ?? 'fixed',
+    setDisplayMode: (mode) => {
+      if (mode !== 'fixed' && mode !== 'scale') return;
+      set({ displayMode: mode });
+    },
+    toggleDisplayMode: () =>
+      set((prev) => ({ displayMode: prev.displayMode === 'scale' ? 'fixed' : 'scale' })),
     loadingItems: new Set(),
     activeSelect: null,
     activeDatetime: null,
@@ -384,6 +399,8 @@ export function createAppStore(config: TileBoardConfig): void {
   }));
 
   window.openPage = (index: number) => getAppStore().openPage(index);
+  window.setDisplayMode = (mode: DisplayMode) => getAppStore().setDisplayMode(mode);
+  window.toggleDisplayMode = () => getAppStore().toggleDisplayMode();
 }
 
 export function useAppStore(): AppStore;
