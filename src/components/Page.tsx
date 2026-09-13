@@ -1,5 +1,7 @@
 import type React from 'react';
+import { useRef } from 'react';
 import type { PageConfig } from '../config/types';
+import { usePageScale } from '../hooks/usePageScale';
 import { getAppStore, useAppStore } from '../store';
 import { pageBackground } from '../utils/layout';
 import Group from './Group';
@@ -15,6 +17,9 @@ export default function Page({ page, index }: PageProps) {
   const states = useAppStore((s) => s.entities);
   const activePage = useAppStore((s) => s.activePage);
   const setScrolled = useAppStore((s) => s.setScrolled);
+  const displayMode = useAppStore((s) => s.displayMode);
+  const pageRef = useRef<HTMLDivElement>(null);
+  const scale = usePageScale(pageRef, displayMode === 'scale');
 
   const transition = config.transition ?? 'animated';
   const menuPosition = config.menuPosition ?? 'left';
@@ -24,6 +29,10 @@ export default function Page({ page, index }: PageProps) {
     styles.position = 'absolute';
     styles.left = `${index * 100}%`;
     styles.top = '0';
+  }
+  if (displayMode === 'scale' && scale < 1) {
+    styles.transform = `scale(${scale})`;
+    styles.transformOrigin = 'center';
   }
 
   function onScroll(e: React.UIEvent<HTMLDivElement>): void {
@@ -43,6 +52,7 @@ export default function Page({ page, index }: PageProps) {
 
   return (
     <div
+      ref={pageRef}
       className={'page' + (index === activePage ? ' -active' : '')}
       style={styles}
       onScroll={onScroll}

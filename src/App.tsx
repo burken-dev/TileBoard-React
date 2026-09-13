@@ -21,14 +21,15 @@ interface AppProps {
 
 export default function App({ config }: AppProps) {
   const scrolled = useAppStore((s) => s.scrolled);
+  const displayMode = useAppStore((s) => s.displayMode);
 
   useEffect(() => {
     initConnection();
   }, []);
 
   useEffect(() => {
-    document.body.className = bodyClasses(config, scrolled).join(' ');
-  }, [config, scrolled]);
+    document.body.className = bodyClasses(config, scrolled, displayMode).join(' ');
+  }, [config, scrolled, displayMode]);
 
   useEffect(() => {
     if (!config.autoReloadInterval || config.autoReloadInterval <= 0) return;
