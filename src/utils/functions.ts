@@ -15,6 +15,8 @@ export function getContext(): FunctionContext {
     callService,
     sendMessage,
     openPage: (pageIndex) => getAppStore().openPage(pageIndex),
+    setDisplayMode: (mode) => getAppStore().setDisplayMode(mode),
+    toggleDisplayMode: () => getAppStore().toggleDisplayMode(),
     addNotification: (data) => getAppStore().addNotification(data),
     memo,
     uiState: (key) => getAppStore().uiState[key],
