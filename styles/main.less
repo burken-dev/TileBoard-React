@@ -194,6 +194,12 @@ body {
    width: 100%;
    overflow-y: hidden;
    touch-action: pan-x pan-y;
+   display: flex;
+   flex-direction: column;
+
+   > .header {
+      flex-shrink: 0;
+   }
 }
 
 .page-align {
@@ -207,7 +213,8 @@ body {
 }
 
 .pages {
-   height: 100%;
+   flex: 1;
+   min-height: 0;
    width: 100%;
    position: relative;
    z-index: 1;
@@ -235,7 +242,21 @@ body {
 .-display-scale {
    .page {
       overflow: hidden;
+      justify-content: center;
+      align-items: center;
    }
+}
+
+.page-scale {
+   display: flex;
+   flex-direction: column;
+   flex-shrink: 0; // keep content size so the viewport scrolls instead of squeezing
+}
+
+.page-content {
+   display: flex;
+   align-items: safe center;
+   flex-wrap: nowrap;
 }
 
 .page-head {
@@ -264,11 +285,10 @@ body {
 
 
 .header {
-   position: absolute;
-   z-index: 2;
-   left: 0;
-   right: 0;
+   position: sticky;
    top: 0;
+   flex-shrink: 0;
+   z-index: 2;
    font-size: 20px;
    color: #fff;
 
@@ -395,6 +415,11 @@ body {
          display: block;
          white-space: nowrap;
       }
+   }
+
+   .page-content {
+      flex-direction: column;
+      align-items: flex-start;
    }
 }
 

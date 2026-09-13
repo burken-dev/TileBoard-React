@@ -73,6 +73,7 @@ export default function Pages() {
 
   return (
     <div className="page-container" {...pointerHandlers}>
+      <Header header={config.header} />
       <div
         ref={containerRef}
         id="pages"
@@ -86,7 +87,6 @@ export default function Pages() {
           ) : null,
         )}
       </div>
-      <Header header={config.header} />
       <PagesMenu />
     </div>
   );
