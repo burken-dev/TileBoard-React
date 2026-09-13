@@ -263,4 +263,29 @@ describe('Pages', () => {
     const { container } = render(<Pages />);
     expect(container.querySelectorAll('.item')).toHaveLength(3);
   });
+
+  it('wraps page content in an inner scaler so the viewport never scales', () => {
+    setup();
+    const { container } = render(<Pages />);
+    const page = container.querySelector('.page') as HTMLElement;
+    const scaler = page.querySelector(':scope > .page-scale') as HTMLElement;
+    expect(scaler).not.toBeNull();
+    expect(scaler.querySelectorAll('.group').length).toBeGreaterThan(0);
+  });
+
+  it('renders the page header inside the scaler so it scales with the tiles', () => {
+    createAppStore({
+      ...fixture,
+      pages: [{ ...fixture.pages[0], header: { left: [{ type: 'custom_html', html: 'Hi' }] } }],
+    });
+    getAppStore().setEntities([
+      { entity_id: 'a', state: 'off', attributes: {} },
+      { entity_id: 'b', state: 'off', attributes: {} },
+      { entity_id: 'c', state: 'off', attributes: {} },
+    ]);
+    const { container } = render(<Pages />);
+    const scaler = container.querySelector('.page > .page-scale') as HTMLElement;
+    expect(scaler).not.toBeNull();
+    expect(scaler.querySelector('.header')?.textContent).toContain('Hi');
+  });
 });

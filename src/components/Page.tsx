@@ -18,8 +18,9 @@ export default function Page({ page, index }: PageProps) {
   const activePage = useAppStore((s) => s.activePage);
   const setScrolled = useAppStore((s) => s.setScrolled);
   const displayMode = useAppStore((s) => s.displayMode);
-  const pageRef = useRef<HTMLDivElement>(null);
-  const scale = usePageScale(pageRef, displayMode === 'scale', index === activePage);
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const scale = usePageScale(viewportRef, contentRef, displayMode === 'scale', index === activePage);
 
   const transition = config.transition ?? 'animated';
   const menuPosition = config.menuPosition ?? 'left';
@@ -30,9 +31,12 @@ export default function Page({ page, index }: PageProps) {
     styles.left = `${index * 100}%`;
     styles.top = '0';
   }
+  // Scale the inner content, never the viewport: scaling the viewport clips
+  // overflowing tiles before the transform and only shrinks the background.
+  const scaleStyles: React.CSSProperties = {};
   if (displayMode === 'scale' && scale < 1) {
-    styles.transform = `scale(${scale})`;
-    styles.transformOrigin = 'center';
+    scaleStyles.transform = `scale(${scale})`;
+    scaleStyles.transformOrigin = 'center center';
   }
 
   function onScroll(e: React.UIEvent<HTMLDivElement>): void {
@@ -52,16 +56,20 @@ export default function Page({ page, index }: PageProps) {
 
   return (
     <div
-      ref={pageRef}
+      ref={viewportRef}
       className={'page' + (index === activePage ? ' -active' : '')}
       style={styles}
       onScroll={onScroll}
     >
-      <div className="page-align" />
-      <Header header={page.header} />
-      {page.groups.map((group, groupIndex) => (
-        <Group key={groupIndex} group={group} page={page} />
-      ))}
+      <div ref={contentRef} className="page-scale" style={scaleStyles}>
+        <Header header={page.header} />
+        <div className="page-content">
+          <div className="page-align" />
+          {page.groups.map((group, groupIndex) => (
+            <Group key={groupIndex} group={group} page={page} />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
