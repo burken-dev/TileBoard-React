@@ -14,9 +14,24 @@ class FakeRO {
   disconnect() {}
 }
 
+class FakeMO {
+  static instances: FakeMO[] = [];
+  cb: MutationCallback;
+  constructor(cb: MutationCallback) {
+    this.cb = cb;
+    FakeMO.instances.push(this);
+  }
+  observe() {}
+  disconnect() {}
+  takeRecords(): MutationRecord[] {
+    return [];
+  }
+}
+
 afterEach(() => {
   vi.unstubAllGlobals();
   FakeRO.instances = [];
+  FakeMO.instances = [];
 });
 
 function mockEl(scrollW: number, scrollH: number, clientW: number, clientH: number): HTMLElement {
@@ -34,14 +49,24 @@ describe('usePageScale', () => {
   it('returns 1 when disabled', () => {
     vi.stubGlobal('ResizeObserver', FakeRO);
     const ref = { current: mockEl(2000, 1000, 1000, 800) };
-    const { result } = renderHook(() => usePageScale(ref, false));
+    const { result } = renderHook(() => usePageScale(ref, false, true));
     expect(result.current).toBe(1);
+  });
+
+  it('returns 1 and observes nothing when inactive', () => {
+    vi.stubGlobal('ResizeObserver', FakeRO);
+    vi.stubGlobal('MutationObserver', FakeMO);
+    const ref = { current: mockEl(2000, 1000, 1000, 800) };
+    const { result } = renderHook(() => usePageScale(ref, true, false));
+    expect(result.current).toBe(1);
+    expect(FakeRO.instances).toHaveLength(0);
+    expect(FakeMO.instances).toHaveLength(0);
   });
 
   it('scales content to fit when enabled', () => {
     vi.stubGlobal('ResizeObserver', FakeRO);
     const ref = { current: mockEl(2000, 1000, 1000, 800) };
-    const { result } = renderHook(() => usePageScale(ref, true));
+    const { result } = renderHook(() => usePageScale(ref, true, true));
     expect(result.current).toBe(0.5);
   });
 
@@ -49,12 +74,27 @@ describe('usePageScale', () => {
     vi.stubGlobal('ResizeObserver', FakeRO);
     const el = mockEl(2000, 1000, 1000, 800);
     const ref = { current: el };
-    const { result } = renderHook(() => usePageScale(ref, true));
+    const { result } = renderHook(() => usePageScale(ref, true, true));
     expect(result.current).toBe(0.5);
     Object.defineProperty(el, 'scrollWidth', { value: 1000, configurable: true });
     const ro = FakeRO.instances[0];
     act(() => {
       ro.cb([] as unknown as ResizeObserverEntry[], ro as unknown as ResizeObserver);
+    });
+    expect(result.current).toBe(0.8);
+  });
+
+  it('recomputes on DOM mutations', () => {
+    vi.stubGlobal('ResizeObserver', FakeRO);
+    vi.stubGlobal('MutationObserver', FakeMO);
+    const el = mockEl(2000, 1000, 1000, 800);
+    const ref = { current: el };
+    const { result } = renderHook(() => usePageScale(ref, true, true));
+    expect(result.current).toBe(0.5);
+    Object.defineProperty(el, 'scrollWidth', { value: 1000, configurable: true });
+    const mo = FakeMO.instances[0];
+    act(() => {
+      mo.cb([], mo as unknown as MutationObserver);
     });
     expect(result.current).toBe(0.8);
   });
