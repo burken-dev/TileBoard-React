@@ -203,6 +203,11 @@ body {
       left: 0;
       right: 0;
       top: 0;
+      pointer-events: none; // let clicks pass through empty header areas to tiles below
+
+      a, button {
+         pointer-events: auto;
+      }
    }
 }
 
