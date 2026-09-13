@@ -199,7 +199,7 @@ export function createAppStore(config: TileBoardConfig): void {
     entitiesLoaded: false,
     activePage: initialPage(config),
     scrolled: { horizontal: false, vertical: false },
-    displayMode: config.displayMode ?? 'fixed',
+    displayMode: config.displayMode === 'scale' ? 'scale' : 'fixed',
     setDisplayMode: (mode) => {
       if (mode !== 'fixed' && mode !== 'scale') return;
       set({ displayMode: mode });

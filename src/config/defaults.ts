@@ -16,7 +16,7 @@ export function applyDefaults(config: TileBoardConfig): TileBoardConfig {
     entitySize: config.entitySize ?? 'normal',
     menuPosition: config.menuPosition ?? 'left',
     groupsAlign: config.groupsAlign ?? 'horizontally',
-    displayMode: config.displayMode ?? 'fixed',
+    displayMode: config.displayMode === 'scale' ? 'scale' : 'fixed',
     notiesPosition: config.notiesPosition ?? 'right',
     timeFormat: config.timeFormat ?? 24,
     pingConnection: config.pingConnection ?? true,

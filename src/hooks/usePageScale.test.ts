@@ -51,7 +51,7 @@ describe('usePageScale', () => {
     const ref = { current: el };
     const { result } = renderHook(() => usePageScale(ref, true));
     expect(result.current).toBe(0.5);
-    Object.defineProperty(el, 'scrollWidth', { value: 1000 });
+    Object.defineProperty(el, 'scrollWidth', { value: 1000, configurable: true });
     const ro = FakeRO.instances[0];
     act(() => {
       ro.cb([] as unknown as ResizeObserverEntry[], ro as unknown as ResizeObserver);

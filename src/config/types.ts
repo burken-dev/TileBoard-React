@@ -25,6 +25,8 @@ export interface NotificationData {
   lifetime?: number;
 }
 
+export type DisplayMode = 'fixed' | 'scale';
+
 export interface FunctionContext {
   states: EntityStates;
   parseFieldValue: (value: unknown, item?: TileConfig, entity?: HaEntity | null) => unknown;
@@ -242,8 +244,6 @@ export interface EventConfig {
   command: string;
   action: (this: FunctionContext, event: Record<string, unknown>) => void;
 }
-
-export type DisplayMode = 'fixed' | 'scale';
 
 export interface TileBoardConfig {
   serverUrl: string;

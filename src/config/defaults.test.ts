@@ -102,4 +102,10 @@ describe('applyDefaults', () => {
   it('keeps an explicit displayMode', () => {
     expect(applyDefaults({ ...baseConfig, displayMode: 'scale' }).displayMode).toBe('scale');
   });
+
+  it('sanitizes bogus displayMode to fixed', () => {
+    expect(
+      applyDefaults({ ...baseConfig, displayMode: 'bogus' as never }).displayMode,
+    ).toBe('fixed');
+  });
 });
