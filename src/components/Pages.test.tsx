@@ -246,4 +246,21 @@ describe('Pages', () => {
     expect(container.querySelector('.page-overlay')).toBeNull();
     expect(container.querySelector('.item-select')).toBeNull();
   });
+
+  it('applies no transform in fixed mode', () => {
+    setup();
+    const { container } = render(<Pages />);
+    expect((container.querySelector('.page') as HTMLElement).style.transform).toBe('');
+  });
+
+  it('renders all tiles in scale mode without crashing', () => {
+    createAppStore({ ...fixture, displayMode: 'scale' });
+    getAppStore().setEntities([
+      { entity_id: 'a', state: 'off', attributes: {} },
+      { entity_id: 'b', state: 'off', attributes: {} },
+      { entity_id: 'c', state: 'off', attributes: {} },
+    ]);
+    const { container } = render(<Pages />);
+    expect(container.querySelectorAll('.item')).toHaveLength(3);
+  });
 });
