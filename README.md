@@ -129,6 +129,12 @@ var CONFIG = {
    hideScrollbar: false,
    /* groupsAlign: Align groups 'horizontally' (default) or 'vertically' */
    groupsAlign: 'horizontally',
+   /* displayMode: 'fixed' (default) keeps tile sizes and scrolls on small
+    * screens; 'scale' shrinks whole pages to fit (never enlarges).
+    * Switch at runtime with window.setDisplayMode/toggleDisplayMode or
+    * this.setDisplayMode/toggleDisplayMode in tile actions.
+    */
+   displayMode: 'fixed',
 
    /* Called when connected to the API and the state has been fetched.
     * Can be called multiple times in case of reconnecting.
@@ -418,6 +424,8 @@ Every anonymous function in a tile/config is called with a context (`this`) that
    callService: Function, // (domain, service, data) -> Promise; call a HA service
    sendMessage: Function, // (data) -> Promise; send a raw websocket message
    openPage: Function, // (index) -> void; switch to a page
+   setDisplayMode: Function, // ('fixed'|'scale') -> void; switch display mode
+   toggleDisplayMode: Function, // () -> void; flip fixed <-> scale
    memo: Function, // (key, ttlSeconds, fn) -> value; memoizes fn() for ttlSeconds
    uiState: Function, // (key) -> value; read a page-level UI state value
    setUiState: Function, // (key, value) -> void; set a value and re-render affected tiles
@@ -577,6 +585,8 @@ Example to fire a notification in a Home Assistant automation. This example fire
 * `window.openPage(index)` — switch to the page at `index`
 * `window.showScreensaver()` — force the screensaver on
 * `window.hideScreensaver()` — force the screensaver off
+* `window.setDisplayMode(mode)` — set display mode to `'fixed'` or `'scale'`
+* `window.toggleDisplayMode()` — flip between `fixed` and `scale`
 
 ## Custom CSS Styles
 
@@ -600,7 +610,7 @@ For tablet configuration use the `'compact'` theme and reduce padding. For mobil
 
 * String literals replace the legacy global constants (`TYPES.SWITCH` → `'switch'`, `CUSTOM_THEMES.HOMEKIT` → `'homekit'`, `TRANSITIONS.ANIMATED` → `'animated'`, ...).
 * Function context has changed: no `$scope`, no `api`; use `callService(domain, service, data)`, `sendMessage(data)`, `parseFieldValue(value)`, `states`, `openPage(index)`.
-* `window.openPage`, `window.showScreensaver`, `window.hideScreensaver` are the supported automation entry points.
+* `window.openPage`, `window.showScreensaver`, `window.hideScreensaver`, `window.setDisplayMode`, `window.toggleDisplayMode` are the supported automation entry points.
 * The `date` header item format uses date-fns tokens (the documented default `'EEEE, LLLL dd'` works as-is; exotic Angular tokens may need adjustment).
 
 ## Contribution
