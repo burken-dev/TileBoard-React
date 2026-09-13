@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   bodyClasses,
   calcGroupSize,
+  calcPageScale,
   groupSizeStyles,
   itemPositionStyles,
   pageTransform,
@@ -82,5 +83,30 @@ describe('bodyClasses', () => {
     const classes = bodyClasses(config, { horizontal: true, vertical: true });
     expect(classes).toContain('-scrolled-horizontally');
     expect(classes).toContain('-scrolled-vertically');
+  });
+});
+
+describe('calcPageScale', () => {
+  it('shrinks to fit the tighter axis', () => {
+    expect(calcPageScale(2000, 1000, 1000, 800)).toBe(0.5);
+    expect(calcPageScale(1000, 2000, 800, 1000)).toBe(0.5);
+  });
+
+  it('never upscales', () => {
+    expect(calcPageScale(500, 400, 1000, 800)).toBe(1);
+  });
+
+  it('returns 1 for non-positive inputs', () => {
+    expect(calcPageScale(0, 0, 1000, 800)).toBe(1);
+    expect(calcPageScale(1000, 800, 0, 0)).toBe(1);
+  });
+});
+
+describe('display body class', () => {
+  it('adds -display-scale only in scale mode', () => {
+    const config: TileBoardConfig = { serverUrl: 'http://h', pages: [] };
+    const scroll = { horizontal: false, vertical: false };
+    expect(bodyClasses(config, scroll, 'scale')).toContain('-display-scale');
+    expect(bodyClasses(config, scroll)).not.toContain('-display-scale');
   });
 });

@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react';
-import type { EntityStates, GroupConfig, PageConfig, TileBoardConfig, TileConfig } from '../config/types';
+import type { DisplayMode, EntityStates, GroupConfig, PageConfig, TileBoardConfig, TileConfig } from '../config/types';
 import { toAbsoluteServerURL } from './misc';
 import { resolveFieldValue } from './fields';
 
@@ -18,6 +18,16 @@ export function calcGroupSize(group: GroupConfig, states: EntityStates): { width
     width = Math.max(width, item.position[0] + w);
   }
   return { width, height };
+}
+
+export function calcPageScale(
+  contentW: number,
+  contentH: number,
+  viewW: number,
+  viewH: number,
+): number {
+  if (contentW <= 0 || contentH <= 0 || viewW <= 0 || viewH <= 0) return 1;
+  return Math.min(viewW / contentW, viewH / contentH, 1);
 }
 
 export function groupSizeStyles(group: GroupConfig, opts: SizeOpts, states: EntityStates): CSSProperties {
@@ -82,6 +92,7 @@ export function pageBackground(page: PageConfig, config: TileBoardConfig, states
 export function bodyClasses(
   config: TileBoardConfig,
   scroll: { horizontal: boolean; vertical: boolean },
+  displayMode: DisplayMode = 'fixed',
 ): string[] {
   const classes: string[] = [];
 
@@ -100,6 +111,8 @@ export function bodyClasses(
   classes.push('-groups-align-' + (config.groupsAlign ?? 'horizontally'));
 
   if (config.hideScrollbar) classes.push('-hide-scrollbar');
+
+  if (displayMode === 'scale') classes.push('-display-scale');
 
   if (scroll.horizontal) classes.push('-scrolled-horizontally');
   if (scroll.vertical) classes.push('-scrolled-vertically');
