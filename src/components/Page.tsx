@@ -19,7 +19,7 @@ export default function Page({ page, index }: PageProps) {
   const setScrolled = useAppStore((s) => s.setScrolled);
   const displayMode = useAppStore((s) => s.displayMode);
   const pageRef = useRef<HTMLDivElement>(null);
-  const scale = usePageScale(pageRef, displayMode === 'scale');
+  const scale = usePageScale(pageRef, displayMode === 'scale', index === activePage);
 
   const transition = config.transition ?? 'animated';
   const menuPosition = config.menuPosition ?? 'left';
