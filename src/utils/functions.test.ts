@@ -37,4 +37,16 @@ describe('getContext', () => {
     expect(ctx.slideIndex).toBeNull();
     expect(ctx.slideCount).toBeNull();
   });
+
+  it('delegates setDisplayMode to the store', () => {
+    const spy = vi.spyOn(getAppStore(), 'setDisplayMode');
+    getContext().setDisplayMode('scale');
+    expect(spy).toHaveBeenCalledWith('scale');
+  });
+
+  it('delegates toggleDisplayMode to the store', () => {
+    const spy = vi.spyOn(getAppStore(), 'toggleDisplayMode');
+    getContext().toggleDisplayMode();
+    expect(spy).toHaveBeenCalledWith();
+  });
 });

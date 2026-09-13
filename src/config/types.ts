@@ -31,6 +31,8 @@ export interface FunctionContext {
   callService: (domain: string, service: string, serviceData?: Record<string, unknown>) => void;
   sendMessage: <T = unknown>(data: Record<string, unknown>) => Promise<T>;
   openPage: (pageIndex: number) => void;
+  setDisplayMode: (mode: DisplayMode) => void;
+  toggleDisplayMode: () => void;
   addNotification: (data: NotificationData) => void;
   memo: <T>(key: string, ttlSeconds: number, fn: () => T) => T;
   uiState: (key: string) => unknown;
