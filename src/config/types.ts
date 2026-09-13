@@ -241,6 +241,8 @@ export interface EventConfig {
   action: (this: FunctionContext, event: Record<string, unknown>) => void;
 }
 
+export type DisplayMode = 'fixed' | 'scale';
+
 export interface TileBoardConfig {
   serverUrl: string;
   wsUrl?: string;
@@ -261,6 +263,7 @@ export interface TileBoardConfig {
   menuPosition?: 'left' | 'bottom';
   hideScrollbar?: boolean;
   groupsAlign?: 'horizontally' | 'vertically';
+  displayMode?: DisplayMode;
   notiesPosition?: 'left' | 'right';
   ignoreErrors?: boolean;
   rememberLastPage?: boolean;

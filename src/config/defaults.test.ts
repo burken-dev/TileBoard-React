@@ -94,4 +94,12 @@ describe('applyDefaults', () => {
       'animated_gpu',
     );
   });
+
+  it('fills displayMode with fixed', () => {
+    expect(applyDefaults(baseConfig).displayMode).toBe('fixed');
+  });
+
+  it('keeps an explicit displayMode', () => {
+    expect(applyDefaults({ ...baseConfig, displayMode: 'scale' }).displayMode).toBe('scale');
+  });
 });
