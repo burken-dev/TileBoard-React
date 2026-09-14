@@ -110,3 +110,60 @@ describe('display body class', () => {
     expect(bodyClasses(config, scroll)).not.toContain('-display-scale');
   });
 });
+
+describe('bodyClasses customClasses', () => {
+  const scroll = { horizontal: false, vertical: false };
+
+  it('appends a global string split on whitespace', () => {
+    const config: TileBoardConfig = {
+      serverUrl: 'http://h',
+      pages: [],
+      customClasses: 'kiosk dark-mode',
+    };
+    const classes = bodyClasses(config, scroll);
+    expect(classes).toContain('kiosk');
+    expect(classes).toContain('dark-mode');
+  });
+
+  it('appends a global array after system classes', () => {
+    const config: TileBoardConfig = {
+      serverUrl: 'http://h',
+      pages: [],
+      menuPosition: 'left',
+      customClasses: ['foo', 'bar'],
+    };
+    const classes = bodyClasses(config, scroll);
+    expect(classes).toContain('foo');
+    expect(classes).toContain('bar');
+    expect(classes.indexOf('foo')).toBeGreaterThan(classes.indexOf('-menu-left'));
+  });
+
+  it('appends active page classes after global ones', () => {
+    const config: TileBoardConfig = {
+      serverUrl: 'http://h',
+      pages: [{ title: 'A', customClasses: 'living-room', groups: [] }],
+      customClasses: 'kiosk',
+    };
+    const classes = bodyClasses(config, scroll, 'fixed', 0);
+    expect(classes).toContain('kiosk');
+    expect(classes).toContain('living-room');
+    expect(classes.indexOf('living-room')).toBeGreaterThan(classes.indexOf('kiosk'));
+  });
+
+  it('ignores empty entries and out-of-range page index', () => {
+    const config: TileBoardConfig = {
+      serverUrl: 'http://h',
+      pages: [{ title: 'A', groups: [] }],
+      customClasses: ['  ', '', 'ok'],
+    };
+    const classes = bodyClasses(config, scroll, 'fixed', 99);
+    expect(classes).toContain('ok');
+    expect(classes).not.toContain('');
+    expect(classes).not.toContain('  ');
+  });
+
+  it('changes nothing when customClasses is absent', () => {
+    const config: TileBoardConfig = { serverUrl: 'http://h', pages: [] };
+    expect(bodyClasses(config, scroll)).not.toContain('kiosk');
+  });
+});
