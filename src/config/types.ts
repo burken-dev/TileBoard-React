@@ -171,6 +171,7 @@ export interface PageConfig {
   tileMargin?: Field<number>;
   groupMarginCss?: Field<string>;
   hidden?: Field<boolean>;
+  customClasses?: string | string[];
   header?: HeaderConfig;
   groups: GroupConfig[];
 }
@@ -250,6 +251,7 @@ export interface TileBoardConfig {
   wsUrl?: string;
   authToken?: string | null;
   customTheme?: string | string[] | null;
+  customClasses?: string | string[];
   transition?: 'animated' | 'animated_gpu' | 'simple';
   tileSize?: number;
   tileMargin?: number;

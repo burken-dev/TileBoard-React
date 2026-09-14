@@ -89,10 +89,24 @@ export function pageBackground(page: PageConfig, config: TileBoardConfig, states
   return styles;
 }
 
+function normalizeClasses(value: unknown): string[] {
+  const list = Array.isArray(value) ? value : [value];
+  const out: string[] = [];
+  for (const entry of list) {
+    if (typeof entry !== 'string') continue;
+    for (const part of entry.split(/\s+/)) {
+      const cls = part.trim();
+      if (cls) out.push(cls);
+    }
+  }
+  return out;
+}
+
 export function bodyClasses(
   config: TileBoardConfig,
   scroll: { horizontal: boolean; vertical: boolean },
   displayMode: DisplayMode = 'fixed',
+  activePageIndex?: number | null,
 ): string[] {
   const classes: string[] = [];
 
@@ -116,6 +130,12 @@ export function bodyClasses(
 
   if (scroll.horizontal) classes.push('-scrolled-horizontally');
   if (scroll.vertical) classes.push('-scrolled-vertically');
+
+  classes.push(...normalizeClasses(config.customClasses));
+  if (typeof activePageIndex === 'number') {
+    const page = config.pages?.[activePageIndex];
+    if (page) classes.push(...normalizeClasses(page.customClasses));
+  }
 
   return classes;
 }
