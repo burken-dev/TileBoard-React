@@ -138,6 +138,7 @@ export interface TileConfig {
   controlsEnabled?: boolean;
   items?: TileConfig[]; // multi tile: child tiles to rotate between
   autorotate?: Field<number>; // multi tile: ms per child, -1/absent = off
+  fallback?: boolean; // multi tile: auto-pick first available child (skips unavailable/unknown)
   key?: string; // multi child: stable identifier used by setUiState('multi:<id>', key)
 }
 

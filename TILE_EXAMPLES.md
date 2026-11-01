@@ -424,6 +424,32 @@ Children inherit the multi tile's size unless overridden.
 },
 ```
 
+With `fallback: true` the tile auto-picks the first available child (skips
+missing entities and `unavailable`/`unknown` states) and renders nothing when
+none is available. Without a manual pick it re-picks live; a manually picked
+child stays pinned and renders nothing while it is unavailable. Custom logic
+goes in the child's `hidden` function:
+```js
+{
+   position: [0, 0],
+   id: 'pool-slot',
+   type: 'multi',
+   fallback: true,
+   items: [
+      { type: 'sensor', id: 'sensor.pool_temp', position: [0, 0] },
+      { type: 'sensor', id: 'sensor.outdoor_temp', position: [0, 0] },
+      {
+         type: 'sensor',
+         id: 'sensor.sauna_temp',
+         position: [0, 0],
+         hidden: function () {
+            return this.states['switch.sauna']?.state !== 'on';
+         },
+      },
+   ],
+},
+```
+
 #### SCENE
 Works almost identical to the SCRIPT. Activates scene in a tap.
 ```js
