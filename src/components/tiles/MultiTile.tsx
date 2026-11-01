@@ -9,9 +9,13 @@ function childKey(child: TileConfig, index: number): string {
   return typeof child.key === 'string' ? child.key : String(index);
 }
 
-function childVisible(child: TileConfig, entities: EntityStates): boolean {
+function childVisible(child: TileConfig, entities: EntityStates, fallback: boolean): boolean {
   if (isHidden(child, entities)) return false;
-  return typeof child.id === 'object' || Boolean(entities[child.id]);
+  if (typeof child.id === 'object') return true;
+  const entity = entities[child.id];
+  if (!entity) return false;
+  if (fallback && (entity.state === 'unavailable' || entity.state === 'unknown')) return false;
+  return true;
 }
 
 function wrap(index: number, length: number): number {
@@ -27,13 +31,14 @@ export function MultiTile({ item, page }: { item: TileConfig; page: PageConfig }
 
   const resolved = resolveTile(item, null, entities);
   const children = resolved.items ?? [];
+  const fallback = resolved.fallback ?? false;
   const opts = pageOpts(page, config, entities);
 
   const activeKeyRef = useRef<string | null>(null);
 
   const visibleChildren = children
     .map((child, index) => ({ child, index }))
-    .filter(({ child }) => childVisible(child, entities));
+    .filter(({ child }) => childVisible(child, entities, fallback));
 
   let targetIndex: number | null = null;
   if (visibleChildren.length > 0) {
@@ -54,10 +59,12 @@ export function MultiTile({ item, page }: { item: TileConfig; page: PageConfig }
   }
 
   // ponytail: normalization effect runs every render; the key !== value guard makes it settle after one write.
+  // fallback auto (no explicit pick) stays unpinned so it re-picks live instead of going blank.
   useEffect(() => {
     if (targetIndex === null) return;
     const key = childKey(children[targetIndex], targetIndex);
     activeKeyRef.current = key;
+    if (fallback && value === undefined) return;
     if (key !== value) setUiState(uiKey, key);
   });
 

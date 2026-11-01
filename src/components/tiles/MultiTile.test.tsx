@@ -168,3 +168,43 @@ describe('Tile integration', () => {
     expect(container.querySelector('.item.-multi .item-title')).toHaveTextContent('Switch A');
   });
 });
+
+describe('MultiTile fallback', () => {
+  const unavailableA: HaEntity = { entity_id: 'switch.a', state: 'unavailable', attributes: { friendly_name: 'Switch A' } };
+  const unknownB: HaEntity = { entity_id: 'switch.b', state: 'unknown', attributes: { friendly_name: 'Switch B' } };
+
+  it('shows the first available child when the first is unavailable', () => {
+    setup([unavailableA, entityB]);
+    const { container } = renderMulti({ fallback: true } as Partial<TileConfig>);
+    expect(container.querySelector('.item.-multi .item-title')).toHaveTextContent('Switch B');
+  });
+
+  it('shows nothing when all children are unavailable', () => {
+    setup([unavailableA, unknownB]);
+    const { container } = renderMulti({ fallback: true } as Partial<TileConfig>);
+    expect(container.querySelector('.item.-multi')).toBeNull();
+  });
+
+  it('re-picks live when availability changes without a manual pick', () => {
+    setup([entityA, entityB]);
+    const { container } = renderMulti({ fallback: true } as Partial<TileConfig>);
+    expect(container.querySelector('.item.-multi .item-title')).toHaveTextContent('Switch A');
+    act(() => getAppStore().setEntities([unavailableA, entityB]));
+    expect(container.querySelector('.item.-multi .item-title')).toHaveTextContent('Switch B');
+  });
+
+  it('stays blank when a manually pinned child goes unavailable', () => {
+    setup([entityA, entityB]);
+    const { container } = renderMulti({ fallback: true } as Partial<TileConfig>);
+    act(() => getAppStore().setUiState('multi:main', 'b'));
+    expect(container.querySelector('.item.-multi .item-title')).toHaveTextContent('Switch B');
+    act(() => getAppStore().setEntities([entityA, unknownB]));
+    expect(container.querySelector('.item.-multi')).toBeNull();
+  });
+
+  it('without fallback still shows an unavailable child (existing behavior)', () => {
+    setup([unavailableA, entityB]);
+    const { container } = renderMulti();
+    expect(container.querySelector('.item.-multi .item-title')).toHaveTextContent('Switch A');
+  });
+});
