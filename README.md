@@ -4,13 +4,9 @@ This is a simple yet highly customizable dashboard for Home Assistant. The main 
 
 This repository is a React + TypeScript rewrite of the original AngularJS [TileBoard](https://github.com/resoai/TileBoard) by [resoai](https://github.com/resoai). All configuration formats, tile types, and behaviors from the original have been ported; the config file keeps the same shape, but uses plain string literals instead of the legacy global constants.
 
-Should you have any ideas or questions please post them on the home-assistant forum or create an issue on github.
-
 ## Links
 
 * [Original TileBoard](https://github.com/resoai/TileBoard)
-* [Discussion on Home Assistant Community](https://community.home-assistant.io/t/new-dashboard-for-ha/57173)
-* [Demo Video](https://youtu.be/L8JwzWNAPr8)
 
 ## Screenshots
 
