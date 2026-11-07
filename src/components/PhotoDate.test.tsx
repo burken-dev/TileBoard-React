@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import PhotoDate from './PhotoDate';
 import { createAppStore } from '../store';
@@ -38,5 +38,13 @@ describe('PhotoDate', () => {
     render(<PhotoDate bg="b.jpg" />);
     expect(await Promise.resolve()).toBeUndefined();
     expect(screen.queryByText(/./)).toBeNull();
+  });
+
+  it('clears the previous date when the next image has no EXIF', async () => {
+    const { rerender } = render(<PhotoDate bg="a.jpg" />);
+    expect(await screen.findByText('12 april 2023')).toBeTruthy();
+    loadMock.mockResolvedValueOnce({} as never);
+    rerender(<PhotoDate bg="b.jpg" />);
+    await waitFor(() => expect(screen.queryByText(/./)).toBeNull());
   });
 });
