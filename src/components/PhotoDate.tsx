@@ -18,6 +18,7 @@ export default function PhotoDate({ bg, format: fmt = 'dd MMMM yyyy' }: PhotoDat
       setText('');
       return;
     }
+    setText('');
     const url = new URL(bg, location.href).href;
     import('exifreader')
       .then(({ default: ExifReader }) => ExifReader.load(url))
@@ -28,11 +29,16 @@ export default function PhotoDate({ bg, format: fmt = 'dd MMMM yyyy' }: PhotoDat
           | undefined;
         let raw = tag && typeof tag === 'object' ? (tag.value ?? tag.description) : tag;
         if (Array.isArray(raw)) raw = raw[0];
-        if (typeof raw !== 'string') return;
+        if (typeof raw !== 'string') {
+          setText('');
+          return;
+        }
         const date = parse(raw, 'yyyy:MM:dd HH:mm:ss', new Date());
-        if (!isNaN(date.getTime())) setText(format(date, fmt, { locale: getDateLocale(locale) }));
+        setText(!isNaN(date.getTime()) ? format(date, fmt, { locale: getDateLocale(locale) }) : '');
       })
-      .catch(() => {});
+      .catch(() => {
+        if (!cancelled) setText('');
+      });
     return () => {
       cancelled = true;
     };
