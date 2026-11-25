@@ -613,6 +613,20 @@ For tablet configuration use the `'compact'` theme and reduce padding. For mobil
 
 Please feel free to post an issue or pull request and we will sort it out.
 
+### Dependency maintenance
+
+- Dependabot checks npm, Docker base images, and GitHub Actions weekly.
+- Patch/minor updates auto-merge after required CI; major updates need manual review.
+- Security updates follow the same semver rule.
+- Before tagging `v*`, review `npm outdated` and pending major PRs, run `npm audit --omit=dev`, resolve or document high/critical findings, and run lint, typecheck, tests, and build.
+
+```bash
+npm run lint
+npm run typecheck
+npm run test
+npm run build
+```
+
 ## Test config
 
 For developing tile types and layouts, a test configuration ships at
