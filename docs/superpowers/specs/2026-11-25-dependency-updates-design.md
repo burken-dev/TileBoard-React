@@ -41,11 +41,11 @@ required checks; major updates remain manual.
 
 ## Policy
 
-| Ecosystem | Schedule | Patch/minor | Major |
-| --- | --- | --- | --- |
-| npm | Weekly | Grouped PR, auto-merge after CI | Individual PR, manual |
-| Docker base images | Weekly | Auto-merge after CI | Manual |
-| GitHub Actions | Weekly | Auto-merge after CI | Manual |
+| Ecosystem          | Schedule | Patch/minor                     | Major                 |
+| ------------------ | -------- | ------------------------------- | --------------------- |
+| npm                | Weekly   | Grouped PR, auto-merge after CI | Individual PR, manual |
+| Docker base images | Weekly   | Auto-merge after CI             | Manual                |
+| GitHub Actions     | Weekly   | Auto-merge after CI             | Manual                |
 
 A security fix follows the same semver rule: patch/minor fixes can auto-merge
 after CI; fixes requiring a major upgrade are manual. Dependabot security alerts
