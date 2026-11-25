@@ -181,14 +181,15 @@ Include the four verification commands as a fenced shell block.
 
 - [ ] **Step 2: Check the documentation**
 
+Controller ruling: README.md is not globally Prettier-clean before this change. Preserve unrelated content and formatting; do not run Prettier with `--write` on the whole file. The new subsection itself must follow the surrounding Markdown style.
+
 Run:
 
 ```bash
-npx --no-install prettier --check README.md
 git diff --check
 ```
 
-Expected: both commands pass.
+Expected: the command passes and `git diff -- README.md` contains only the new dependency-maintenance subsection.
 
 - [ ] **Step 3: Create the label and enable security/auto-merge settings**
 
@@ -273,9 +274,11 @@ npm run lint
 npm run typecheck
 npm run test
 npm run build
-npx --no-install prettier --check .github/dependabot.yml .github/workflows/dependabot-automerge.yml README.md
+npx --no-install prettier --check .github/dependabot.yml .github/workflows/dependabot-automerge.yml
 git diff --check
 ```
+
+Controller ruling: do not include README.md in the whole-file Prettier check; it is not globally formatted before this change. Verify README changes with `git diff --check` and diff review.
 
 Expected: every command passes.
 
