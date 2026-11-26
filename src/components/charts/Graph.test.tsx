@@ -73,8 +73,11 @@ describe('Graph', () => {
   });
 
   it('registers the Colors plugin so history datasets get auto-colors', async () => {
+    vi.resetModules();
     const { Chart, Colors } = await import('chart.js');
     const registerMock = (Chart as unknown as { register: ReturnType<typeof vi.fn> }).register;
+    registerMock.mockClear();
+    await import('./Graph');
     expect(registerMock).toHaveBeenCalled();
     expect(registerMock.mock.calls[0]).toContain(Colors);
   });
