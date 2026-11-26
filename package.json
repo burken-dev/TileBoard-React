@@ -36,7 +36,7 @@
     "@vitejs/plugin-react": "^6.3.0",
     "eslint": "^10.15.0",
     "eslint-config-prettier": "^10.1.8",
-    "jsdom": "^30.0.1",
+    "jsdom": "^31.0.1",
     "less": "^4.9.1",
     "prettier": "^3.10.1",
     "typescript": "npm:@typescript/typescript6@^6.0.2",
