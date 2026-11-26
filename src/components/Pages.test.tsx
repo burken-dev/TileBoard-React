@@ -156,7 +156,7 @@ describe('Pages', () => {
     fireEvent.pointerDown(scrollItem, { clientY: 300 });
     fireEvent.pointerMove(scrollItem, { clientY: 100 });
     // Transform should NOT be set on drag since target is in a scrollable element
-    expect(pagesEl.style.transform).toBe('translate(0, 0%)');
+    expect(pagesEl.style.transform).toBe('translate(0px, 0%)');
   });
 
   it('input_select opens select overlay with page-overlay, choosing option calls service and closes', () => {
